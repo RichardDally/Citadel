@@ -1,0 +1,11 @@
+*.pb*
+Debug
+Release
+bin
+obj
+*.suo
+*.sdf
+*.vcxproj.user
+CMakeCache.txt
+CMakeFiles
+CMakeOutput
