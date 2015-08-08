@@ -1,30 +1,39 @@
 #pragma once
 
 #include <vector>
+#include <unordered_set>
+#include "Randomness.h"
 #include "CharacterCard.h"
 
-class CharacterDeck
+namespace Citadel
 {
-public:
-    CharacterDeck() = default;
-
-    void Setup(std::initializer_list<Character>&& availableCharacters, const size_t numberOfPlayers)
+    class CharacterDeck
     {
-        availableCharacters_ = availableCharacters;
-        numberOfPlayers_ = numberOfPlayers;
-        visibleCards_.clear();
-        availableCards_.clear();
-    }
+    public:
+        CharacterDeck() = default;
+        ~CharacterDeck() = default;
 
-    void StartANewRound()
-    {
+        void Setup(std::initializer_list<Character>&& availableCharacters, const size_t numberOfPlayers);
+        void RemoveCharactersStep();
+        void FaceupCharacterCards(const size_t n);
 
-    }
+        const std::unordered_set<Character>& GetRemainingCards() const
+        {
+            return remainingCards_;
+        }
 
-private:
-    size_t numberOfPlayers_ = 0;
-    std::vector<const Character> availableCharacters_;
+        void RemoveCard(const Character character)
+        {
+            std::cout << "[Debug] Remove [" << GetCharacterName(character) << "] from remaining cards." << std::endl;
+            remainingCards_.erase(character);
+        }
 
-    std::vector<const Character> visibleCards_;
-    std::vector<const Character> availableCards_;
-};
+    private:
+        size_t numberOfPlayers_ = 0;
+        std::vector<Character> availableCharacters_;
+
+        std::unordered_set<Character> faceupCards_;
+        std::unordered_set<Character> hiddenCards_;
+        std::unordered_set<Character> remainingCards_;
+    };
+}
