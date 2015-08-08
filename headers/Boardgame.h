@@ -1,6 +1,5 @@
 #pragma once
 
-#include <random>
 #include <vector>
 #include <memory>
 
@@ -20,6 +19,19 @@ namespace Citadel
 
     private:
         void StartRound();
+
+        // Round Step 1
+        void RemoveCharactersStep();
+
+        // Round Step 2
+        void ChooseCharactersStep();
+
+        // Round Step 3
+        void PlayerTurnsStep();
+
+        // Round Step 4
+        void EndOfTurnStep();
+
         bool IsGameEnded() const;
 
         template <typename PlayerType>
@@ -33,8 +45,10 @@ namespace Citadel
             }
         }
 
-        std::random_device rd;
-        std::mt19937 mt;
+        size_t currentRound_ = 0;
+        size_t startingPlayer_ = 0;
+        size_t currentPlayer_ = 0;
+        size_t nextStartingPlayer_ = 0;
 
         CharacterDeck characterDeck_;
         std::vector<std::unique_ptr<Player>> players_;
