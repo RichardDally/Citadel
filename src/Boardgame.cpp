@@ -254,6 +254,7 @@ namespace Citadel
                 std::cerr << "Error: CanUseMagicPower called with Character::UNINITIALIZED" << std::endl;
                 return false;
             }
+            default:;
         }
         return true;
     }
@@ -378,10 +379,9 @@ namespace Citadel
                     break;
                 }
 
-                case PlayerAction::UNITIALIZED:
+                default:
                 {
-                    std::cerr << "Player [" << player->GetName() << "] must pick a choice." << std::endl;
-                    break;
+                    std::cerr << "Player [" << player->GetName() << "] must pick a choice. Returned [" << static_cast<int>(action) << "]" << std::endl;
                 }
             }
         }
