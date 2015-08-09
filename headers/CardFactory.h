@@ -1,7 +1,7 @@
 #pragma once
 
+#include <map>
 #include <memory>
-#include <unordered_map>
 
 #include "CharacterCard.h"
 
@@ -9,7 +9,7 @@ const CharacterCard& GetCharacterCard(const Character character)
 {
     using Key = Character;
     using Value = CharacterCard;
-    static std::unordered_map<Key, Value> cache;
+    static std::map<Key, Value> cache;
 
     auto it = cache.find(character);
     if (it != cache.end())

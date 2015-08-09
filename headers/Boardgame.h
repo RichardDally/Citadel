@@ -64,6 +64,6 @@ namespace Citadel
 
         CharacterDeck characterDeck_;
         std::unordered_map<int, std::unique_ptr<Player>> playerById_;
-        std::unordered_map<Character, Player*> playerByCharacter_;
+        std::map<Character, Player*> playerByCharacter_;
     };
 }
