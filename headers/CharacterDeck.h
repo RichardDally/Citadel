@@ -20,6 +20,7 @@ namespace Citadel
 
         void Setup(std::initializer_list<Character>&& availableCharacters, const size_t numberOfPlayers);
         void RemoveCharactersStep();
+        void ChooseCharactersStep();
 
         const std::unordered_set<Character>& GetRemainingCards() const
         {
@@ -37,12 +38,9 @@ namespace Citadel
         template <typename DestContainer>
         void WithdrawCards(const size_t n, DestContainer& container, std::function<bool(const Character)> characterFilter)
         {
-            assert(container.empty());
-            assert(remainingCards_.size() > 0);
-
-            while (remainingCards_.size() > 0 && container.size() != n)
+            const auto initialSize = container.size();
+            while (remainingCards_.size() > 0 && container.size() - initialSize != n)
             {
-                assert(remainingCards_.size() > 0);
                 // Pick random iterator within unordered_set
                 auto it = std::next(std::begin(remainingCards_), Dice::GetRandomNumber(0, remainingCards_.size() - 1));
                 const auto character = *it;

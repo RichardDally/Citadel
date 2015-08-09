@@ -2,6 +2,19 @@
 #include <iostream>
 #include "CharacterDeck.h"
 
+namespace
+{
+    // Define some rules as lambda functions
+    auto faceupSpecialRule = [](const Character c)
+    {
+        return c == Character::KING ? false : true;
+    };
+    auto faceoffRule = [](const Character)
+    {
+        return true;
+    };
+}
+
 namespace Citadel
 {
     void CharacterDeck::Setup(std::initializer_list<Character>&& availableCharacters, const size_t numberOfPlayers)
@@ -20,16 +33,6 @@ namespace Citadel
 
         // Copy every available cards to remaining ones
         remainingCards_.insert(std::begin(availableCharacters_), std::end(availableCharacters_));
-
-        // Define some rules as lambda functions
-        auto faceupSpecialRule = [] (const Character c)
-        {
-            return c == Character::KING ? false : true;
-        };
-        auto faceoffRule = [](const Character)
-        {
-            return true;
-        };
 
         assert(numberOfPlayers_ >= 2 && numberOfPlayers_ <= 7);
         switch (numberOfPlayers_)
@@ -66,5 +69,12 @@ namespace Citadel
 
         // There must be remaining cards to pick by players
         assert(remainingCards_.size() > numberOfPlayers_);
+    }
+
+    // Each player picked a role, remaining cards are going faceoff
+    void CharacterDeck::ChooseCharactersStep()
+    {
+        WithdrawCards(remainingCards_.size(), faceoffCards_, faceoffRule);
+        assert(remainingCards_.empty());
     }
 }
