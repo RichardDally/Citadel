@@ -1,4 +1,3 @@
-#include <iostream>
 #include "Boardgame.h"
 
 int main()
