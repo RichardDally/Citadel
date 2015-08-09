@@ -18,27 +18,44 @@ namespace Citadel
         faceupCards_.clear();
         remainingCards_.clear();
 
+        // Copy every available cards to remaining ones
+        remainingCards_.insert(std::begin(availableCharacters_), std::end(availableCharacters_));
+
+        // Define some rules as lambda functions
+        auto faceupSpecialRule = [] (const Character c)
+        {
+            return c == Character::KING ? false : true;
+        };
+        auto faceoffRule = [](const Character)
+        {
+            return true;
+        };
+
         assert(numberOfPlayers_ >= 2 && numberOfPlayers_ <= 7);
         switch (numberOfPlayers_)
         {
             case 4:
             {
-                assert(availableCharacters_.size() == 8);
-                // 2 character cards faceup
-                FaceupCharacterCards(2);
+                assert(remainingCards_.size() == 8);
+                // Withdraw 1 character card to faceoff heap
+                WithdrawCards(1, faceoffCards_, faceoffRule);
+                // Withdraw 2 character cards to faceup heap
+                WithdrawCards(2, faceupCards_, faceupSpecialRule);
                 break;
             }
             case 5:
             {
-                assert(availableCharacters_.size() == 8);
-                // 1 character card faceup
-                FaceupCharacterCards(1);
+                assert(remainingCards_.size() == 8);
+                // Withdraw 1 character card to faceoff heap
+                WithdrawCards(1, faceoffCards_, faceoffRule);
+                // Withdraw 1 character card to faceup heap
+                WithdrawCards(1, faceupCards_, faceupSpecialRule);
                 break;
             }
             case 6:
             case 7:
             {
-                assert(availableCharacters_.size() == 8);
+                assert(remainingCards_.size() == 8);
                 // No character faceup cards
                 break;
             }
@@ -47,31 +64,7 @@ namespace Citadel
             }
         }
 
-        // Fill remainingCards_ accordingly with faceup cards
-        for (const auto character : availableCharacters_)
-        {
-            if (faceupCards_.find(character) == faceupCards_.end())
-            {
-                remainingCards_.insert(character);
-            }
-        }
-
-        assert(remainingCards_.size() > 0);
-    }
-
-    void CharacterDeck::FaceupCharacterCards(const size_t n)
-    {
-        assert(faceupCards_.empty());
-        while (faceupCards_.size() != n)
-        {
-            const auto index = Dice::GetRandomNumber(0, availableCharacters_.size());
-            const auto character = availableCharacters_[index];
-            // Special rule: king cannot be faceup
-            if (character != Character::KING)
-            {
-                std::cout << "[Debug] Faceup character: " << GetCharacterName(character) << std::endl;
-                faceupCards_.insert(character);
-            }
-        }
+        // There must be remaining cards to pick by players
+        assert(remainingCards_.size() > numberOfPlayers_);
     }
 }
