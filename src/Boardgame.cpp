@@ -185,7 +185,7 @@ namespace Citadel
             }
 
             Player* player = it->second;
-            std::cout << "Debug: [" << player->GetName() << "] is [" << GetCharacterName(character) << std::endl;
+            std::cout << "Debug: [" << player->GetName() << "] is [" << GetCharacterName(character) << "]" << std::endl;
 
             // First check if character is murdered (assassin cannot be)
             assert(murderedCharacter != Character::ASSASSIN);
