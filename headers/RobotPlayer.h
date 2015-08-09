@@ -2,18 +2,15 @@
 
 #include "Player.h"
 
-class RobotPlayer : public Player
+namespace Citadel
 {
-public:
-    RobotPlayer() = default;
-
-    virtual Character PickRoleDecision(const std::unordered_set<Character>& remainingCards) override
+    class RobotPlayer : public Player
     {
-        assert(remainingCards.size() > 0);
-        return *std::begin(remainingCards);
-    }
+    public:
+        RobotPlayer();
+        RobotPlayer(const std::string& name);
 
-    virtual void PlayRoleStep() override
-    {
-    }
-};
+        virtual Character PickRoleDecision(const std::unordered_set<Character>& remainingCards) override;
+        virtual void PlayRoleStep() override;
+    };
+}
