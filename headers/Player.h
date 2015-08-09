@@ -1,8 +1,9 @@
 #pragma once
 
-#include <cassert>
+#include <map>
 #include <string>
 #include <vector>
+#include <cassert>
 #include <unordered_set>
 
 #include "GameData.h"
@@ -16,6 +17,11 @@ public:
     {
     }
 
+    const Character GetCharacter() const
+    {
+        return character_;
+    }
+
     void SetCharacter(const Character character)
     {
         character_ = character;
@@ -26,28 +32,72 @@ public:
         return name_;
     }
 
+    const size_t GetNumberOfCardsInHand() const
+    {
+        return cardsInHand_.size();
+    }
+
+    std::vector<int>& GetCardsInHand()
+    {
+        return cardsInHand_;
+    }
+
+    const std::vector<int>& GetBuiltCity() const
+    {
+        return builtCity_;
+    }
+
     const int GetGoldCoins() const
     {
         return goldCoins_;
     }
 
-    void ModifyGoldCoins(int coins)
+    void ModifyGoldCoins(const int modifier)
     {
-        goldCoins_ += coins;
-        if (coins < 0 && goldCoins_ + coins < 0)
+        goldCoins_ += modifier;
+        if (modifier < 0 && goldCoins_ + modifier < 0)
         {
-            assert("Gold coins cannot be negative");
+            assert(!"Gold coins cannot be negative");
             goldCoins_ = 0;
         }
     }
 
+    int GetID() const
+    {
+        return id_;
+    }
+
+    // Returns character picked to play
     virtual Character PickCharacter(const std::unordered_set<Character>& remainingCards) = 0;
-    virtual void PlayCharacter() = 0;
+
+    // Returns action to be taken
+    virtual PlayerAction ChooseAction() = 0;
+
+    // Returns district card id player wants to build
+    virtual std::vector<int> ChooseDistrictCardsToBuild(const size_t authorizedBuilds) = 0;
+
+    // Returns character targeted by assassination or theft
+    virtual Character ChooseCharacterTarget() = 0;
+
+    // Returns opponent player id, current player wants to target
+    virtual int ChoosePlayerTarget(std::vector<const Player*> opponents) = 0;
+
+    // Returns a choice specific to Magician character
+    virtual MagicianChoice MagicianDecision() = 0;
 
 protected:
     Character character_ = Character::UNINITIALIZED;
     std::string name_;
+
+    // Key: district card id
     std::vector<int> cardsInHand_;
+
+    // District card id
     std::vector<int> builtCity_;
+
     int goldCoins_ = 0;
+
+private:
+    static int idGenerator_;
+    int id_ = idGenerator_++;
 };
