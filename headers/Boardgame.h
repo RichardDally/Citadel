@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
 #include "Player.h"
 #include "CharacterDeck.h"
@@ -18,6 +19,9 @@ namespace Citadel
         void StartBasicGame();
 
     private:
+        // Returns player id
+        int DecideWhoStarts();
+
         void StartRound();
 
         // Round Step 1
@@ -28,6 +32,11 @@ namespace Citadel
 
         // Round Step 3
         void PlayerTurnsStep();
+        // Sub functions
+        bool CanUseMagicPower(const Character character) const;
+        void EarnGoldFromDistricts(const Character character, Player* player);
+        void PlayerTurn(Player* player, Character& murderedCharacter, Character& stolenCharacter);
+        bool UseMagicPower(Player* player, Character& murderedCharacter, Character& stolenCharacter);
 
         // Round Step 4
         void EndOfTurnStep();
@@ -42,16 +51,19 @@ namespace Citadel
                 "PlayerType must be HumanPlayer or RobotPlayer");
             for (size_t i = 0; i < n; ++i)
             {
-                players_.emplace_back(new PlayerType);
+                // TODO: replace by std::make_unique
+                auto newPlayer = std::unique_ptr<PlayerType>(new PlayerType);
+                playerById_.insert(std::make_pair(newPlayer->GetID(), std::move(newPlayer)));
             }
         }
 
         size_t currentRound_ = 0;
-        size_t startingPlayer_ = 0;
+        int startingPlayer_ = 0;
         size_t currentPlayer_ = 0;
         size_t nextStartingPlayer_ = 0;
 
         CharacterDeck characterDeck_;
-        std::vector<std::unique_ptr<Player>> players_;
+        std::unordered_map<int, std::unique_ptr<Player>> playerById_;
+        std::unordered_map<Character, Player*> playerByCharacter_;
     };
 }
