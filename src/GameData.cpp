@@ -1,4 +1,4 @@
-#include <cstddef> // sizeof operator
+#include <cstddef> // size_t type
 #include "GameData.h"
 
 namespace
