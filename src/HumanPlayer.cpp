@@ -12,7 +12,7 @@ namespace Citadel
     }
 
     // Returns character picked to play
-    Character HumanPlayer::PickCharacter(const std::unordered_set<Character>& remainingCards)
+    Character HumanPlayer::PickCharacter(const std::set<Character>& remainingCards)
     {
         assert(remainingCards.size() > 0);
         return *std::begin(remainingCards);

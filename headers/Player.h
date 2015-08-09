@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <cassert>
-#include <unordered_set>
+#include <set>
 
 #include "GameData.h"
 
@@ -68,7 +68,7 @@ public:
     }
 
     // Returns character picked to play
-    virtual Character PickCharacter(const std::unordered_set<Character>& remainingCards) = 0;
+    virtual Character PickCharacter(const std::set<Character>& remainingCards) = 0;
 
     // Returns action to be taken
     virtual PlayerAction ChooseAction() = 0;

@@ -11,7 +11,7 @@ namespace Citadel
         HumanPlayer(const std::string& name);
 
         // Returns character picked to play
-        virtual Character PickCharacter(const std::unordered_set<Character>& remainingCards) override;
+        virtual Character PickCharacter(const std::set<Character>& remainingCards) override;
 
         // Returns action to be taken
         virtual PlayerAction ChooseAction() override;

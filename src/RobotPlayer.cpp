@@ -27,7 +27,7 @@ namespace Citadel
     }
 
     // Returns character picked to play
-    Character RobotPlayer::PickCharacter(const std::unordered_set<Character>& remainingCards)
+    Character RobotPlayer::PickCharacter(const std::set<Character>& remainingCards)
     {
         assert(remainingCards.size() > 0);
         return *std::begin(remainingCards);

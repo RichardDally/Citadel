@@ -3,7 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <functional>
-#include <unordered_set>
+#include <set>
 
 #include "Randomness.h"
 #include "CharacterCard.h"
@@ -22,12 +22,12 @@ namespace Citadel
         void RemoveCharactersStep();
         void ChooseCharactersStep();
 
-        const std::unordered_set<Character>& GetFaceupCards() const
+        const std::set<Character>& GetFaceupCards() const
         {
             return faceupCards_;
         }
 
-        const std::unordered_set<Character>& GetRemainingCards() const
+        const std::set<Character>& GetRemainingCards() const
         {
             return remainingCards_;
         }
@@ -62,8 +62,10 @@ namespace Citadel
         size_t numberOfPlayers_ = 0;
         std::vector<Character> availableCharacters_; // referential, readonly
 
-        std::unordered_set<Character> faceupCards_;
-        std::unordered_set<Character> faceoffCards_;
-        std::unordered_set<Character> remainingCards_;
+        // C++11 note: std::unordered_set does not work with enum class as key.
+        // => This is fixed in C++14.
+        std::set<Character> faceupCards_;
+        std::set<Character> faceoffCards_;
+        std::set<Character> remainingCards_;
     };
 }
