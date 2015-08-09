@@ -37,6 +37,7 @@ namespace Citadel
         template <typename PlayerType>
         void AddPlayer(const size_t n)
         {
+            assert(n > 0);
             static_assert(std::is_same<PlayerType, HumanPlayer>::value || std::is_same<PlayerType, RobotPlayer>::value,
                 "PlayerType must be HumanPlayer or RobotPlayer");
             for (size_t i = 0; i < n; ++i)
