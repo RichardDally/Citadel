@@ -22,6 +22,11 @@ namespace Citadel
         void RemoveCharactersStep();
         void ChooseCharactersStep();
 
+        const std::unordered_set<Character>& GetFaceupCards() const
+        {
+            return faceupCards_;
+        }
+
         const std::unordered_set<Character>& GetRemainingCards() const
         {
             return remainingCards_;
@@ -29,7 +34,7 @@ namespace Citadel
 
         void RemoveCard(const Character character)
         {
-            std::cout << "[Debug] Remove [" << GetCharacterName(character) << "] from remaining cards." << std::endl;
+            std::cout << "Debug: remove [" << GetCharacterName(character) << "] from remaining cards." << std::endl;
             remainingCards_.erase(character);
         }
 
@@ -47,7 +52,7 @@ namespace Citadel
 
                 if (characterFilter(character))
                 {
-                    std::cout << "[Debug] " << (&container == &faceupCards_ ? "faceup" : "faceoff") << " character: " << GetCharacterName(character) << std::endl;
+                    std::cout << "Debug: " << (&container == &faceupCards_ ? "faceup" : "faceoff") << " character: " << GetCharacterName(character) << std::endl;
                     container.insert(character);
                     remainingCards_.erase(it);
                 }
