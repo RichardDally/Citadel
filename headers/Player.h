@@ -41,20 +41,13 @@ public:
         }
     }
 
-    virtual void PlayRoleStep() = 0;
-
-    const Character PickRoleStep(const std::unordered_set<Character>& remainingCards)
-    {
-        return PickRoleDecision(remainingCards);
-    }
-    virtual Character PickRoleDecision(const std::unordered_set<Character>& remainingCards) = 0;
+    virtual Character PickCharacter(const std::unordered_set<Character>& remainingCards) = 0;
+    virtual void PlayCharacter() = 0;
 
 protected:
+    Character character_ = Character::UNINITIALIZED;
     std::string name_;
     std::vector<int> cardsInHand_;
     std::vector<int> builtCity_;
     int goldCoins_ = 0;
-
-private:
-    Character character_ = Character::UNINITIALIZED;
 };

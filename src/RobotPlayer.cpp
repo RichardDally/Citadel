@@ -26,13 +26,13 @@ namespace Citadel
     {
     }
 
-    Character RobotPlayer::PickRoleDecision(const std::unordered_set<Character>& remainingCards)
+    Character RobotPlayer::PickCharacter(const std::unordered_set<Character>& remainingCards)
     {
         assert(remainingCards.size() > 0);
         return *std::begin(remainingCards);
     }
 
-    void RobotPlayer::PlayRoleStep()
+    void RobotPlayer::PlayCharacter()
     {
     }
 }

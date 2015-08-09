@@ -10,7 +10,7 @@ namespace Citadel
         RobotPlayer();
         RobotPlayer(const std::string& name);
 
-        virtual Character PickRoleDecision(const std::unordered_set<Character>& remainingCards) override;
-        virtual void PlayRoleStep() override;
+        virtual Character PickCharacter(const std::unordered_set<Character>& remainingCards) override;
+        virtual void PlayCharacter() override;
     };
 }
