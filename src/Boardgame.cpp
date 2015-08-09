@@ -10,8 +10,8 @@ namespace Citadel
     Boardgame::Boardgame()
     {
         // Setup a default game
-        AddPlayer<HumanPlayer>(1);
-        AddPlayer<RobotPlayer>(3);
+        //AddPlayer<HumanPlayer>(1);
+        AddPlayer<RobotPlayer>(4);
 
         characterDeck_.Setup({
             Character::ASSASSIN,
@@ -106,13 +106,13 @@ namespace Citadel
             // Next player
             ++currentPlayer_;
 
-        } while (currentPlayer_ == startingPlayer_);
+            // Circular walking
+            if (currentPlayer_ == players_.size())
+            {
+                currentPlayer_ = 0;
+            }
 
-        // Circular walking
-        if (currentPlayer_ == players_.size())
-        {
-            currentPlayer_ = 0;
-        }
+        } while (currentPlayer_ != startingPlayer_);
 
         // Round ended ?
         /*
