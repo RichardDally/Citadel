@@ -9,18 +9,34 @@ namespace Citadel
     {
         for (const auto district : availableDistricts)
         {
-            if (GetDistrictQuantity(district) > 0)
+            const size_t districtQuantity = GetDistrictQuantity(district);
+            for (size_t i = 0; i < districtQuantity; ++i)
             {
-                availableCards_.insert(std::make_pair(district, GetDistrictQuantity(district)));
-                heapOfCards_.push_back(district);
-            }
-            else
-            {
-                std::cout << "District [" << GetDistrictName(district) << "] is not available." << std::endl;
+                pileOfCards_.push_back(district);
             }
         }
 
         // Once all cards have been pushed, shuffle them
-        std::random_shuffle(std::begin(heapOfCards_), std::end(heapOfCards_));
+        std::random_shuffle(std::begin(pileOfCards_), std::end(pileOfCards_));
+    }
+
+    // Pick a district card from top of the stack
+    District DistrictDeck::Draw()
+    {
+        District district = District::UNINITIALIZED;
+
+        if (pileOfCards_.size() > 0)
+        {
+            district = pileOfCards_.front();
+            pileOfCards_.erase(std::begin(pileOfCards_));
+        }
+
+        return district;
+    }
+
+    // Put a district card below the bottom of the stack
+    void DistrictDeck::Discard(const District district)
+    {
+        pileOfCards_.push_back(district);
     }
 }

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <map>
 #include <vector>
 #include "GameData.h"
 
@@ -16,8 +15,18 @@ namespace Citadel
 
         void Setup(const std::vector<District>& availableDistricts);
 
+        const size_t GetPileOfCardSize() const
+        {
+            return pileOfCards_.size();
+        }
+
+        // Pick a district card from top of the stack
+        District Draw();
+
+        // Put a district card below the bottom of the stack
+        void Discard(const District district);
+
     private:
-        std::map<District, size_t> availableCards_;
-        std::vector<District> heapOfCards_;
+        std::vector<District> pileOfCards_;
     };
 }
