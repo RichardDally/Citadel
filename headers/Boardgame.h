@@ -7,6 +7,7 @@
 #include "HumanPlayer.h" // for static_assert
 #include "RobotPlayer.h" // for static_assert
 #include "CharacterDeck.h"
+#include "DistrictDeck.h"
 
 namespace Citadel
 {
@@ -63,6 +64,7 @@ namespace Citadel
         size_t nextStartingPlayer_ = 0;
 
         CharacterDeck characterDeck_;
+        DistrictDeck districtDeck_;
         std::unordered_map<int, std::unique_ptr<Player>> playerById_;
         std::map<Character, Player*> playerByCharacter_;
     };

@@ -14,28 +14,67 @@ namespace
         MAGIC_POWER_STEP,
         ENDING_STEP
     };
+
+#pragma region DEFAULT CHARACTERS
+    static const std::vector<Character> defaultCharacters
+    {
+        Character::ASSASSIN,
+        Character::THIEF,
+        Character::MAGICIAN,
+        Character::KING,
+        Character::BISHOP,
+        Character::MERCHANT,
+        Character::ARCHITECT,
+        Character::WARLORD,
+    };
+#pragma endregion
+
+#pragma region DEFAULT DISTRICTS
+    static const std::vector<District> defaultDistricts
+    {
+#pragma region RED DISTRICTS
+        District::WATCHTOWER,
+        District::PRISON,
+        District::BATTLEFIELD,
+        District::FORTRESS,
+#pragma endregion
+#pragma region YELLOW DISTRICTS
+        District::MANOR,
+        District::CASTLE,
+        District::PALACE,
+#pragma endregion
+#pragma region GREEN DISTRICTS
+        District::TAVERN,
+        District::MARKET,
+        District::TRADING_POST,
+        District::DOCKS,
+        District::HARBOR,
+        District::TOWN_HALL,
+#pragma endregion
+#pragma region BLUE DISTRICTS
+        District::TEMPLE,
+        District::CHURCH,
+        District::MONASTARY,
+        District::CATHEDRAL,
+#pragma endregion
+    };
+#pragma endregion
 }
 
 namespace Citadel
 {
     Boardgame::Boardgame()
     {
-        // Setup a default game
+        // Setup a basic game
+
         //AddPlayer<HumanPlayer>(1);
         AddPlayer<RobotPlayer>(4);
 
-        characterDeck_.Setup({
-            Character::ASSASSIN,
-            Character::THIEF,
-            Character::MAGICIAN,
-            Character::KING,
-            Character::BISHOP,
-            Character::MERCHANT,
-            Character::ARCHITECT,
-            Character::WARLORD,
-        },
-        playerById_.size()
-        );
+        // Setup available characters
+        characterDeck_.Setup(defaultCharacters, playerById_.size());
+
+        // Setup available districts
+        districtDeck_.Setup(defaultDistricts);
     }
 
     void Boardgame::StartBasicGame()
