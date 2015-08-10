@@ -1,5 +1,6 @@
 #pragma once
 
+// Base game characters
 enum class Character
 {
     UNINITIALIZED,
@@ -15,6 +16,45 @@ enum class Character
 };
 const char* const GetCharacterName(const Character character);
 const char* const GetCharacterDescription(const Character character);
+
+// Base game districts
+enum class District
+{
+    UNINITIALIZED,
+    WATCHTOWER,
+    PRISON,
+    BATTLEFIELD,
+    FORTRESS,
+    MANOR,
+    CASTLE,
+    PALACE,
+    TAVERN,
+    MARKET,
+    TRADING_POST,
+    DOCKS,
+    HARBOR,
+    TOWN_HALL,
+    TEMPLE,
+    CHURCH,
+    MONASTARY,
+    CATHEDRAL,
+    HAUNTED_CITY,
+    KEEP,
+    LABORATORY,
+    SMITHY,
+    OBSERVATORY,
+    GRAVEYARD,
+    DRAGON_GATE,
+    UNIVERSITY,
+    LIBRARY,
+    GREAT_WALL,
+    SCHOOL_OF_MAGIC,
+    MAX
+};
+const char* const GetDistrictName(const District district);
+const char* const GetDistrictDescription(const District district);
+const int         GetDistrictCost(const District district);
+const size_t      GetDistrictQuantity(const District district);
 
 enum class Color
 {
