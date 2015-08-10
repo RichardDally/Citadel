@@ -176,6 +176,8 @@ namespace Citadel
 
         for (const auto character : callingOrder)
         {
+            assert(character != Character::MAX);
+            assert(character != Character::UNINITIALIZED);
             std::cout << "Calling [" << GetCharacterName(character) << "]" << std::endl;
             auto it = playerByCharacter_.find(character);
             if (it == playerByCharacter_.end())
@@ -185,6 +187,12 @@ namespace Citadel
             }
 
             Player* player = it->second;
+            if (player == nullptr)
+            {
+                assert(!"player pointer should not be nullptr.");
+                std::cerr << "Error: player attached to [" << GetCharacterName(character) << "] was nullptr." << std::endl;
+                continue;
+            }
             std::cout << "Debug: [" << player->GetName() << "] is [" << GetCharacterName(character) << "]" << std::endl;
 
             // First check if character is murdered (assassin cannot be)
