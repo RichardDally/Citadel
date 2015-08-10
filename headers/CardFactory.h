@@ -1,23 +1,11 @@
 #pragma once
 
-#include <map>
-#include <memory>
-
 #include "CharacterCard.h"
 
-const CharacterCard& GetCharacterCard(const Character character)
+namespace Citadel
 {
-    using Key = Character;
-    using Value = CharacterCard;
-    static std::map<Key, Value> cache;
-
-    auto it = cache.find(character);
-    if (it != cache.end())
+    namespace CardFactory
     {
-        return it->second;
-    }
-    else
-    {
-        cache.insert(std::make_pair(character, CharacterCard(character)));
+        const CharacterCard& GetCharacterCard(const Character character);
     }
 }
