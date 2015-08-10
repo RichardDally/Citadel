@@ -47,6 +47,7 @@ enum class District
     CATHEDRAL,
 #pragma endregion
     // TODO: Enable PURPLE DISTRICTS (update game rules)
+#pragma region PURPLE DISTRICTS
     //HAUNTED_CITY,
     //KEEP,
     //LABORATORY,
@@ -58,6 +59,7 @@ enum class District
     //LIBRARY,
     //GREAT_WALL,
     //SCHOOL_OF_MAGIC,
+#pragma endregion
     MAX
 };
 const char* const GetDistrictName(const District district);
