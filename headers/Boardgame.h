@@ -15,7 +15,6 @@ namespace Citadel
     public:
         Boardgame();
         // TODO: Add ctor to customize game
-        // TODO: Add reset function
 
         void StartBasicGame();
 
