@@ -40,11 +40,11 @@ namespace Citadel
         return PlayerAction::UNITIALIZED;
     }
 
-    // Returns district card id player wants to build
-    std::vector<int> RobotPlayer::ChooseDistrictCardsToBuild(const size_t authorizedBuilds)
+    // Returns districts player wants to build
+    std::vector<District> RobotPlayer::ChooseDistrictCardsToBuild(const size_t authorizedBuilds)
     {
         assert(!"Boom");
-        return std::vector<int>();
+        return std::vector<District>();
     }
 
     // Returns character targeted by assassination or theft

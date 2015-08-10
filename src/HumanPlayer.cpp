@@ -26,10 +26,10 @@ namespace Citadel
     }
 
     // Returns district card id player wants to build
-    std::vector<int> HumanPlayer::ChooseDistrictCardsToBuild(const size_t authorizedBuilds)
+    std::vector<District> HumanPlayer::ChooseDistrictCardsToBuild(const size_t authorizedBuilds)
     {
         assert(!"Boom");
-        return std::vector<int>();
+        return std::vector<District>();
     }
 
     // Returns character targeted by assassination or theft

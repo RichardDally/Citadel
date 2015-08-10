@@ -10,6 +10,7 @@ namespace Citadel
         RobotPlayer();
         RobotPlayer(const std::string& name);
 
+#pragma region PURE VIRTUAL METHODS
         // Returns character picked to play
         virtual Character PickCharacter(const std::set<Character>& remainingCards) override;
 
@@ -17,7 +18,7 @@ namespace Citadel
         virtual PlayerAction ChooseAction() override;
 
         // Returns district card id player wants to build
-        virtual std::vector<int> ChooseDistrictCardsToBuild(const size_t authorizedBuilds) override;
+        virtual std::vector<District> ChooseDistrictCardsToBuild(const size_t authorizedBuilds) override;
 
         // Returns character targeted by assassination or theft
         virtual Character ChooseCharacterTarget() override;
@@ -27,5 +28,6 @@ namespace Citadel
 
         // Returns a choice specific to Magician character
         virtual MagicianChoice MagicianDecision() override;
+#pragma endregion
     };
 }

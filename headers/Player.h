@@ -37,12 +37,12 @@ public:
         return cardsInHand_.size();
     }
 
-    std::vector<int>& GetCardsInHand()
+    std::vector<District>& GetCardsInHand()
     {
         return cardsInHand_;
     }
 
-    const std::vector<int>& GetBuiltCity() const
+    const std::vector<District>& GetBuiltCity() const
     {
         return builtCity_;
     }
@@ -67,6 +67,7 @@ public:
         return id_;
     }
 
+#pragma region PURE VIRTUAL METHODS
     // Returns character picked to play
     virtual Character PickCharacter(const std::set<Character>& remainingCards) = 0;
 
@@ -74,7 +75,7 @@ public:
     virtual PlayerAction ChooseAction() = 0;
 
     // Returns district card id player wants to build
-    virtual std::vector<int> ChooseDistrictCardsToBuild(const size_t authorizedBuilds) = 0;
+    virtual std::vector<District> ChooseDistrictCardsToBuild(const size_t authorizedBuilds) = 0;
 
     // Returns character targeted by assassination or theft
     virtual Character ChooseCharacterTarget() = 0;
@@ -84,16 +85,17 @@ public:
 
     // Returns a choice specific to Magician character
     virtual MagicianChoice MagicianDecision() = 0;
+#pragma endregion
 
 protected:
     Character character_ = Character::UNINITIALIZED;
     std::string name_;
 
     // Key: district card id
-    std::vector<int> cardsInHand_;
+    std::vector<District> cardsInHand_;
 
     // District card id
-    std::vector<int> builtCity_;
+    std::vector<District> builtCity_;
 
     int goldCoins_ = 0;
 
