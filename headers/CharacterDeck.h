@@ -18,7 +18,7 @@ namespace Citadel
         CharacterDeck(const CharacterDeck&) = default;
         CharacterDeck& operator=(const CharacterDeck&) = default;
 
-        void Setup(std::initializer_list<Character>&& availableCharacters, const size_t numberOfPlayers);
+        void Setup(const std::vector<Character>& availableCharacters, const size_t numberOfPlayers);
         void RemoveCharactersStep();
         void ChooseCharactersStep();
 

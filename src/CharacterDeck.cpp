@@ -17,11 +17,12 @@ namespace
 
 namespace Citadel
 {
-    void CharacterDeck::Setup(std::initializer_list<Character>&& availableCharacters, const size_t numberOfPlayers)
+    void CharacterDeck::Setup(const std::vector<Character>& availableCharacters, const size_t numberOfPlayers)
     {
         availableCharacters_ = availableCharacters;
         numberOfPlayers_ = numberOfPlayers;
         faceupCards_.clear();
+        faceoffCards_.clear();
         remainingCards_.clear();
     }
 
@@ -29,6 +30,7 @@ namespace Citadel
     {
         // Cleanup
         faceupCards_.clear();
+        faceoffCards_.clear();
         remainingCards_.clear();
 
         // Copy every available cards to remaining ones
