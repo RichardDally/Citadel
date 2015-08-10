@@ -21,34 +21,43 @@ const char* const GetCharacterDescription(const Character character);
 enum class District
 {
     UNINITIALIZED,
+#pragma region RED DISTRICTS
     WATCHTOWER,
     PRISON,
     BATTLEFIELD,
     FORTRESS,
+#pragma endregion
+#pragma region YELLOW DISTRICTS
     MANOR,
     CASTLE,
     PALACE,
+#pragma endregion
+#pragma region GREEN DISTRICTS
     TAVERN,
     MARKET,
     TRADING_POST,
     DOCKS,
     HARBOR,
     TOWN_HALL,
+#pragma endregion
+#pragma region BLUE DISTRICTS
     TEMPLE,
     CHURCH,
     MONASTARY,
     CATHEDRAL,
-    HAUNTED_CITY,
-    KEEP,
-    LABORATORY,
-    SMITHY,
-    OBSERVATORY,
-    GRAVEYARD,
-    DRAGON_GATE,
-    UNIVERSITY,
-    LIBRARY,
-    GREAT_WALL,
-    SCHOOL_OF_MAGIC,
+#pragma endregion
+    // TODO: Enable PURPLE DISTRICTS (update game rules)
+    //HAUNTED_CITY,
+    //KEEP,
+    //LABORATORY,
+    //SMITHY,
+    //OBSERVATORY,
+    //GRAVEYARD,
+    //DRAGON_GATE,
+    //UNIVERSITY,
+    //LIBRARY,
+    //GREAT_WALL,
+    //SCHOOL_OF_MAGIC,
     MAX
 };
 const char* const GetDistrictName(const District district);
