@@ -113,7 +113,7 @@ namespace Citadel
         if (playerById_.size() > 0)
         {
             auto random_it = std::next(std::begin(playerById_), Dice::GetRandomNumber(0, playerById_.size() - 1));
-            assert(random_it->first == random_it->second->GetID());
+            assert(random_it->first == random_it->second->GetID()); // Logic assertion
             return random_it->second->GetID();
         }
         return -1;
