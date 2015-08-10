@@ -1,5 +1,7 @@
 #pragma once
 
+// TODO: split into several files, CharacterData.h, DistrictData.h etc...
+
 // Base game characters
 enum class Character
 {
