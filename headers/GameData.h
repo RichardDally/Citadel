@@ -48,19 +48,18 @@ enum class District
     MONASTARY,
     CATHEDRAL,
 #pragma endregion
-    // TODO: Enable PURPLE DISTRICTS (update game rules)
 #pragma region PURPLE DISTRICTS
-    //HAUNTED_CITY,
-    //KEEP,
-    //LABORATORY,
-    //SMITHY,
-    //OBSERVATORY,
-    //GRAVEYARD,
-    //DRAGON_GATE,
-    //UNIVERSITY,
-    //LIBRARY,
-    //GREAT_WALL,
-    //SCHOOL_OF_MAGIC,
+    HAUNTED_CITY,
+    KEEP,
+    LABORATORY,
+    SMITHY,
+    OBSERVATORY,
+    GRAVEYARD,
+    DRAGON_GATE,
+    UNIVERSITY,
+    LIBRARY,
+    GREAT_WALL,
+    SCHOOL_OF_MAGIC,
 #pragma endregion
     MAX
 };
