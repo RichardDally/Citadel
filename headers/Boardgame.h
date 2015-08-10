@@ -4,7 +4,8 @@
 #include <memory>
 #include <unordered_map>
 
-#include "Player.h"
+#include "HumanPlayer.h" // for static_assert
+#include "RobotPlayer.h" // for static_assert
 #include "CharacterDeck.h"
 
 namespace Citadel
