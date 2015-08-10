@@ -155,7 +155,7 @@ namespace Citadel
     // Step Three: Player Turns
     void Boardgame::PlayerTurnsStep()
     {
-        // TODO: move calling order to boardgame attribute + manage new roles such as Witch)
+        // TODO: move calling order to boardgame attribute + manage new roles such as Witch
         static const std::vector<Character> callingOrder
         {
             Character::ASSASSIN,
