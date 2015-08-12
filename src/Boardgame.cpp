@@ -340,7 +340,17 @@ namespace Citadel
             default:;
         }
 
-        // TODO: count colored district and earn equivalent gold coins
+        // For each built district with a color matching current character color, earn 1 gold
+        size_t earnedGoldCoins = 0;
+        const auto& city = player->GetBuiltCity();
+        for (const auto district : city)
+        {
+            if (GetDistrictColor(district) == playerColor)
+            {
+                ++earnedGoldCoins;
+            }
+        }
+        player->ModifyGoldCoins(earnedGoldCoins);
     }
 
     void Boardgame::PlayerTurn(Player* player, Character& murderedCharacter, Character& stolenCharacter)

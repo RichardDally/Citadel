@@ -19,6 +19,18 @@ enum class Character
 const char* const GetCharacterName(const Character character);
 const char* const GetCharacterDescription(const Character character);
 
+enum class Color
+{
+    UNINITIALIZED,
+    RED, // Warlord district
+    GREEN, // Merchant district
+    YELLOW,  // King district
+    BLUE, // Bishop district
+    PURPLE, // Special district
+    MAX
+};
+const char* const GetColorName(const Color character);
+
 // Base game districts
 enum class District
 {
@@ -65,20 +77,9 @@ enum class District
 };
 const char* const GetDistrictName(const District district);
 const char* const GetDistrictDescription(const District district);
+const Color       GetDistrictColor(const District district);
 const int         GetDistrictCost(const District district);
 const size_t      GetDistrictQuantity(const District district);
-
-enum class Color
-{
-    UNINITIALIZED,
-    RED, // Warlord district
-    GREEN, // Merchant district
-    YELLOW,  // King district
-    BLUE, // Bishop district
-    PURPLE, // Special district
-    MAX
-};
-const char* const GetColorName(const Color character);
 
 enum class PlayerAction
 {

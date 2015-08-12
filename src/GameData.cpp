@@ -47,6 +47,28 @@ const char* const GetCharacterDescription(const Character character)
 }
 #pragma endregion
 
+#pragma region Color
+namespace
+{
+    const char* const colorNames[] =
+    {
+        "UNINITIALIZED",
+        "RED",
+        "GREEN",
+        "YELLOW",
+        "BLUE",
+        "PURPLE",
+    };
+}
+
+const char* const GetColorName(const Color color)
+{
+    static_assert(static_cast<size_t>(Color::MAX) == sizeof(colorNames) / sizeof(colorNames[0]),
+        "Color::MAX must match colorNames number of items");
+    return colorNames[static_cast<size_t>(color)];
+}
+#pragma endregion
+
 #pragma region District
 namespace
 {
@@ -142,28 +164,6 @@ const size_t GetDistrictQuantity(const District district)
     static_assert(static_cast<size_t>(District::MAX) == sizeof(districtMetaData) / sizeof(districtMetaData[0]),
         "District::MAX must match districtMetaData number of items");
     return districtMetaData[static_cast<size_t>(district)].quantity_;
-}
-#pragma endregion
-
-#pragma region Color
-namespace
-{
-    const char* const colorNames[] =
-    {
-        "UNINITIALIZED",
-        "RED",
-        "GREEN",
-        "YELLOW",
-        "BLUE",
-        "PURPLE",
-    };
-}
-
-const char* const GetColorName(const Color color)
-{
-    static_assert(static_cast<size_t>(Color::MAX) == sizeof(colorNames) / sizeof(colorNames[0]),
-        "Color::MAX must match colorNames number of items");
-    return colorNames[static_cast<size_t>(color)];
 }
 #pragma endregion
 
