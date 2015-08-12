@@ -407,7 +407,7 @@ namespace Citadel
                         if (player->GetCharacter() == Character::ARCHITECT)
                         {
                             // Architect gains 2 card just after taking an action.
-                            // TODO: implement gaining 2 district cards
+                            TransferDistrictCards(2, player);
                         }
                         step = PlayerTurnStep::BUILD_STEP;
                     }
