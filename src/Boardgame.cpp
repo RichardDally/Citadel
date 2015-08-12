@@ -589,6 +589,8 @@ namespace Citadel
                     case MagicianChoice::EXCHANGE_FROM_DISTRICT_DECK:
                     {
                         // TODO: implement district card swap with district deck
+                        auto districtsToDiscard = player->ChooseDistrictsCardsToSwap();
+
                         break;
                     }
                     case MagicianChoice::DO_NOTHING:
