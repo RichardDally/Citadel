@@ -195,7 +195,7 @@ namespace Citadel
             // Remember next king for the next round
             if (pickedCharacter == Character::KING)
             {
-                // Note even murdered, currentPlayer will be the next king on next round
+                // Even murdered, currentPlayer will be the next king on next round
                 nextStartingPlayer_ = currentPlayer_;
                 std::cout << "Debug: Next king will be [" << playerById_[currentPlayer_]->GetName() << "]" << std::endl;
             }
@@ -501,6 +501,7 @@ namespace Citadel
         {
             case Character::ASSASSIN:
             {
+                // TODO: Build a container of possible character victims
                 const Character victim = player->ChooseCharacterTarget();
 
                 // Ensure player is not trying to commit suicide
