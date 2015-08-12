@@ -292,11 +292,12 @@ namespace Citadel
             assert(stolenCharacter != Character::THIEF);
             if (character == stolenCharacter)
             {
+                auto thief = playerByCharacter_.find(Character::THIEF);
+                auto victim = playerByCharacter_.find(character);
+
                 {
                     // Debug block
                     std::cout << "Debug: [" << GetCharacterName(character) << "] has been stolen !" << std::endl;
-                    auto thief = playerByCharacter_.find(Character::THIEF);
-                    auto victim = playerByCharacter_.find(character);
                     assert(thief != playerByCharacter_.end());
                     assert(victim != playerByCharacter_.end());
                     if (thief != playerByCharacter_.end() && victim != playerByCharacter_.end())
@@ -305,7 +306,9 @@ namespace Citadel
                     }
                 }
 
-                // TODO: implement STEALING
+                const auto stolenGold = victim->second->GetGoldCoins();
+                thief->second->ModifyGoldCoins(stolenGold);
+                victim->second->ModifyGoldCoins(- stolenGold);
             }
 
             // 1) Earn gold from district cards
