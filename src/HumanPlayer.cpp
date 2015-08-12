@@ -39,7 +39,7 @@ namespace Citadel
     }
 
     // Returns character targeted by assassination or theft
-    Character HumanPlayer::ChooseCharacterTarget()
+    Character HumanPlayer::ChooseCharacterTarget(const std::set<Character>& opponents)
     {
         assert(!"Boom");
         return Character::UNINITIALIZED;

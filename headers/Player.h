@@ -81,7 +81,7 @@ public:
     virtual std::vector<District> ChooseDistrictCardsToBuild(const size_t authorizedBuilds) = 0;
 
     // Returns character targeted by assassination or theft
-    virtual Character ChooseCharacterTarget() = 0;
+    virtual Character ChooseCharacterTarget(const std::set<Character>& opponents) = 0;
 
     // Returns opponent player id, current player wants to target
     virtual int ChoosePlayerTarget(std::vector<const Player*> opponents) = 0;

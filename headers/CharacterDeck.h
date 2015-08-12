@@ -22,6 +22,9 @@ namespace Citadel
         void RemoveCharactersStep();
         void ChooseCharactersStep();
 
+        // Compute possible opponents of a specific character (useful for Assassin or Thief)
+        std::set<Character> PossibleOpponentsCharacters(const Character playerCharacter);
+
         const std::set<Character>& GetFaceupCards() const
         {
             return faceupCards_;

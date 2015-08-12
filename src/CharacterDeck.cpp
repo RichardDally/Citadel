@@ -79,4 +79,22 @@ namespace Citadel
         WithdrawCards(remainingCards_.size(), faceoffCards_, faceoffRule);
         assert(remainingCards_.empty());
     }
+
+    // Compute possible opponents of a specific character (useful for Assassin or Thief)
+    std::set<Character> CharacterDeck::PossibleOpponentsCharacters(const Character playerCharacter)
+    {
+        assert(playerCharacter != Character::UNINITIALIZED);
+        std::set<Character> result;
+
+        for (const auto character : availableCharacters_)
+        {
+            if (character != playerCharacter &&
+                faceupCards_.find(character) != std::end(faceupCards_)) 
+            {
+                result.insert(character);
+            }
+        }
+
+        return result;
+    }
 }

@@ -24,7 +24,7 @@ namespace Citadel
         virtual std::vector<District> ChooseDistrictCardsToBuild(const size_t authorizedBuilds) override;
 
         // Returns character targeted by assassination or theft
-        virtual Character ChooseCharacterTarget() override;
+        virtual Character ChooseCharacterTarget(const std::set<Character>& opponents) override;
 
         // Returns opponent player id, current player wants to target
         virtual int ChoosePlayerTarget(std::vector<const Player*> opponents) override;

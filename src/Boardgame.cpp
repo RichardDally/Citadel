@@ -501,21 +501,19 @@ namespace Citadel
         {
             case Character::ASSASSIN:
             {
-                // TODO: Build a container of possible character victims
-                const Character victim = player->ChooseCharacterTarget();
+                auto possibleVictims = characterDeck_.PossibleOpponentsCharacters(player->GetCharacter());
+                const Character victim = player->ChooseCharacterTarget(possibleVictims);
 
-                // Ensure player is not trying to commit suicide
-                if (victim == player->GetCharacter())
+                if (possibleVictims.find(victim) == std::end(possibleVictims))
                 {
-                    std::cerr << "Suicide is not allowed..." << std::endl;
-                    return false;
-                }
-
-                // Ensure player is not trying to murder a character which is not used
-                const auto& faceupCards = characterDeck_.GetFaceupCards();
-                if (faceupCards.find(victim) != faceupCards.end())
-                {
-                    std::cerr << "There is no point to assassinate faceup character..." << std::endl;
+                    if (victim == player->GetCharacter())
+                    {
+                        std::cerr << "Player [" << player->GetName() << "tried to commit suicide..." << std::endl;
+                    }
+                    else
+                    {
+                        std::cerr << "Player [" << player->GetName() << "] tried to assassinate [" << GetCharacterName(victim) << "] but it's impossible." << std::endl;
+                    }
                     return false;
                 }
 
@@ -524,20 +522,19 @@ namespace Citadel
             }
             case Character::THIEF:
             {
-                const Character victim = player->ChooseCharacterTarget();
+                auto possibleVictims = characterDeck_.PossibleOpponentsCharacters(player->GetCharacter());
+                const Character victim = player->ChooseCharacterTarget(possibleVictims);
 
-                // Ensure player is not trying to rob himself
-                if (victim == player->GetCharacter())
+                if (possibleVictims.find(victim) == std::end(possibleVictims))
                 {
-                    std::cerr << "Self stealing is not allowed..." << std::endl;
-                    return false;
-                }
-
-                // Ensure player is not trying to steal a character which is not used
-                const auto& faceupCards = characterDeck_.GetFaceupCards();
-                if (faceupCards.find(victim) != faceupCards.end())
-                {
-                    std::cerr << "There is no point to assassinate faceup character..." << std::endl;
+                    if (victim == player->GetCharacter())
+                    {
+                        std::cerr << "Player [" << player->GetName() << "tried to steal himself..." << std::endl;
+                    }
+                    else
+                    {
+                        std::cerr << "Player [" << player->GetName() << "] tried to steal [" << GetCharacterName(victim) << "] but it's impossible." << std::endl;
+                    }
                     return false;
                 }
 

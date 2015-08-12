@@ -54,7 +54,7 @@ namespace Citadel
     }
 
     // Returns character targeted by assassination or theft
-    Character RobotPlayer::ChooseCharacterTarget()
+    Character RobotPlayer::ChooseCharacterTarget(const std::set<Character>& opponents)
     {
         assert(!"Boom");
         return Character::UNINITIALIZED;
