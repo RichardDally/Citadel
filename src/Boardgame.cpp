@@ -137,12 +137,16 @@ namespace Citadel
 
     int Boardgame::DecideWhoStarts()
     {
-        assert(playerById_.size() > 0);
-        if (playerById_.size() > 0)
+        if (playerById_.empty() == false)
         {
             auto random_it = std::next(std::begin(playerById_), Dice::GetRandomNumber(0, playerById_.size() - 1));
             assert(random_it->first == random_it->second->GetID()); // Logic assertion
             return random_it->second->GetID();
+        }
+        else
+        {
+            assert(!"Player container is empty, cannot start a game");
+            std::cerr << "There is no player to pick to start a game" << std::endl;
         }
         return -1;
     }
