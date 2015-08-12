@@ -20,6 +20,9 @@ namespace Citadel
         void StartBasicGame();
 
     private:
+        // Transfer district cards to specific player
+        void TransferDistrictCards(const size_t numberOfCards, Player* player);
+
         // Returns player id
         int DecideWhoStarts();
 

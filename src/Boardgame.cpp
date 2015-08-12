@@ -96,20 +96,9 @@ namespace Citadel
 
         // Each player earns 4 district cards
         const size_t numberOfCards = 4;
-        for (size_t i = 0; i < numberOfCards; ++i)
+        for (auto& pair : playerById_)
         {
-            for (auto& pair : playerById_)
-            {
-                // Draw a card
-                const auto district = districtDeck_.Draw();
-                if (district == District::UNINITIALIZED)
-                {
-                    assert(!"Last drawn card was uninitialized.");
-                }
-                // Give the card to player
-                assert(pair.second != nullptr);
-                pair.second->GetCardsInHand().push_back(district);
-            }
+            TransferDistrictCards(numberOfCards, pair.second.get());
         }
 
         currentPlayer_ = startingPlayer_;
@@ -124,6 +113,25 @@ namespace Citadel
             {
                 break;
             }
+        }
+    }
+
+    void Boardgame::TransferDistrictCards(const size_t numberOfCards, Player* player)
+    {
+        if (player != nullptr)
+        {
+            const auto fromDeck = districtDeck_.Draw(numberOfCards);
+            if (fromDeck.size() < numberOfCards)
+            {
+                std::cerr << "There is not enough cards in the deck. Drawn [" << fromDeck.size() << "] instead of [" << numberOfCards << "]" << std::endl;
+                assert(!"District deck should have enough cards.");
+            }
+            auto& toHand = player->GetCardsInHand();
+            toHand.insert(std::cend(toHand), std::cbegin(fromDeck), std::cend(fromDeck));
+        }
+        else
+        {
+            assert(!"Cannot transfer cards to nullptr player");
         }
     }
 
