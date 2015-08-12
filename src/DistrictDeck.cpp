@@ -28,8 +28,8 @@ namespace Citadel
 
         if (pileOfCards_.size() >= n)
         {
-            result.assign(std::cbegin(pileOfCards_), std::cbegin(pileOfCards_) + n);
-            pileOfCards_.erase(std::cbegin(pileOfCards_), std::cbegin(pileOfCards_) + n);
+            result.assign(std::begin(pileOfCards_), std::begin(pileOfCards_) + n);
+            pileOfCards_.erase(std::begin(pileOfCards_), std::begin(pileOfCards_) + n);
         }
         else
         {

@@ -127,7 +127,7 @@ namespace Citadel
                 assert(!"District deck should have enough cards.");
             }
             auto& toHand = player->GetCardsInHand();
-            toHand.insert(std::cend(toHand), std::cbegin(fromDeck), std::cend(fromDeck));
+            toHand.insert(std::end(toHand), std::begin(fromDeck), std::end(fromDeck));
         }
         else
         {
