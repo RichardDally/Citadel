@@ -1,4 +1,5 @@
 #include <vector>
+#include <cassert>
 #include <iostream>
 #include <algorithm>
 #include "DistrictDeck.h"
@@ -20,18 +21,22 @@ namespace Citadel
         std::random_shuffle(std::begin(pileOfCards_), std::end(pileOfCards_));
     }
 
-    // Pick a district card from top of the stack
-    District DistrictDeck::Draw()
+    // Pick n district card from top of the stack
+    std::vector<District> DistrictDeck::Draw(const size_t n)
     {
-        District district = District::UNINITIALIZED;
+        std::vector<District> result;
 
-        if (pileOfCards_.size() > 0)
+        if (pileOfCards_.size() >= n)
         {
-            district = pileOfCards_.front();
-            pileOfCards_.erase(std::begin(pileOfCards_));
+            result.assign(std::cbegin(pileOfCards_), std::cbegin(pileOfCards_) + n);
+            pileOfCards_.erase(std::cbegin(pileOfCards_), std::cbegin(pileOfCards_) + n);
+        }
+        else
+        {
+            assert(!"There is not enough cards to draw");
         }
 
-        return district;
+        return result;
     }
 
     // Put a district card below the bottom of the stack
