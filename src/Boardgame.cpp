@@ -337,7 +337,7 @@ namespace Citadel
             case Character::BISHOP: playerColor = Color::BLUE; break;
             case Character::MERCHANT: playerColor = Color::GREEN; break;
             case Character::WARLORD: playerColor = Color::RED; break;
-            default:;
+            default: return; // Current character cannot earn gold.
         }
 
         // For each built district with a color matching current character color, earn 1 gold
