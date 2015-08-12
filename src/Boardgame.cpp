@@ -584,6 +584,11 @@ namespace Citadel
                 }
                 break;
             }
+            case Character::WARLORD:
+            {
+                // TODO: implement !
+                break;
+            }
             default:
             {
                 std::cerr << "No magic power for [" << GetCharacterName(player->GetCharacter()) << "]" << std::endl;
