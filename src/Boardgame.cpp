@@ -79,6 +79,9 @@ namespace Citadel
 
     void Boardgame::StartBasicGame()
     {
+        // Give 4 cards to each player
+        
+
         // Decide who's starting.
         startingPlayer_ = DecideWhoStarts();
 
@@ -86,10 +89,27 @@ namespace Citadel
 
         // Setup basic stuff
         // Each player earns 2 coins
-        // Each player earns 4 district cards
-        for (auto it = std::begin(playerById_); it != std::end(playerById_); ++it)
+        for (auto& pair : playerById_)
         {
-            it->second->ModifyGoldCoins(2);
+            pair.second->ModifyGoldCoins(2);
+        }
+
+        // Each player earns 4 district cards
+        const size_t numberOfCards = 4;
+        for (size_t i = 0; i < numberOfCards; ++i)
+        {
+            for (auto& pair : playerById_)
+            {
+                // Draw a card
+                const auto district = districtDeck_.Draw();
+                if (district == District::UNINITIALIZED)
+                {
+                    assert(!"Last drawn card was uninitialized.");
+                }
+                // Give the card to player
+                assert(pair.second != nullptr);
+                pair.second->GetCardsInHand().push_back(district);
+            }
         }
 
         currentPlayer_ = startingPlayer_;
