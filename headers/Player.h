@@ -88,6 +88,9 @@ public:
 
     // Returns a choice specific to Magician character
     virtual MagicianChoice MagicianDecision() = 0;
+
+    // Returns discarded districts to be replaced by equivalent number of cards from district deck
+    virtual std::vector<District> ChooseDistrictsCardsToSwap() = 0;
 #pragma endregion
 
 protected:

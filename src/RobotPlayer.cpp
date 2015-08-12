@@ -73,4 +73,11 @@ namespace Citadel
         assert(!"Boom");
         return MagicianChoice::DO_NOTHING;
     }
+
+    // Returns discarded districts to be replaced by equivalent number of cards from district deck
+    std::vector<District> RobotPlayer::ChooseDistrictsCardsToSwap()
+    {
+        assert(!"Boom");
+        return std::vector<District>();
+    }
 }
