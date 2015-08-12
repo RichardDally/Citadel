@@ -21,7 +21,7 @@ namespace Citadel
         }
 
         // Pick a district card from top of the stack
-        std::vector<District> DistrictDeck::Draw(const size_t n);
+        std::vector<District> Draw(const size_t n);
 
         // Put a district card below the bottom of the stack
         void Discard(const District district);
