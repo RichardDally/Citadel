@@ -564,7 +564,6 @@ namespace Citadel
                         }
 
                         const int victimID = player->ChoosePlayerTarget(opponents);
-                        // TODO: implement card swap between players
 
                         if (victimID == player->GetID())
                         {
