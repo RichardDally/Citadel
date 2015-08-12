@@ -456,6 +456,9 @@ namespace Citadel
                         const size_t authorizedBuilds = player->GetCharacter() == Character::ARCHITECT ? 3 : 1;
                         auto districts = player->ChooseDistrictCardsToBuild(authorizedBuilds);
 
+                        // TODO: implement district building
+                        // Check if player actually has those cards
+
                         if (canUseMagicPower)
                         {
                             step = PlayerTurnStep::MAGIC_POWER_STEP;
