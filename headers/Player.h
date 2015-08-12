@@ -74,6 +74,9 @@ public:
     // Returns action to be taken
     virtual PlayerAction ChooseAction() = 0;
 
+    // Watch proposed district cards and return selected card
+    virtual District WatchAndChooseDistrictCard(const std::vector<District>& districts) = 0;
+
     // Returns district card id player wants to build
     virtual std::vector<District> ChooseDistrictCardsToBuild(const size_t authorizedBuilds) = 0;
 

@@ -401,8 +401,25 @@ namespace Citadel
                         }
                         else if (action == PlayerAction::WATCH_DISTRICT_CARDS)
                         {
+                            auto districts = districtDeck_.Draw(2);
+
                             // Player can watch 2 cards but pick only one.
-                            //int cardID = player->PickDistrictCard();
+                            auto selectedDistrict = player->WatchAndChooseDistrictCard(districts);
+
+                            // Check player isn't cheating.
+                            auto selectedDistrictIt = std::find(std::begin(districts), std::end(districts), selectedDistrict);
+                            if (selectedDistrictIt == std::end(districts))
+                            {
+                                std::cerr << "Player must pick a card among proposed ones" << std::endl;
+                                continue;
+                            }
+
+                            // Transfer the card to player
+                            player->GetCardsInHand().push_back(selectedDistrict);
+
+                            // Discard other cards
+                            districts.erase(selectedDistrictIt); // Remove chosen card
+                            districtDeck_.Discard(districts);    // Add the rest
                         }
                         if (player->GetCharacter() == Character::ARCHITECT)
                         {

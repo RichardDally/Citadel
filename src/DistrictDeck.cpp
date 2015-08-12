@@ -40,8 +40,8 @@ namespace Citadel
     }
 
     // Put a district card below the bottom of the stack
-    void DistrictDeck::Discard(const District district)
+    void DistrictDeck::Discard(const std::vector<District>& districts)
     {
-        pileOfCards_.push_back(district);
+        pileOfCards_.insert(std::end(pileOfCards_), std::begin(districts), std::end(districts));
     }
 }

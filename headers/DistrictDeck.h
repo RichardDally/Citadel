@@ -24,7 +24,7 @@ namespace Citadel
         std::vector<District> Draw(const size_t n);
 
         // Put a district card below the bottom of the stack
-        void Discard(const District district);
+        void Discard(const std::vector<District>& districts);
 
     private:
         std::vector<District> pileOfCards_;

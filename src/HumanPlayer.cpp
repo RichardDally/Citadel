@@ -25,6 +25,12 @@ namespace Citadel
         return PlayerAction::UNITIALIZED;
     }
 
+    District HumanPlayer::WatchAndChooseDistrictCard(const std::vector<District>& districts)
+    {
+        assert(!"Boom");
+        return District::UNINITIALIZED;
+    }
+
     // Returns district card id player wants to build
     std::vector<District> HumanPlayer::ChooseDistrictCardsToBuild(const size_t authorizedBuilds)
     {
