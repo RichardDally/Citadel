@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 
 #include "Randomness.h"
 #include "HumanPlayer.h"
