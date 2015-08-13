@@ -87,15 +87,11 @@ namespace Citadel
 
         // Setup basic stuff
         // Each player earns 2 coins
-        for (auto& pair : playerById_)
-        {
-            pair.second->ModifyGoldCoins(2);
-        }
-
         // Each player earns 4 district cards
         const size_t numberOfCards = 4;
         for (auto& pair : playerById_)
         {
+            pair.second->ModifyGoldCoins(2);
             TransferDistrictCards(numberOfCards, pair.second.get());
         }
 
