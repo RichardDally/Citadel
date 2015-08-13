@@ -173,7 +173,7 @@ namespace Citadel
         const auto& remainingCards = characterDeck_.GetRemainingCards();
         do
         {
-            assert(currentPlayer_ >= 0 && currentPlayer_ < playerById_.size());
+            assert(currentPlayer_ >= 0 && currentPlayer_ < static_cast<int>(playerById_.size()));
             std::cout << "[" << playerById_[currentPlayer_]->GetName() << "] is now picking a role." << std::endl;
 
             const auto pickedCharacter = playerById_[currentPlayer_]->PickCharacter(remainingCards);
@@ -206,7 +206,7 @@ namespace Citadel
             ++currentPlayer_;
 
             // Circular walking
-            if (currentPlayer_ == playerById_.size())
+            if (currentPlayer_ == static_cast<int>(playerById_.size()))
             {
                 currentPlayer_ = 0;
             }

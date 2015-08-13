@@ -63,8 +63,8 @@ namespace Citadel
 
         size_t currentRound_ = 0;
         int startingPlayer_ = 0;
-        size_t currentPlayer_ = 0;
-        size_t nextStartingPlayer_ = 0;
+        int currentPlayer_ = 0;
+        int nextStartingPlayer_ = 0;
 
         CharacterDeck characterDeck_;
         DistrictDeck districtDeck_;
