@@ -503,29 +503,10 @@ namespace Citadel
     // Boolean return: does magic power has been consumed ?
     bool Boardgame::UseMagicPower(Player* player, Character& murderedCharacter, Character& stolenCharacter)
     {
-        switch (player->GetCharacter())
+        const auto character = player->GetCharacter();
+        switch (character)
         {
             case Character::ASSASSIN:
-            {
-                auto possibleVictims = characterDeck_.PossibleOpponentsCharacters(player->GetCharacter());
-                const Character victim = player->ChooseCharacterTarget(possibleVictims);
-
-                if (possibleVictims.find(victim) == std::end(possibleVictims))
-                {
-                    if (victim == player->GetCharacter())
-                    {
-                        std::cerr << "Player [" << player->GetName() << "tried to commit suicide..." << std::endl;
-                    }
-                    else
-                    {
-                        std::cerr << "Player [" << player->GetName() << "] tried to assassinate [" << GetCharacterName(victim) << "] but it's impossible." << std::endl;
-                    }
-                    return false;
-                }
-
-                murderedCharacter = victim;
-                break;
-            }
             case Character::THIEF:
             {
                 auto possibleVictims = characterDeck_.PossibleOpponentsCharacters(player->GetCharacter());
@@ -533,18 +514,18 @@ namespace Citadel
 
                 if (possibleVictims.find(victim) == std::end(possibleVictims))
                 {
-                    if (victim == player->GetCharacter())
-                    {
-                        std::cerr << "Player [" << player->GetName() << "tried to steal himself..." << std::endl;
-                    }
-                    else
-                    {
-                        std::cerr << "Player [" << player->GetName() << "] tried to steal [" << GetCharacterName(victim) << "] but it's impossible." << std::endl;
-                    }
+                    std::cerr << "Player [" << player->GetName() << "] choosed [" << GetCharacterName(victim) << "] but it's impossible." << std::endl;
                     return false;
                 }
 
-                stolenCharacter = victim;
+                if (character == Character::ASSASSIN)
+                {
+                    murderedCharacter = victim;
+                }
+                else if (character == Character::THIEF)
+                {
+                    stolenCharacter = victim;
+                }
                 break;
             }
             case Character::MAGICIAN:
