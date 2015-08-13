@@ -80,9 +80,6 @@ namespace Citadel
 
     void Boardgame::StartBasicGame()
     {
-        // Give 4 cards to each player
-        
-
         // Decide who's starting.
         startingPlayer_ = DecideWhoStarts();
 
