@@ -47,6 +47,11 @@ public:
         return builtCity_;
     }
 
+    void BuildDistrict(const std::vector<District>& districts)
+    {
+        builtCity_.insert(std::end(builtCity_), std::begin(districts), std::end(districts));
+    }
+
     const int GetGoldCoins() const
     {
         return goldCoins_;

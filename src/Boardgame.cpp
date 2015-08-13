@@ -450,11 +450,64 @@ namespace Citadel
                         // Ask player for building
                         // Note Architect can build up to three district cards
                         const size_t authorizedBuilds = player->GetCharacter() == Character::ARCHITECT ? 3 : 1;
-                        auto districts = player->ChooseDistrictCardsToBuild(authorizedBuilds);
+                        auto districtCards = player->ChooseDistrictCardsToBuild(authorizedBuilds);
 
-                        // TODO: implement district building
-                        // Check if player actually has those cards
+                        if (districtCards.size() > authorizedBuilds)
+                        {
+                            std::cerr << "Player [" << player->GetName() << "] is not able to build [" << districtCards.size() << "] districts." << std::endl;
+                            continue;
+                        }
 
+                        int goldCost = 0;
+                        const auto& builtCity = player->GetBuiltCity();
+                        auto& cardsInHand = player->GetCardsInHand();
+
+                        // Iterate over chosen districts by player
+                        for (const auto district : districtCards)
+                        {
+                            // Check if player isn't cheating (i.e. ensure chosen district cards belong to player)
+                            if (std::find(std::begin(cardsInHand), std::end(cardsInHand), district) == std::end(cardsInHand))
+                            {
+                                std::cerr << "Player [" << player->GetName() << "] tried to build [" << GetDistrictName(district) << "] but doesn't have this district." << std::endl;
+                                continue;
+                            }
+
+                            // Ensure district isn't already built
+                            if (std::find(std::begin(builtCity), std::end(builtCity), district) == std::end(builtCity))
+                            {
+                                std::cerr << "Player [" << player->GetName() << "] tried to build an existing building (cannot build twice the same)." << std::endl;
+                                continue;
+                            }
+
+                            // Price each district to get the sum
+                            goldCost += GetDistrictCost(district);
+                        }
+
+                        // Check if player has enough gold coins
+                        if (goldCost > player->GetGoldCoins())
+                        {
+                            std::cerr << "Player [" << player->GetName() << "] tried to build but doesn't have enough gold coins." << std::endl;
+                            continue;
+                        }
+
+                        // Finally build the district
+                        player->BuildDistrict(districtCards);
+
+                        // Remove used districts from player hand
+                        for (const auto district : districtCards)
+                        {
+                            auto pos = std::find(std::begin(cardsInHand), std::end(cardsInHand), district);
+                            if (pos != std::end(cardsInHand))
+                            {
+                                cardsInHand.erase(pos);
+                            }
+                            else
+                            {
+                                assert(!"LOGIC FAILURE");
+                            }
+                        }
+
+                        // Proceed to next step
                         if (canUseMagicPower)
                         {
                             step = PlayerTurnStep::MAGIC_POWER_STEP;
