@@ -38,6 +38,11 @@ namespace Citadel
         void PlayerTurnsStep();
         // Sub functions
         bool CanUseMagicPower(const Character character) const;
+        bool AskCharacterTarget(Player* player, Character& victim);
+        bool AssassinMagicPower(Player* player, Character& murderedCharacter);
+        bool ThiefMagicPower(Player* player, Character& stolenCharacter);
+        bool MagicianMagicPower(Player* player);
+        bool WarlordMagicPower(Player* player);
         void EarnGoldFromDistricts(const Character character, Player* player);
         void PlayerTurn(Player* player, Character& murderedCharacter, Character& stolenCharacter);
         bool UseMagicPower(Player* player, Character& murderedCharacter, Character& stolenCharacter);

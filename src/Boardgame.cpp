@@ -319,14 +319,14 @@ namespace Citadel
     {
         switch (character)
         {
-            // There is no manual magic power (i.e. a choice to be made)
+            // There is no manual magic power (i.e. a choice to be made) for following characters
             case Character::KING:
             case Character::BISHOP:
             case Character::MERCHANT:
                 return false;
             case Character::UNINITIALIZED:
             {
-                assert(!"Cannot call CanUseMagicPower on Character::UNINITIALIZED");
+                assert(!"CanUseMagicPower called with Character::UNINITIALIZED");
                 std::cerr << "Error: CanUseMagicPower called with Character::UNINITIALIZED" << std::endl;
                 return false;
             }
@@ -529,7 +529,7 @@ namespace Citadel
                     if (canUseMagicPower)
                     {
                         const auto magicPowerConsumed = UseMagicPower(player, murderedCharacter, stolenCharacter);
-                        canUseMagicPower = false;
+                        canUseMagicPower = !magicPowerConsumed;
                     }
                     else
                     {
@@ -553,91 +553,20 @@ namespace Citadel
         switch (character)
         {
             case Character::ASSASSIN:
+            {
+                return AssassinMagicPower(player, murderedCharacter);
+            }
             case Character::THIEF:
             {
-                auto possibleVictims = characterDeck_.PossibleOpponentsCharacters(player->GetCharacter());
-                const Character victim = player->ChooseCharacterTarget(possibleVictims);
-
-                if (possibleVictims.find(victim) == std::end(possibleVictims))
-                {
-                    std::cerr << "Player [" << player->GetName() << "] choosed [" << GetCharacterName(victim) << "] but it's impossible." << std::endl;
-                    return false;
-                }
-
-                if (character == Character::ASSASSIN)
-                {
-                    murderedCharacter = victim;
-                }
-                else if (character == Character::THIEF)
-                {
-                    stolenCharacter = victim;
-                }
-                break;
+                return ThiefMagicPower(player, stolenCharacter);
             }
             case Character::MAGICIAN:
             {
-                // Three possibilities:
-                // 1) Exchange your entire hand of cards(not the cards in your city) with the hand of another player
-                // 2)  Place any number of cards from your hand facedown at the bottom of the District Deck, and
-                //     then draw an equal number of cards from the top of the District Deck
-                // 3) Do nothing
-                const MagicianChoice magicianChoice = player->MagicianDecision();
-                switch (magicianChoice)
-                {
-                    case MagicianChoice::EXCHANGE_FROM_PLAYER:
-                    {
-                        // Build a vector of readonly players
-                        std::vector<const Player*> opponents;
-                        for (const auto& pair : playerById_)
-                        {
-                            if (pair.first != player->GetID())
-                            {
-                                opponents.push_back(pair.second.get());
-                            }
-                        }
-
-                        const int victimID = player->ChoosePlayerTarget(opponents);
-
-                        if (victimID == player->GetID())
-                        {
-                            std::cerr << "Cannot self swap card" << std::endl;
-                            return false;
-                        }
-
-                        auto playerIdPairIt = playerById_.find(victimID);
-                        if (playerIdPairIt == playerById_.end())
-                        {
-                            std::cerr << "Unable to find [" << victimID << "] player ID. Retry." << std::endl;
-                            return false;
-                        }
-
-                        // Swap cards in hand
-                        std::swap(player->GetCardsInHand(), playerIdPairIt->second->GetCardsInHand());
-
-                        break;
-                    }
-                    case MagicianChoice::EXCHANGE_FROM_DISTRICT_DECK:
-                    {
-                        // TODO: implement district card swap with district deck
-                        auto districtsToDiscard = player->ChooseDistrictsCardsToSwap();
-
-                        break;
-                    }
-                    case MagicianChoice::DO_NOTHING:
-                    {
-                        break;
-                    }
-                    default:
-                    {
-                        std::cerr << "Magician choice is not correct: [" << static_cast<int>(magicianChoice) << "]" << std::endl;
-                    }
-                }
-                break;
+                return MagicianMagicPower(player);
             }
             case Character::WARLORD:
             {
-                // TODO: implement !
-                break;
+                return WarlordMagicPower(player);
             }
             default:
             {
@@ -647,13 +576,123 @@ namespace Citadel
         return true;
     }
 
+    bool Boardgame::AskCharacterTarget(Player* player, Character& victim)
+    {
+        auto possibleVictims = characterDeck_.PossibleOpponentsCharacters(player->GetCharacter());
+        victim = player->ChooseCharacterTarget(possibleVictims);
+        if (possibleVictims.find(victim) == std::end(possibleVictims))
+        {
+            std::cerr << "Player [" << player->GetName() << "] choosed [" << GetCharacterName(victim) << "] but it's impossible." << std::endl;
+            return false;
+        }
+        return true;
+    }
+
+    bool Boardgame::AssassinMagicPower(Player* player, Character& murderedCharacter)
+    {
+        Character victim = Character::UNINITIALIZED;
+
+        if (AskCharacterTarget(player, victim))
+        {
+            murderedCharacter = victim;
+            return true;
+        }
+
+        return false;
+    }
+
+    bool Boardgame::ThiefMagicPower(Player* player, Character& stolenCharacter)
+    {
+        Character victim = Character::UNINITIALIZED;
+
+        if (AskCharacterTarget(player, victim))
+        {
+            stolenCharacter = victim;
+            return true;
+        }
+
+        return false;
+    }
+
+    bool Boardgame::MagicianMagicPower(Player* player)
+    {
+        // Three possibilities:
+        // 1) Exchange your entire hand of cards(not the cards in your city) with the hand of another player
+        // 2)  Place any number of cards from your hand facedown at the bottom of the District Deck, and
+        //     then draw an equal number of cards from the top of the District Deck
+        // 3) Do nothing
+        const MagicianChoice magicianChoice = player->MagicianDecision();
+        switch (magicianChoice)
+        {
+            case MagicianChoice::EXCHANGE_FROM_PLAYER:
+            {
+                // Build a vector of readonly players
+                std::vector<const Player*> opponents;
+                for (const auto& pair : playerById_)
+                {
+                    if (pair.first != player->GetID())
+                    {
+                        opponents.push_back(pair.second.get());
+                    }
+                }
+
+                const int victimID = player->ChoosePlayerTarget(opponents);
+
+                if (victimID == player->GetID())
+                {
+                    std::cerr << "Cannot self swap card" << std::endl;
+                    return false;
+                }
+
+                auto playerIdPairIt = playerById_.find(victimID);
+                if (playerIdPairIt == playerById_.end())
+                {
+                    std::cerr << "Unable to find [" << victimID << "] player ID. Retry." << std::endl;
+                    return false;
+                }
+
+                // Swap cards in hand
+                std::swap(player->GetCardsInHand(), playerIdPairIt->second->GetCardsInHand());
+
+                break;
+            }
+            case MagicianChoice::EXCHANGE_FROM_DISTRICT_DECK:
+            {
+                // TODO: implement district card swap with district deck
+                auto districtsToDiscard = player->ChooseDistrictsCardsToSwap();
+
+                break;
+            }
+            case MagicianChoice::DO_NOTHING:
+            {
+                // Player has chosen to not use his magic power
+                break;
+            }
+            default:
+            {
+                std::cerr << "Magician choice is not correct: [" << static_cast<int>(magicianChoice) << "]" << std::endl;
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    bool Boardgame::WarlordMagicPower(Player* player)
+    {
+        // TODO: implement
+        return true;
+    }
+
     // Step Four : End of Round
     void Boardgame::EndOfTurnStep()
     {
+        // TODO: implement
     }
 
     bool Boardgame::IsGameEnded() const
     {
+        // TODO: implement
         return false;
     }
 }
