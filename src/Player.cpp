@@ -23,3 +23,13 @@ void Player::BuildDistrict(const std::vector<District>& districts)
         }
     }
 }
+
+void Player::ModifyGoldCoins(const int modifier)
+{
+    goldCoins_ += modifier;
+    if (modifier < 0 && goldCoins_ + modifier < 0)
+    {
+        assert(!"Gold coins cannot be negative");
+        goldCoins_ = 0;
+    }
+}

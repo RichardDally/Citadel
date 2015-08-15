@@ -48,27 +48,19 @@ public:
         return builtCity_;
     }
 
-    void BuildDistrict(const std::vector<District>& districts);
-
     const int GetGoldCoins() const
     {
         return goldCoins_;
-    }
-
-    void ModifyGoldCoins(const int modifier)
-    {
-        goldCoins_ += modifier;
-        if (modifier < 0 && goldCoins_ + modifier < 0)
-        {
-            assert(!"Gold coins cannot be negative");
-            goldCoins_ = 0;
-        }
     }
 
     int GetID() const
     {
         return id_;
     }
+
+    void BuildDistrict(const std::vector<District>& districts);
+    void ModifyGoldCoins(const int modifier);
+
 
 #pragma region PURE VIRTUAL METHODS
     // Returns character picked to play
