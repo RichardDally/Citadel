@@ -458,27 +458,10 @@ namespace Citadel
                             continue;
                         }
 
-                        int goldCost = 0;
-                        const auto& builtCity = player->GetBuiltCity();
-                        auto& cardsInHand = player->GetCardsInHand();
-
                         // Iterate over chosen districts by player
+                        int goldCost = 0;
                         for (const auto district : districtCards)
                         {
-                            // Check if player isn't cheating (i.e. ensure chosen district cards belong to player)
-                            if (std::find(std::begin(cardsInHand), std::end(cardsInHand), district) == std::end(cardsInHand))
-                            {
-                                std::cerr << "Player [" << player->GetName() << "] tried to build [" << GetDistrictName(district) << "] but doesn't have this district." << std::endl;
-                                continue;
-                            }
-
-                            // Ensure district isn't already built
-                            if (std::find(std::begin(builtCity), std::end(builtCity), district) == std::end(builtCity))
-                            {
-                                std::cerr << "Player [" << player->GetName() << "] tried to build an existing building (cannot build twice the same)." << std::endl;
-                                continue;
-                            }
-
                             // Price each district to get the sum
                             goldCost += GetDistrictCost(district);
                         }
@@ -492,20 +475,6 @@ namespace Citadel
 
                         // Finally build the district
                         player->BuildDistrict(districtCards);
-
-                        // Remove used districts from player hand
-                        for (const auto district : districtCards)
-                        {
-                            auto pos = std::find(std::begin(cardsInHand), std::end(cardsInHand), district);
-                            if (pos != std::end(cardsInHand))
-                            {
-                                cardsInHand.erase(pos);
-                            }
-                            else
-                            {
-                                assert(!"LOGIC FAILURE");
-                            }
-                        }
 
                         // Proceed to next step
                         if (canUseMagicPower)
@@ -658,8 +627,47 @@ namespace Citadel
             }
             case MagicianChoice::EXCHANGE_FROM_DISTRICT_DECK:
             {
-                // TODO: implement district card swap with district deck
+                auto& cardsInHand = player->GetCardsInHand();
+                if (cardsInHand.empty())
+                {
+                    std::cerr << "Player has no cards in hand, therefore cannot exchange cards with District deck" << std::endl;
+                    return false;
+                }
+
+                if (districtDeck_.GetPileOfCardSize() < cardsInHand.size())
+                {
+                    std::cerr << "There is not enough cards in district deck to swap" << std::endl;
+                    return false;
+                }
+
                 auto districtsToDiscard = player->ChooseDistrictsCardsToSwap();
+                if (districtsToDiscard.empty())
+                {
+                    std::cerr << "Player returned no cards to exchange <ith District deck" << std::endl;
+                    return false;
+                }
+
+                auto end = districtsToDiscard.cend();
+                for (auto it = districtsToDiscard.cbegin(); it != end; ++it)
+                {
+                    auto pos = std::find(cardsInHand.cbegin(), cardsInHand.cend(), *it);
+                    if (pos != cardsInHand.cend())
+                    {
+                        // Remove card from hand
+                        cardsInHand.erase(pos);
+                    }
+                    else
+                    {
+                        std::cerr << "Chosen district card is not in your hand" << std::endl;
+                        // Insert removed cards to rollback
+                        cardsInHand.insert(cardsInHand.cend(), districtsToDiscard.cbegin(), it);
+                        return false;
+                    }
+                }
+
+                districtDeck_.Discard(districtsToDiscard);
+                auto drawnCards = districtDeck_.Draw(districtsToDiscard.size());
+                cardsInHand.insert(cardsInHand.cend(), drawnCards.cbegin(), drawnCards.cend());
 
                 break;
             }

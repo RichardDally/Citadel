@@ -1,10 +1,11 @@
 #pragma once
 
+#include <set>
 #include <map>
 #include <string>
 #include <vector>
 #include <cassert>
-#include <set>
+#include <iostream>
 
 #include "GameData.h"
 
@@ -42,14 +43,30 @@ public:
         return cardsInHand_;
     }
 
-    const std::vector<District>& GetBuiltCity() const
+    const std::set<District>& GetBuiltCity() const
     {
         return builtCity_;
     }
 
     void BuildDistrict(const std::vector<District>& districts)
     {
-        builtCity_.insert(std::end(builtCity_), std::begin(districts), std::end(districts));
+        for (const auto district : districts)
+        {
+            if (std::find(std::begin(builtCity_), std::end(builtCity_), district) == std::end(builtCity_))
+            {
+                auto pos = std::find(std::begin(cardsInHand_), std::end(cardsInHand_), district);
+                if (pos != std::end(cardsInHand_))
+                {
+                    cardsInHand_.erase(pos);
+                    builtCity_.insert(district);
+                    ModifyGoldCoins(-GetDistrictCost(district));
+                }
+            }
+            else
+            {
+                std::cerr << "District [" << GetDistrictName(district) << "] is already built. Cannot build again." << std::endl;
+            }
+        }
     }
 
     const int GetGoldCoins() const
@@ -106,7 +123,8 @@ protected:
     std::vector<District> cardsInHand_;
 
     // District card id
-    std::vector<District> builtCity_;
+    // using std::set because you cannot build twice same district
+    std::set<District> builtCity_;
 
     int goldCoins_ = 0;
 
