@@ -628,25 +628,25 @@ namespace Citadel
             }
         }
 
-        const int victimID = player->ChoosePlayerTarget(opponents);
+const int victimID = player->ChoosePlayerTarget(opponents);
 
-        if (victimID == player->GetID())
-        {
-            std::cerr << "Cannot self swap card" << std::endl;
-            return false;
-        }
+if (victimID == player->GetID())
+{
+    std::cerr << "Cannot self swap card" << std::endl;
+    return false;
+}
 
-        auto playerIdPairIt = playerById_.find(victimID);
-        if (playerIdPairIt == playerById_.end())
-        {
-            std::cerr << "Unable to find [" << victimID << "] player ID. Retry." << std::endl;
-            return false;
-        }
+auto playerIdPairIt = playerById_.find(victimID);
+if (playerIdPairIt == playerById_.end())
+{
+    std::cerr << "Unable to find [" << victimID << "] player ID. Retry." << std::endl;
+    return false;
+}
 
-        // Swap cards in hand
-        std::swap(player->GetCardsInHand(), playerIdPairIt->second->GetCardsInHand());
+// Swap cards in hand
+std::swap(player->GetCardsInHand(), playerIdPairIt->second->GetCardsInHand());
 
-        return true;
+return true;
     }
 
     bool Boardgame::MagicianExchangeFromDistrictDeck(Player* player)
@@ -698,7 +698,51 @@ namespace Citadel
 
     bool Boardgame::WarlordMagicPower(Player* player)
     {
-        // TODO: implement
+        std::vector<const Player*> players;
+        for (const auto& pair : playerById_)
+        {
+            players.push_back(pair.second.get());
+        }
+
+        auto pair = player->ChoosePlayerDistrictTarget(players);
+
+        // Find player
+        auto playerIt = playerById_.find(pair.first);
+        if (playerIt == playerById_.end())
+        {
+            std::cerr << "Unable to find player id [" << pair.first << "]" << std::endl;
+            return false;
+        }
+
+        if (pair.second == District::UNINITIALIZED)
+        {
+            std::cerr << "Cannot destroy UNINITIALIZED district." << std::endl;
+            return false;
+        }
+
+        if (GetDistrictCost(pair.second) >= 1)
+        {
+            // Destroy cost is district cost minus one.
+            if (GetDistrictCost(pair.second) - 1 <= player->GetGoldCoins())
+            {
+                if (playerIt->second->DestroyDistrict(pair.second) == false)
+                {
+                    std::cerr << "Player [" << pair.first << "] does not have [" << GetDistrictName(pair.second) << "]" << std::endl;
+                    return false;
+                }
+            }
+            else
+            {
+                std::cerr << "Player [" << pair.first << "] has not enough gold to destroy this district" << std::endl;
+                return false;
+            }
+        }
+        else
+        {
+            std::cerr << "District [" << GetDistrictName(pair.second) << "] has a cost of [" << GetDistrictCost(pair.second) << "] gold coins." << std::endl;
+            return false;
+        }
+
         return true;
     }
 

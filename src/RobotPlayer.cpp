@@ -67,6 +67,13 @@ namespace Citadel
         return -1;
     }
 
+    // Returns a pair containing player id (self district destroy is tolerated) as key and destroyed district as value
+    std::pair<int, District> RobotPlayer::ChoosePlayerDistrictTarget(std::vector<const Player*> players)
+    {
+        assert(!"Boom");
+        return std::pair<int, District>(-1, District::UNINITIALIZED);
+    }
+
     // Returns a choice specific to Magician character
     MagicianChoice RobotPlayer::MagicianDecision()
     {

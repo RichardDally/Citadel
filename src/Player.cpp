@@ -3,6 +3,17 @@
 
 int Player::idGenerator_ = 0;
 
+bool Player::DestroyDistrict(const District district)
+{
+    auto it = builtCity_.find(district);
+    if (it != builtCity_.end())
+    {
+        builtCity_.erase(it);
+        return true;
+    }
+    return false;
+}
+
 void Player::BuildDistrict(const std::vector<District>& districts)
 {
     for (const auto district : districts)

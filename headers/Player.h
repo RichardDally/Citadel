@@ -58,6 +58,7 @@ public:
         return id_;
     }
 
+    bool DestroyDistrict(const District district);
     void BuildDistrict(const std::vector<District>& districts);
     void ModifyGoldCoins(const int modifier);
 
@@ -80,6 +81,9 @@ public:
 
     // Returns opponent player id, current player wants to target
     virtual int ChoosePlayerTarget(std::vector<const Player*> opponents) = 0;
+
+    // Returns a pair containing player id (self district destroy is tolerated) as key and destroyed district as value
+    virtual std::pair<int, District> ChoosePlayerDistrictTarget(std::vector<const Player*> players) = 0;
 
     // Returns a choice specific to Magician character
     virtual MagicianChoice MagicianDecision() = 0;
