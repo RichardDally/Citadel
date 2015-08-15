@@ -595,81 +595,11 @@ namespace Citadel
         {
             case MagicianChoice::EXCHANGE_FROM_PLAYER:
             {
-                // Build a vector of readonly players
-                std::vector<const Player*> opponents;
-                for (const auto& pair : playerById_)
-                {
-                    if (pair.first != player->GetID())
-                    {
-                        opponents.push_back(pair.second.get());
-                    }
-                }
-
-                const int victimID = player->ChoosePlayerTarget(opponents);
-
-                if (victimID == player->GetID())
-                {
-                    std::cerr << "Cannot self swap card" << std::endl;
-                    return false;
-                }
-
-                auto playerIdPairIt = playerById_.find(victimID);
-                if (playerIdPairIt == playerById_.end())
-                {
-                    std::cerr << "Unable to find [" << victimID << "] player ID. Retry." << std::endl;
-                    return false;
-                }
-
-                // Swap cards in hand
-                std::swap(player->GetCardsInHand(), playerIdPairIt->second->GetCardsInHand());
-
-                break;
+                return MagicianExchangeFromPlayer(player);
             }
             case MagicianChoice::EXCHANGE_FROM_DISTRICT_DECK:
             {
-                auto& cardsInHand = player->GetCardsInHand();
-                if (cardsInHand.empty())
-                {
-                    std::cerr << "Player has no cards in hand, therefore cannot exchange cards with District deck" << std::endl;
-                    return false;
-                }
-
-                if (districtDeck_.GetPileOfCardSize() < cardsInHand.size())
-                {
-                    std::cerr << "There is not enough cards in district deck to swap" << std::endl;
-                    return false;
-                }
-
-                auto districtsToDiscard = player->ChooseDistrictsCardsToSwap();
-                if (districtsToDiscard.empty())
-                {
-                    std::cerr << "Player returned no cards to exchange <ith District deck" << std::endl;
-                    return false;
-                }
-
-                auto end = districtsToDiscard.end();
-                for (auto it = districtsToDiscard.begin(); it != end; ++it)
-                {
-                    auto pos = std::find(cardsInHand.begin(), cardsInHand.end(), *it);
-                    if (pos != cardsInHand.end())
-                    {
-                        // Remove card from hand
-                        cardsInHand.erase(pos);
-                    }
-                    else
-                    {
-                        std::cerr << "Chosen district card is not in your hand" << std::endl;
-                        // Insert removed cards to rollback
-                        cardsInHand.insert(cardsInHand.end(), districtsToDiscard.begin(), it);
-                        return false;
-                    }
-                }
-
-                districtDeck_.Discard(districtsToDiscard);
-                auto drawnCards = districtDeck_.Draw(districtsToDiscard.size());
-                cardsInHand.insert(cardsInHand.end(), drawnCards.begin(), drawnCards.end());
-
-                break;
+                return MagicianExchangeFromDistrictDeck(player);
             }
             case MagicianChoice::DO_NOTHING:
             {
@@ -682,6 +612,86 @@ namespace Citadel
                 return false;
             }
         }
+
+        return true;
+    }
+
+    bool Boardgame::MagicianExchangeFromPlayer(Player* player)
+    {
+        // Build a vector of readonly players
+        std::vector<const Player*> opponents;
+        for (const auto& pair : playerById_)
+        {
+            if (pair.first != player->GetID())
+            {
+                opponents.push_back(pair.second.get());
+            }
+        }
+
+        const int victimID = player->ChoosePlayerTarget(opponents);
+
+        if (victimID == player->GetID())
+        {
+            std::cerr << "Cannot self swap card" << std::endl;
+            return false;
+        }
+
+        auto playerIdPairIt = playerById_.find(victimID);
+        if (playerIdPairIt == playerById_.end())
+        {
+            std::cerr << "Unable to find [" << victimID << "] player ID. Retry." << std::endl;
+            return false;
+        }
+
+        // Swap cards in hand
+        std::swap(player->GetCardsInHand(), playerIdPairIt->second->GetCardsInHand());
+
+        return true;
+    }
+
+    bool Boardgame::MagicianExchangeFromDistrictDeck(Player* player)
+    {
+        auto& cardsInHand = player->GetCardsInHand();
+        if (cardsInHand.empty())
+        {
+            std::cerr << "Player has no cards in hand, therefore cannot exchange cards with District deck" << std::endl;
+            return false;
+        }
+
+        if (districtDeck_.GetPileOfCardSize() < cardsInHand.size())
+        {
+            std::cerr << "There is not enough cards in district deck to swap" << std::endl;
+            return false;
+        }
+
+        auto districtsToDiscard = player->ChooseDistrictsCardsToSwap();
+        if (districtsToDiscard.empty())
+        {
+            std::cerr << "Player returned no cards to exchange <ith District deck" << std::endl;
+            return false;
+        }
+
+        auto end = districtsToDiscard.end();
+        for (auto it = districtsToDiscard.begin(); it != end; ++it)
+        {
+            auto pos = std::find(cardsInHand.begin(), cardsInHand.end(), *it);
+            if (pos != cardsInHand.end())
+            {
+                // Remove card from hand
+                cardsInHand.erase(pos);
+            }
+            else
+            {
+                std::cerr << "Chosen district card is not in your hand" << std::endl;
+                // Insert removed cards to rollback
+                cardsInHand.insert(cardsInHand.end(), districtsToDiscard.begin(), it);
+                return false;
+            }
+        }
+
+        districtDeck_.Discard(districtsToDiscard);
+        auto drawnCards = districtDeck_.Draw(districtsToDiscard.size());
+        cardsInHand.insert(cardsInHand.end(), drawnCards.begin(), drawnCards.end());
 
         return true;
     }

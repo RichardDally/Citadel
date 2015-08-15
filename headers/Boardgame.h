@@ -42,6 +42,8 @@ namespace Citadel
         bool AssassinMagicPower(Player* player, Character& murderedCharacter);
         bool ThiefMagicPower(Player* player, Character& stolenCharacter);
         bool MagicianMagicPower(Player* player);
+        bool MagicianExchangeFromPlayer(Player* player);
+        bool MagicianExchangeFromDistrictDeck(Player* player);
         bool WarlordMagicPower(Player* player);
         void EarnGoldFromDistricts(const Character character, Player* player);
         void PlayerTurn(Player* player, Character& murderedCharacter, Character& stolenCharacter);
