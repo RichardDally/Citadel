@@ -48,26 +48,7 @@ public:
         return builtCity_;
     }
 
-    void BuildDistrict(const std::vector<District>& districts)
-    {
-        for (const auto district : districts)
-        {
-            if (std::find(builtCity_.begin(), builtCity_.end(), district) == builtCity_.end())
-            {
-                auto pos = std::find(cardsInHand_.begin(), cardsInHand_.end(), district);
-                if (pos != std::end(cardsInHand_))
-                {
-                    cardsInHand_.erase(pos);
-                    builtCity_.insert(district);
-                    ModifyGoldCoins(-GetDistrictCost(district));
-                }
-            }
-            else
-            {
-                std::cerr << "District [" << GetDistrictName(district) << "] is already built. Cannot build again." << std::endl;
-            }
-        }
-    }
+    void BuildDistrict(const std::vector<District>& districts);
 
     const int GetGoldCoins() const
     {
