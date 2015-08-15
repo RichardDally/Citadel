@@ -667,7 +667,7 @@ namespace Citadel
 
                 districtDeck_.Discard(districtsToDiscard);
                 auto drawnCards = districtDeck_.Draw(districtsToDiscard.size());
-                cardsInHand.insert(cardsInHand.cend(), drawnCards.cbegin(), drawnCards.cend());
+                cardsInHand.insert(cardsInHand.end(), drawnCards.begin(), drawnCards.end());
 
                 break;
             }
