@@ -647,11 +647,11 @@ namespace Citadel
                     return false;
                 }
 
-                auto end = districtsToDiscard.cend();
-                for (auto it = districtsToDiscard.cbegin(); it != end; ++it)
+                auto end = districtsToDiscard.end();
+                for (auto it = districtsToDiscard.begin(); it != end; ++it)
                 {
-                    auto pos = std::find(cardsInHand.cbegin(), cardsInHand.cend(), *it);
-                    if (pos != cardsInHand.cend())
+                    auto pos = std::find(cardsInHand.begin(), cardsInHand.end(), *it);
+                    if (pos != cardsInHand.end())
                     {
                         // Remove card from hand
                         cardsInHand.erase(pos);
@@ -660,7 +660,7 @@ namespace Citadel
                     {
                         std::cerr << "Chosen district card is not in your hand" << std::endl;
                         // Insert removed cards to rollback
-                        cardsInHand.insert(cardsInHand.cend(), districtsToDiscard.cbegin(), it);
+                        cardsInHand.insert(cardsInHand.end(), districtsToDiscard.begin(), it);
                         return false;
                     }
                 }

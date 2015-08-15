@@ -52,9 +52,9 @@ public:
     {
         for (const auto district : districts)
         {
-            if (std::find(std::begin(builtCity_), std::end(builtCity_), district) == std::end(builtCity_))
+            if (std::find(builtCity_.begin(), builtCity_.end(), district) == builtCity_.end())
             {
-                auto pos = std::find(std::begin(cardsInHand_), std::end(cardsInHand_), district);
+                auto pos = std::find(cardsInHand_.begin(), cardsInHand_.end(), district);
                 if (pos != std::end(cardsInHand_))
                 {
                     cardsInHand_.erase(pos);
