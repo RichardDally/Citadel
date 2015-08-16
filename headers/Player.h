@@ -38,6 +38,11 @@ public:
         return cardsInHand_;
     }
 
+    const size_t GetBuiltCitySize() const
+    {
+        return builtCity_.size();
+    }
+
     const std::set<District>& GetBuiltCity() const
     {
         return builtCity_;
