@@ -33,11 +33,6 @@ public:
         return name_;
     }
 
-    const size_t GetNumberOfCardsInHand() const
-    {
-        return cardsInHand_.size();
-    }
-
     std::vector<District>& GetCardsInHand()
     {
         return cardsInHand_;
