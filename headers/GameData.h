@@ -30,6 +30,7 @@ enum class Color
     MAX
 };
 const char* const GetColorName(const Color character);
+const size_t GetColorNumber();
 
 // Base game districts
 enum class District

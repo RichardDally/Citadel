@@ -67,6 +67,12 @@ const char* const GetColorName(const Color color)
         "Color::MAX must match colorNames number of items");
     return colorNames[static_cast<size_t>(color)];
 }
+
+const size_t GetColorNumber()
+{
+    // Minus 1 to remove Color::UNINITIALIZED
+    return static_cast<size_t>(Color::MAX) - 1;
+}
 #pragma endregion
 
 #pragma region District
@@ -116,6 +122,7 @@ namespace
 #pragma endregion
 
 #pragma region PURPLE DISTRICTS
+        // TODO: implement rules to deal with purple districts
         { "HAUNTED_CITY", "For the purposes of victory points, the Haunted City is conisdered to be of the color of your choice. You cannot use this ability if you built it during the last round of the game.", Color::PURPLE, 2, 1 },
         { "KEEP", "The Keep cannot be destroyed by the Warlord", Color::PURPLE, 3, 2 },
         { "LABORATORY", "Once during your turn, you may discard a district card from your hand and receive one gold from the bank", Color::PURPLE, 5, 1 },
