@@ -303,7 +303,7 @@ namespace Citadel
 
                 const auto stolenGold = victim->second->GetGoldCoins();
                 thief->second->ModifyGoldCoins(stolenGold);
-                victim->second->ModifyGoldCoins(- stolenGold);
+                victim->second->ModifyGoldCoins(-stolenGold);
             }
 
             // 1) Earn gold from district cards
@@ -420,11 +420,18 @@ namespace Citadel
                             districts.erase(selectedDistrictIt); // Remove chosen card
                             districtDeck_.Discard(districts);    // Add the rest
                         }
+
                         if (player->GetCharacter() == Character::ARCHITECT)
                         {
                             // Architect gains 2 card just after taking an action.
                             TransferDistrictCards(2, player);
                         }
+                        else if (player->GetCharacter() == Character::MERCHANT)
+                        {
+                            // Merchant gains 1 gold coin just after taking an action.
+                            player->ModifyGoldCoins(1);
+                        }
+
                         step = PlayerTurnStep::BUILD_STEP;
                     }
                     else
@@ -481,7 +488,7 @@ namespace Citadel
                         // Record first player ending game to grant bonus points
                         if (player->GetBuiltCitySize() >= numberOfDistrictsToWin_ && firstPlayerEndingGame == -1)
                         {
-                            std::cout << "Debug: [" << player->GetName() << "] is first player to end it's city (" << numberOfDistrictsToWin_  << ") districts built." << std::endl;
+                            std::cout << "Debug: [" << player->GetName() << "] is first player to end it's city (" << numberOfDistrictsToWin_ << ") districts built." << std::endl;
                             firstPlayerEndingGame = player->GetID();
                         }
 
@@ -637,25 +644,25 @@ namespace Citadel
             }
         }
 
-const int victimID = player->ChoosePlayerTarget(opponents);
+        const int victimID = player->ChoosePlayerTarget(opponents);
 
-if (victimID == player->GetID())
-{
-    std::cerr << "Cannot self swap card" << std::endl;
-    return false;
-}
+        if (victimID == player->GetID())
+        {
+            std::cerr << "Cannot self swap card" << std::endl;
+            return false;
+        }
 
-auto playerIdPairIt = playerById_.find(victimID);
-if (playerIdPairIt == playerById_.end())
-{
-    std::cerr << "Unable to find [" << victimID << "] player ID. Retry." << std::endl;
-    return false;
-}
+        auto playerIdPairIt = playerById_.find(victimID);
+        if (playerIdPairIt == playerById_.end())
+        {
+            std::cerr << "Unable to find [" << victimID << "] player ID. Retry." << std::endl;
+            return false;
+        }
 
-// Swap cards in hand
-std::swap(player->GetCardsInHand(), playerIdPairIt->second->GetCardsInHand());
+        // Swap cards in hand
+        std::swap(player->GetCardsInHand(), playerIdPairIt->second->GetCardsInHand());
 
-return true;
+        return true;
     }
 
     bool Boardgame::MagicianExchangeFromDistrictDeck(Player* player)
