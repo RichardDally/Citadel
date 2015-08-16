@@ -80,6 +80,9 @@ namespace Citadel
 
     void Boardgame::StartBasicGame()
     {
+        // Reset ending player
+        firstPlayerEndingGame = -1;
+
         // Decide who's starting.
         startingPlayer_ = DecideWhoStarts();
 
@@ -108,6 +111,8 @@ namespace Citadel
                 break;
             }
         }
+
+        ComputeScores();
     }
 
     void Boardgame::TransferDistrictCards(const size_t numberOfCards, Player* player)
@@ -473,6 +478,13 @@ namespace Citadel
                         // Finally build the district
                         player->BuildDistrict(districtCards);
 
+                        // Record first player ending game to grant bonus points
+                        if (player->GetBuiltCitySize() >= numberOfDistrictsToWin_ && firstPlayerEndingGame == -1)
+                        {
+                            std::cout << "Debug: [" << player->GetName() << "] is first player to end it's city (" << numberOfDistrictsToWin_  << ") districts built." << std::endl;
+                            firstPlayerEndingGame = player->GetID();
+                        }
+
                         // Proceed to next step
                         if (canUseMagicPower)
                         {
@@ -753,5 +765,63 @@ return true;
             }
         }
         return false;
+    }
+
+    void Boardgame::ComputeScores()
+    {
+        // Key: player id
+        // Value: score
+        std::unordered_map<int, int> scores;
+        std::set<Color> colorBonus;
+
+        for (const auto& pair : playerById_)
+        {
+            colorBonus.clear();
+            scores.insert(std::make_pair(pair.first, 0));
+            Player* player = pair.second.get();
+
+            if (player == nullptr)
+            {
+                continue;
+            }
+
+            assert(player->GetID() == pair.first);
+
+            // Score rules
+            // 1. A player receives a number of points equal to the total combined gold cost of all the district cards in his city at the end of the game.
+            // 2. If a player has at least one district in each of the five colors, he receives three points.
+            // 3. If a player was the first player to build eight districts, he receives four points.
+            // 4. All other players who have managed to build eight districts at the end of the game receive two points.
+
+            int score = 0;
+
+            const auto& city = player->GetBuiltCity();
+            for (auto district : city)
+            {
+                colorBonus.insert(GetDistrictColor(district)); // Rule 2
+                score += GetDistrictCost(district); // Rule 1
+            }
+
+            // Rule 2
+            if (colorBonus.size() == GetColorNumber())
+            {
+                score += 3;
+            }
+
+            // Rule 3
+            if (player->GetID() == firstPlayerEndingGame)
+            {
+                score += 4;
+            }
+            // Rule 4
+            else if (city.size() >= numberOfDistrictsToWin_)
+            {
+                score += 2;
+            }
+
+            scores[player->GetID()] = score;
+
+            std::cout << "Debug: Player [" << player->GetName() << "] has [" << score << "] points." << std::endl;
+        }
     }
 }

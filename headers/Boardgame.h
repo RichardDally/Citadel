@@ -50,6 +50,7 @@ namespace Citadel
         bool UseMagicPower(Player* player, Character& murderedCharacter, Character& stolenCharacter);
 
         bool IsGameEnded() const;
+        void ComputeScores();
 
         template <typename PlayerType>
         void AddPlayer(const size_t n)
@@ -69,6 +70,7 @@ namespace Citadel
         int startingPlayer_ = 0;
         int currentPlayer_ = 0;
         int nextStartingPlayer_ = 0;
+        int firstPlayerEndingGame = -1;
 
         size_t numberOfDistrictsToWin_ = 8;
 
