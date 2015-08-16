@@ -60,7 +60,7 @@ namespace Citadel
                 "PlayerType must be HumanPlayer or RobotPlayer");
             for (size_t i = 0; i < n; ++i)
             {
-                // TODO: replace by std::make_unique
+                // TODO C++14: replace by std::make_unique
                 auto newPlayer = std::unique_ptr<PlayerType>(new PlayerType);
                 playerById_.insert(std::make_pair(newPlayer->GetID(), std::move(newPlayer)));
             }
