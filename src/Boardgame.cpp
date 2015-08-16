@@ -723,10 +723,24 @@ namespace Citadel
         auto pair = player->ChoosePlayerDistrictTarget(players);
 
         // Find player
-        auto playerIt = playerById_.find(pair.first);
-        if (playerIt == playerById_.end())
+        auto victimIt = playerById_.find(pair.first);
+        if (victimIt == playerById_.end())
         {
             std::cerr << "Unable to find player id [" << pair.first << "]" << std::endl;
+            return false;
+        }
+
+        // Warlord cannot destroy Bishop districts
+        if (victimIt->second->GetCharacter() == Character::BISHOP)
+        {
+            std::cerr << "Cannot destroy a Bishop's district." << std::endl;
+            return false;
+        }
+
+        // Once a city is completed, one district cannot be destroyed within.
+        if (victimIt->second->GetBuiltCitySize() >= numberOfDistrictsToWin_)
+        {
+            std::cerr << "Cannot destroy a district in a completed city" << std::endl;
             return false;
         }
 
@@ -741,7 +755,7 @@ namespace Citadel
             // Destroy cost is district cost minus one.
             if (GetDistrictCost(pair.second) - 1 <= player->GetGoldCoins())
             {
-                if (playerIt->second->DestroyDistrict(pair.second) == false)
+                if (victimIt->second->DestroyDistrict(pair.second) == false)
                 {
                     std::cerr << "Player [" << pair.first << "] does not have [" << GetDistrictName(pair.second) << "]" << std::endl;
                     return false;
