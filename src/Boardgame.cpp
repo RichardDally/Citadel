@@ -155,9 +155,6 @@ namespace Citadel
 
         // Step Three: Player Turns
         PlayerTurnsStep();
-
-        // Step Four : End of Round
-        EndOfTurnStep();
     }
 
     // Step One : Remove characters
@@ -746,15 +743,15 @@ return true;
         return true;
     }
 
-    // Step Four : End of Round
-    void Boardgame::EndOfTurnStep()
-    {
-        // TODO: implement
-    }
-
     bool Boardgame::IsGameEnded() const
     {
-        // TODO: implement
+        for (const auto& pair : playerById_)
+        {
+            if (pair.second->GetBuiltCity().size() >= numberOfDistrictsToWin_)
+            {
+                return true;
+            }
+        }
         return false;
     }
 }

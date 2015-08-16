@@ -49,9 +49,6 @@ namespace Citadel
         void PlayerTurn(Player* player, Character& murderedCharacter, Character& stolenCharacter);
         bool UseMagicPower(Player* player, Character& murderedCharacter, Character& stolenCharacter);
 
-        // Round Step 4
-        void EndOfTurnStep();
-
         bool IsGameEnded() const;
 
         template <typename PlayerType>
@@ -72,6 +69,8 @@ namespace Citadel
         int startingPlayer_ = 0;
         int currentPlayer_ = 0;
         int nextStartingPlayer_ = 0;
+
+        size_t numberOfDistrictsToWin_ = 8;
 
         CharacterDeck characterDeck_;
         DistrictDeck districtDeck_;
