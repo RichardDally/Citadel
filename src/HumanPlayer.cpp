@@ -19,7 +19,7 @@ namespace Citadel
     }
 
     // Returns action to be taken
-    PlayerAction HumanPlayer::ChooseAction()
+    PlayerAction HumanPlayer::ChooseAction(const PlayerTurnStep step)
     {
         assert(!"Boom");
         return PlayerAction::UNITIALIZED;

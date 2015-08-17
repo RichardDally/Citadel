@@ -68,7 +68,7 @@ public:
     virtual Character PickCharacter(const std::set<Character>& remainingCards) = 0;
 
     // Returns action to be taken
-    virtual PlayerAction ChooseAction() = 0;
+    virtual PlayerAction ChooseAction(const PlayerTurnStep step) = 0;
 
     // Watch proposed district cards and return selected card
     virtual District WatchAndChooseDistrictCard(const std::vector<District>& districts) = 0;
