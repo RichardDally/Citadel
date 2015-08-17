@@ -19,6 +19,7 @@ enum class Character
 const char* const GetCharacterName(const Character character);
 const char* const GetCharacterDescription(const Character character);
 
+// District colors
 enum class Color
 {
     UNINITIALIZED,
@@ -82,6 +83,19 @@ const Color       GetDistrictColor(const District district);
 const int         GetDistrictCost(const District district);
 const size_t      GetDistrictQuantity(const District district);
 
+// Player turn steps
+enum class PlayerTurnStep
+{
+    UNINITIALIZED,
+    ACTION_STEP,
+    BUILD_STEP,
+    MAGIC_POWER_STEP,
+    ENDING_STEP,
+    MAX
+};
+const char* const GetPlayerTurnStepName(const PlayerTurnStep step);
+
+// Player choices
 enum class PlayerAction
 {
     UNITIALIZED,
@@ -93,6 +107,7 @@ enum class PlayerAction
 };
 const char* const GetPlayerActionName(const PlayerAction action);
 
+// Magician character choices
 enum class MagicianChoice
 {
     UNITIALIZED,

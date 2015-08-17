@@ -174,6 +174,27 @@ const size_t GetDistrictQuantity(const District district)
 }
 #pragma endregion
 
+#pragma region PlayerTurnStep
+namespace
+{
+    const char* const playerTurnStepNames[] =
+    {
+        "UNINITIALIZED",
+        "ACTION_STEP",
+        "BUILD_STEP",
+        "MAGIC_POWER_STEP",
+        "ENDING_STEP",
+    };
+}
+
+const char* const GetPlayerTurnStepName(const PlayerTurnStep step)
+{
+    static_assert(static_cast<size_t>(PlayerTurnStep::MAX) == sizeof(playerTurnStepNames) / sizeof(playerTurnStepNames[0]),
+        "PlayerTurnStep::MAX must match playerTurnStepNames number of items");
+    return playerTurnStepNames[static_cast<size_t>(step)];
+}
+#pragma endregion
+
 #pragma region PlayerAction
 namespace
 {

@@ -8,14 +8,6 @@
 
 namespace
 {
-    enum class PlayerTurnStep
-    {
-        ACTION_STEP,
-        BUILD_STEP,
-        MAGIC_POWER_STEP,
-        ENDING_STEP
-    };
-
 #pragma region DEFAULT CHARACTERS
     static const std::vector<Character> defaultCharacters
     {
@@ -384,7 +376,7 @@ namespace Citadel
             else
             {
                 // Ask player to choose an action (gold coins or district cards)
-                action = player->ChooseAction();
+                action = player->ChooseAction(step);
             }
 
             switch (action)
