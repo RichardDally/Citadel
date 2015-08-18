@@ -17,18 +17,17 @@ namespace
         "WARLORD"
     };
 
-    // TODO: fill descriptions
     const char* const characterDescriptions[] =
     {
         "No description",
-        "ASSASSIN description",
-        "THIEF description",
-        "MAGICIAN description",
-        "KING description",
-        "BISHOP description",
-        "MERCHANT description",
-        "ARCHITECT description",
-        "WARLORD description"
+        "Tremendously handy for shanking those greedy Merchants who try to get rich quick",
+        "Why work hard to amass gold when you could just steal it ?",
+        "Like a certain Spanish Inquisition, no one ever expects the Magician.",
+        "KING description", // TODO: fill description
+        "Practically a license to print money for the enterprising builder with lots of religious districts in his city.",
+        "Merchant exists to fill the coffers of the enterprising player, and he does it very well.",
+        "There's no better way to build up a monster hand of cards than with the Architect.",
+        "Smug and confident in his ability to kill you at pretty much any moment, the Warlord sits back and relaxes as he ponders how best to destroy you."
     };
 }
 
