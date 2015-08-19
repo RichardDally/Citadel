@@ -23,7 +23,7 @@ namespace
         "Tremendously handy for shanking those greedy Merchants who try to get rich quick",
         "Why work hard to amass gold when you could just steal it ?",
         "Like a certain Spanish Inquisition, no one ever expects the Magician.",
-        "KING description", // TODO: fill description
+        "Looking down on you with snooty horror, the King wonders why you've dared invade his chambers with your filthy person, one hand poised to make a dismissive \"flicking\" motion in your general direction.",
         "Practically a license to print money for the enterprising builder with lots of religious districts in his city.",
         "Merchant exists to fill the coffers of the enterprising player, and he does it very well.",
         "There's no better way to build up a monster hand of cards than with the Architect.",
