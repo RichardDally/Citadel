@@ -1,5 +1,34 @@
-#include <cstddef> // size_t type
+#include <cassert>
+#include <iostream>
 #include "GameData.h"
+
+#pragma region Color
+namespace
+{
+    const char* const colorNames[] =
+    {
+        "UNINITIALIZED",
+        "RED",
+        "GREEN",
+        "YELLOW",
+        "BLUE",
+        "PURPLE",
+    };
+}
+
+const char* const GetColorName(const Color color)
+{
+    static_assert(static_cast<size_t>(Color::MAX) == sizeof(colorNames) / sizeof(colorNames[0]),
+        "Color::MAX must match colorNames number of items");
+    return colorNames[static_cast<size_t>(color)];
+}
+
+const size_t GetColorNumber()
+{
+    // Minus 1 to remove Color::UNINITIALIZED
+    return static_cast<size_t>(Color::MAX) - 1;
+}
+#pragma endregion
 
 #pragma region Character
 namespace
@@ -44,33 +73,45 @@ const char* const GetCharacterDescription(const Character character)
         "Character::MAX must match characterDescriptions number of items");
     return characterDescriptions[static_cast<size_t>(character)];
 }
-#pragma endregion
 
-#pragma region Color
-namespace
+const Color GetCharacterColor(const Character character)
 {
-    const char* const colorNames[] =
+    Color result = Color::UNINITIALIZED;
+
+    switch (character)
     {
-        "UNINITIALIZED",
-        "RED",
-        "GREEN",
-        "YELLOW",
-        "BLUE",
-        "PURPLE",
-    };
-}
+        case Character::ASSASSIN: break;
+        case Character::THIEF: break;
+        case Character::MAGICIAN: break;
+        case Character::KING:
+        {
+            result = Color::YELLOW;
+            break;
+        }
+        case Character::BISHOP:
+        {
+            result = Color::BLUE;
+            break;
+        }
+        case Character::MERCHANT:
+        {
+            result = Color::GREEN;
+            break;
+        }
+        case Character::ARCHITECT: break;
+        case Character::WARLORD:
+        {
+            result = Color::RED;
+            break;
+        }
+        default:
+        {
+            assert(!"This character is not handled to get it's color");
+            std::cerr << "Character [" << static_cast<int>(character) << "] is not handled." << std::endl;
+        }
+    }
 
-const char* const GetColorName(const Color color)
-{
-    static_assert(static_cast<size_t>(Color::MAX) == sizeof(colorNames) / sizeof(colorNames[0]),
-        "Color::MAX must match colorNames number of items");
-    return colorNames[static_cast<size_t>(color)];
-}
-
-const size_t GetColorNumber()
-{
-    // Minus 1 to remove Color::UNINITIALIZED
-    return static_cast<size_t>(Color::MAX) - 1;
+    return result;
 }
 #pragma endregion
 

@@ -2,6 +2,20 @@
 
 // TODO: split into several files, CharacterData.h, DistrictData.h etc...
 
+// District/Character colors
+enum class Color
+{
+    UNINITIALIZED,
+    RED, // Warlord district
+    GREEN, // Merchant district
+    YELLOW,  // King district
+    BLUE, // Bishop district
+    PURPLE, // Special district
+    MAX
+};
+const char* const GetColorName(const Color character);
+const size_t GetColorNumber();
+
 // Base game characters
 enum class Character
 {
@@ -18,20 +32,7 @@ enum class Character
 };
 const char* const GetCharacterName(const Character character);
 const char* const GetCharacterDescription(const Character character);
-
-// District colors
-enum class Color
-{
-    UNINITIALIZED,
-    RED, // Warlord district
-    GREEN, // Merchant district
-    YELLOW,  // King district
-    BLUE, // Bishop district
-    PURPLE, // Special district
-    MAX
-};
-const char* const GetColorName(const Color character);
-const size_t GetColorNumber();
+const Color GetCharacterColor(const Character character);
 
 // Base game districts
 enum class District
