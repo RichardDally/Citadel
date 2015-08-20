@@ -26,6 +26,7 @@ namespace Citadel
     {
     }
 
+#pragma region PURE VIRTUAL METHODS
     // Returns character picked to play
     Character RobotPlayer::PickCharacter(const std::set<Character>& remainingCards)
     {
@@ -87,4 +88,5 @@ namespace Citadel
         assert(!"Boom");
         return std::vector<District>();
     }
+#pragma endregion
 }
