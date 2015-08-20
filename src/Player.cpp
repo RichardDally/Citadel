@@ -44,3 +44,22 @@ void Player::ModifyGoldCoins(const int modifier)
         goldCoins_ = 0;
     }
 }
+
+const size_t Player::SimulateDistrictRevenues() const
+{
+    const auto characterColor = GetCharacterColor(GetCharacter());
+    if (characterColor == Color::UNINITIALIZED)
+    {
+        return 0;
+    }
+
+    size_t revenues = 0;
+    for (const auto district : builtCity_)
+    {
+        if (GetDistrictColor(district) == characterColor)
+        {
+            ++revenues;
+        }
+    }
+    return revenues;
+}
