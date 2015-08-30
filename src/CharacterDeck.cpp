@@ -89,7 +89,7 @@ namespace Citadel
         for (const auto character : availableCharacters_)
         {
             if (character != playerCharacter &&
-                faceupCards_.find(character) != std::end(faceupCards_)) 
+                faceupCards_.find(character) == std::end(faceupCards_)) 
             {
                 result.insert(character);
             }
