@@ -9,7 +9,9 @@ namespace
         "Synapse",
         "DevNull",
         "Alpha",
-        "TheOracle"
+        "TheOracle",
+        "Alfred",
+        "Corona",
     };
     const size_t namesSize = sizeof(names) / sizeof(names[0]);
 }
