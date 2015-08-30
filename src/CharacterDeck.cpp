@@ -88,10 +88,21 @@ namespace Citadel
 
         for (const auto character : availableCharacters_)
         {
-            if (character != playerCharacter &&
-                faceupCards_.find(character) == std::end(faceupCards_)) 
+            // Cannot self target
+            if (character != playerCharacter)
             {
-                result.insert(character);
+                // Cannot target faced up characters
+                if (faceupCards_.find(character) == std::end(faceupCards_))
+                {
+                    // Cannot steal Assassin
+                    if (playerCharacter == Character::THIEF && character == Character::ASSASSIN)
+                    {
+                    }
+                    else
+                    {
+                        result.insert(character);
+                    }
+                }
             }
         }
 
