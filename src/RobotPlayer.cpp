@@ -35,7 +35,7 @@ namespace Citadel
     }
 
     // Returns action to be taken
-    PlayerAction RobotPlayer::ChooseAction(const PlayerTurnStep step)
+    PlayerAction RobotPlayer::ChooseAction(const PlayerTurnStep step, const bool canUseMagicPower)
     {
         assert(!"Boom");
         return PlayerAction::UNITIALIZED;

@@ -60,8 +60,8 @@ namespace Citadel
     {
         // Setup a basic game
 
-        //AddPlayer<HumanPlayer>(1);
-        AddPlayer<RobotPlayer>(4);
+        AddPlayer<HumanPlayer>(4);
+        //AddPlayer<RobotPlayer>(3);
 
         // Setup available characters
         characterDeck_.Setup(defaultCharacters, playerById_.size());
@@ -377,7 +377,7 @@ namespace Citadel
             else
             {
                 // Ask player to choose an action (gold coins or district cards)
-                action = player->ChooseAction(step);
+                action = player->ChooseAction(step, canUseMagicPower);
             }
 
             switch (action)
