@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include <utility>
+#include <iterator>
 #include <iostream>
 #include "HumanPlayer.h"
 
