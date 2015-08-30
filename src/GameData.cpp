@@ -241,15 +241,16 @@ namespace
     const char* const playerActionNames[] =
     {
         "UNITIALIZED",
-        "TAKE_GOLD_COINS",
-        "WATCH_DISTRICT_CARDS",
-        "BUILD_DISTRICT_CARDS",
-        "USE_MAGIC_POWER",
+        "TAKE GOLD COINS",
+        "WATCH DISTRICT CARDS",
+        "BUILD DISTRICT CARDS",
+        "USE MAGIC POWER",
     };
 }
 
 const char* const GetPlayerActionName(const PlayerAction action)
 {
+    static_assert(static_cast<size_t>(PlayerAction::UNITIALIZED) == 0, "PlayerAction::UNITIALIZED must be first element and set to 0");
     static_assert(static_cast<size_t>(PlayerAction::MAX) == sizeof(playerActionNames) / sizeof(playerActionNames[0]),
         "PlayerAction::MAX must match playerActionNames number of items");
     return playerActionNames[static_cast<size_t>(action)];
