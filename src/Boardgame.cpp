@@ -508,6 +508,10 @@ namespace Citadel
                     {
                         const auto magicPowerConsumed = UseMagicPower(player, murderedCharacter, stolenCharacter);
                         canUseMagicPower = !magicPowerConsumed;
+                        if (magicPowerConsumed && step == PlayerTurnStep::MAGIC_POWER_STEP)
+                        {
+                            step = PlayerTurnStep::ENDING_STEP;
+                        }
                     }
                     else
                     {
