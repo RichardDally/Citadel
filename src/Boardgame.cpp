@@ -317,6 +317,7 @@ namespace Citadel
             case Character::KING:
             case Character::BISHOP:
             case Character::MERCHANT:
+            case Character::ARCHITECT:
                 return false;
             case Character::UNINITIALIZED:
             {
