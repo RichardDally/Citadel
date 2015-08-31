@@ -114,7 +114,7 @@ namespace Citadel
 
     std::vector<District> HumanPlayer::ChooseDistrictCardsToBuild(const size_t authorizedBuilds)
     {
-        std::cout << "@" << GetName() << ", You can build " << authorizedBuilds << " district cards." << std::endl;
+        std::cout << "@" << GetName() << ", You currently have " << GetGoldCoins() << " gold coins." << std::endl;
         std::cout << "@" << GetName() << ", Select up to " << authorizedBuilds << " district among:" << std::endl;
 
         const size_t size = cardsInHand_.size();
