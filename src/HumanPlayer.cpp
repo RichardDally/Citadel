@@ -1,4 +1,5 @@
 #include <set>
+#include <array>
 #include <string>
 #include <sstream>
 #include <utility>
@@ -229,7 +230,22 @@ namespace Citadel
     // Returns a choice specific to Magician character
     MagicianChoice HumanPlayer::MagicianDecision()
     {
-        assert(!"Boom");
+        std::cout << "@" << GetName() << ", As Magician make a choice among:" << std::endl;
+
+        static const std::array<MagicianChoice, 3> indexedMagicianChoices { { MagicianChoice::DO_NOTHING, MagicianChoice::EXCHANGE_FROM_PLAYER, MagicianChoice::EXCHANGE_FROM_DISTRICT_DECK } };
+        for (size_t i = 0; i < indexedMagicianChoices.size(); ++i)
+        {
+            std::cout << "- " << GetMagicianChoiceName(indexedMagicianChoices[i]) << " (" << i << ")" << std::endl;
+        }
+        
+        size_t magicianChoice = 0;
+        std::cin >> magicianChoice;
+
+        if (magicianChoice < indexedMagicianChoices.size())
+        {
+            return indexedMagicianChoices[magicianChoice];
+        }
+
         return MagicianChoice::DO_NOTHING;
     }
 
