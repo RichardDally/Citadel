@@ -95,6 +95,7 @@ namespace Citadel
 
         for (currentRound_ = 0; IsGameEnded() == false; ++currentRound_)
         {
+            std::cout << "Debug: round [" << currentRound_ << "]" << std::endl;
             StartRound();
 
             // Debug purpose
