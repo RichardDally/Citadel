@@ -758,6 +758,7 @@ namespace Citadel
                     std::cerr << "Player [" << pair.first << "] does not have [" << GetDistrictName(pair.second) << "]" << std::endl;
                     return false;
                 }
+                std::cout << "Debug: player [" << player->GetName() << "] destroyed [" << GetDistrictName(pair.second) << "] owned by [" << victimIt->second->GetName() << "]" << std::endl;
             }
             else
             {

@@ -171,42 +171,54 @@ namespace Citadel
     }
 
     // Returns a pair containing player id (self district destroy is tolerated) as key and destroyed district as value
-    // TODO: test this method
     std::pair<int, District> HumanPlayer::ChoosePlayerDistrictTarget(std::vector<const Player*> players)
     {
-        std::cout << "@" << GetName() << ", Choose a player id and a district, among:" << std::endl;
+        std::cout << "@" << GetName() << ", Choose a player id followed by a district id, among:" << std::endl;
 
         static_assert(std::is_same<decltype(Player::GetID()), int>::value, "GetID must return an integer");
-        for (const auto player : players)
+        bool somethingToDestroy = false;
+        const size_t playersSize = players.size();
+        for (size_t playerIndex = 0; playerIndex < playersSize; ++playerIndex)
         {
-            std::cout << "Player " << player->GetName() << " (" << player->GetID() << ")" << std::endl;
-            const auto& city = player->GetBuiltCity();
+            std::cout << "Player " << players[playerIndex]->GetName() << " (" << playerIndex << ")" << std::endl;
+            const auto& city = players[playerIndex]->GetBuiltCity();
+            if (city.empty() == false)
+            {
+                somethingToDestroy = true;
+            }
             for (const auto district : city)
             {
                 DisplayDistrictDetails(district, static_cast<size_t>(district));
             }
         }
 
-        std::string userInput;
-        std::cin >> userInput;
-        //std::istringstream stream(userInput);
-        //std::istream_iterator<size_t> begin(stream), end;
-        //std::vector<size_t> indexes(begin, end);
-
-        /*
-        // Player ID then district ID
-        if (indexes.size() == 2)
+        if (somethingToDestroy)
         {
-            if (indexes[0] < players.size())
+            size_t playerIndex = 0;
+            size_t districtID = 0;
+            std::cin >> playerIndex >> districtID;
+
+            if (playerIndex < players.size())
             {
-                const Player* targetedPlayer = players[indexes[0]];
-                if (indexes[1] < static_cast<size_t>(District::MAX))
+                const Player* targetedPlayer = players[playerIndex];
+                if (districtID < static_cast<size_t>(District::MAX))
                 {
-                    return{ targetedPlayer->GetID(), static_cast<District>(indexes[1]) };
+                    return{ targetedPlayer->GetID(), static_cast<District>(districtID) };
+                }
+                else
+                {
+                    std::cerr << "District ID [" << districtID << "] does not exist." << std::endl;
                 }
             }
+            else
+            {
+                std::cerr << "Player index [" << playerIndex << "] is not valid, there is only [" << players.size() << "] players available to choose." << std::endl;
+            }
         }
-        */
+        else
+        {
+            std::cout << "All cities are empty, there is nothing to destroy." << std::endl;
+        }
 
         return { -1, District::UNINITIALIZED };
     }
