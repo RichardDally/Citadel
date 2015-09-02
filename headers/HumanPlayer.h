@@ -40,6 +40,7 @@ namespace Citadel
 #pragma endregion
 
     private:
+        std::vector<District> SelectMultipleDistricts(const std::vector<District>& container);
         void DisplayDistrictDetails(const District district, const size_t index) const;
     };
 }

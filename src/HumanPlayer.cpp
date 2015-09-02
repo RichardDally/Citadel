@@ -1,10 +1,7 @@
 #include <set>
 #include <array>
-#include <string>
-#include <sstream>
-#include <utility>
-#include <iterator>
 #include <iostream>
+#include <unordered_set>
 #include "HumanPlayer.h"
 
 namespace Citadel
@@ -122,24 +119,9 @@ namespace Citadel
         {
             DisplayDistrictDetails(cardsInHand_[i], i);
         }
-        std::cout << "- Nothing (" << cardsInHand_.size() << ")" << std::endl;
+        std::cout << "- Stop (" << cardsInHand_.size() << ")" << std::endl;
 
-        std::string userInput;
-        std::cin >> userInput;
-        std::istringstream stream(userInput);
-        std::istream_iterator<size_t> begin(stream), end;
-        std::set<size_t> districtIndexes(begin, end);
-
-        std::vector<District> result;
-        for (const auto index : districtIndexes)
-        {
-            if (index < size)
-            {
-                result.push_back(cardsInHand_[index]);
-            }
-        }
-
-        return result;
+        return SelectMultipleDistricts(cardsInHand_);
     }
 
     // Returns character targeted by assassination or theft
@@ -207,10 +189,11 @@ namespace Citadel
 
         std::string userInput;
         std::cin >> userInput;
-        std::istringstream stream(userInput);
-        std::istream_iterator<size_t> begin(stream), end;
-        std::vector<size_t> indexes(begin, end);
+        //std::istringstream stream(userInput);
+        //std::istream_iterator<size_t> begin(stream), end;
+        //std::vector<size_t> indexes(begin, end);
 
+        /*
         // Player ID then district ID
         if (indexes.size() == 2)
         {
@@ -223,6 +206,7 @@ namespace Citadel
                 }
             }
         }
+        */
 
         return { -1, District::UNINITIALIZED };
     }
@@ -261,13 +245,24 @@ namespace Citadel
         }
         std::cout << "- Stop (" << cardsInHand_.size() << ")" << std::endl;
 
-        size_t index = 0;
+        return SelectMultipleDistricts(cardsInHand_);
+    }
+
+    std::vector<District> HumanPlayer::SelectMultipleDistricts(const std::vector<District>& container)
+    {
+        const size_t size = container.size();
         std::vector<District> result;
+        std::unordered_set<size_t> alreadyChosen;
+        size_t index = 0;
         while (std::cin >> index)
         {
             if (index < size)
             {
-                result.push_back(cardsInHand_[index]);
+                if (alreadyChosen.find(index) == std::end(alreadyChosen))
+                {
+                    alreadyChosen.insert(index);
+                    result.push_back(container[index]);
+                }
             }
             else
             {
