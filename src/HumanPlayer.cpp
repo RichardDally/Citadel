@@ -252,8 +252,30 @@ namespace Citadel
     // Returns discarded districts to be replaced by equivalent number of cards from district deck
     std::vector<District> HumanPlayer::ChooseDistrictsCardsToSwap()
     {
-        assert(!"Boom");
-        return std::vector<District>();
+        std::cout << "@" << GetName() << ", Select district cards (one at a time, press enter between each) you want to swap among:" << std::endl;
+
+        const size_t size = cardsInHand_.size();
+        for (size_t i = 0; i < size; ++i)
+        {
+            DisplayDistrictDetails(cardsInHand_[i], i);
+        }
+        std::cout << "- Stop (" << cardsInHand_.size() << ")" << std::endl;
+
+        size_t index = 0;
+        std::vector<District> result;
+        while (std::cin >> index)
+        {
+            if (index < size)
+            {
+                result.push_back(cardsInHand_[index]);
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return result;
     }
 
     void HumanPlayer::DisplayDistrictDetails(const District district, const size_t index) const
