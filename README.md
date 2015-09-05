@@ -8,6 +8,8 @@ Coverity scan: <a href="https://scan.coverity.com/projects/leflou-citadel">
 
 Travis Continuous Integration: [![Build Status](https://travis-ci.org/LeFlou/Citadel.svg?branch=master)](https://travis-ci.org/LeFlou/Citadel)
 
+[Trello Dashboard](https://trello.com/b/Q1hr3yWt/citadels)
+
 Citadels is a fantastic boardgame created by Bruno Faidutti.
 
 https://boardgamegeek.com/boardgame/478/citadels quote:<br>
