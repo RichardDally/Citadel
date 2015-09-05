@@ -1,3 +1,4 @@
+#include <cstddef> // size_t definition
 #include "PlayerData.h"
 
 namespace Citadel
