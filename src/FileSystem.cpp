@@ -7,7 +7,8 @@
 #endif
 
 #include <iostream>
-#include <cstdio>  /* defines FILENAME_MAX */
+#include <cerrno> // strerror function
+#include <cstdio>  // defines FILENAME_MAX
 #include "FileSystem.h"
 
 std::string GetCurrentWorkingDirectory()
