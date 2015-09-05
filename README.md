@@ -1,7 +1,7 @@
 Citadels - Famous boardgame coded in C++
 ===================================================
 
-Coverity scan status: <a href="https://scan.coverity.com/projects/leflou-citadel">
+Coverity Scan status: <a href="https://scan.coverity.com/projects/leflou-citadel">
   <img alt="Coverity Scan Build Status"
        src="https://scan.coverity.com/projects/6253/badge.svg"/>
 </a>
