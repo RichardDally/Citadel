@@ -1,3 +1,4 @@
+#include <cassert>
 #include "DistrictData.h"
 
 namespace Citadel
@@ -184,6 +185,11 @@ namespace Citadel
                 return districts;
             }
 #pragma endregion
+
+            default:
+            {
+                assert(!"Not implemented");
+            }
         }
 
         return dummy;
