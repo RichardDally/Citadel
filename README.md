@@ -1,16 +1,16 @@
 Citadels - Famous boardgame coded in C++
 ===================================================
 
-Coverity scan: <a href="https://scan.coverity.com/projects/leflou-citadel">
+Coverity Scan status: <a href="https://scan.coverity.com/projects/leflou-citadel">
   <img alt="Coverity Scan Build Status"
        src="https://scan.coverity.com/projects/6253/badge.svg"/>
 </a>
 
-Continuous Integration master branch: [![Build Status](https://travis-ci.org/LeFlou/Citadel.svg?branch=master)](https://travis-ci.org/LeFlou/Citadel)
+Continuous Integration `master` branch: [![Build Status](https://travis-ci.org/LeFlou/Citadel.svg?branch=master)](https://travis-ci.org/LeFlou/Citadel)
 
 [Trello Dashboard](https://trello.com/b/Q1hr3yWt/citadels)
 
-Citadels is a fantastic boardgame created by Bruno Faidutti.
+Citadels is a fantastic boardgame created by [Bruno Faidutti](http://faidutti.com/blog).
 
 https://boardgamegeek.com/boardgame/478/citadels quote:<br>
 "In Citadels, players take on new roles each round to represent characters they hire in order to help them acquire gold and erect buildings. The game ends at the close of a round in which a player erects his/her eighth building. Players then tally their points, and the player with the highest score wins.
