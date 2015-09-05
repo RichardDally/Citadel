@@ -1,3 +1,4 @@
+#include <random>
 #include <vector>
 #include <cassert>
 #include <iostream>
@@ -17,8 +18,11 @@ namespace Citadel
             }
         }
 
+        std::random_device randomDevice;
+        std::mt19937 randomNumberGenerator(randomDevice());
+
         // Once all cards have been pushed, shuffle them
-        std::random_shuffle(std::begin(pileOfCards_), std::end(pileOfCards_));
+        std::shuffle(std::begin(pileOfCards_), std::end(pileOfCards_), randomNumberGenerator);
     }
 
     // Pick n district card from top of the stack
