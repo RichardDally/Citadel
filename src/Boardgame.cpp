@@ -361,7 +361,6 @@ namespace Citadel
     void Boardgame::PlayerTurn(Player* player, Character& murderedCharacter, Character& stolenCharacter)
     {
         // Starting three steps for player turn
-        // TODO: change ENUM CLASS name...
         PlayerTurnStep step = PlayerTurnStep::ACTION_STEP;
 
         // Determine if this character has special ability to be requested to the player
