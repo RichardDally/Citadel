@@ -3,7 +3,7 @@
 
 int main()
 {
-    Citadel::Boardgame b(Citadel::Edition::REGULAR);
-    b.StartGame();
+    Citadel::Boardgame boardgame(Citadel::Edition::REGULAR);
+    boardgame.StartGame();
     return 0;
 }
