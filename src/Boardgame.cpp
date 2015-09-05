@@ -6,56 +6,56 @@
 #include "RobotPlayer.h"
 #include "Boardgame.h"
 
-namespace
+namespace Citadel
 {
-#pragma region DEFAULT CHARACTERS
-    static const std::vector<Character> defaultCharacters
+    namespace
     {
-        Character::ASSASSIN,
-        Character::THIEF,
-        Character::MAGICIAN,
-        Character::KING,
-        Character::BISHOP,
-        Character::MERCHANT,
-        Character::ARCHITECT,
-        Character::WARLORD,
-    };
+#pragma region DEFAULT CHARACTERS
+        static const std::vector<Character> defaultCharacters
+        {
+            Character::ASSASSIN,
+            Character::THIEF,
+            Character::MAGICIAN,
+            Character::KING,
+            Character::BISHOP,
+            Character::MERCHANT,
+            Character::ARCHITECT,
+            Character::WARLORD,
+        };
 #pragma endregion
 
 #pragma region DEFAULT DISTRICTS
-    static const std::vector<District> defaultDistricts
-    {
+        static const std::vector<District> defaultDistricts
+        {
 #pragma region RED DISTRICTS
-        District::WATCHTOWER,
-        District::PRISON,
-        District::BATTLEFIELD,
-        District::FORTRESS,
+            District::WATCHTOWER,
+            District::PRISON,
+            District::BATTLEFIELD,
+            District::FORTRESS,
 #pragma endregion
 #pragma region YELLOW DISTRICTS
-        District::MANOR,
-        District::CASTLE,
-        District::PALACE,
+            District::MANOR,
+            District::CASTLE,
+            District::PALACE,
 #pragma endregion
 #pragma region GREEN DISTRICTS
-        District::TAVERN,
-        District::MARKET,
-        District::TRADING_POST,
-        District::DOCKS,
-        District::HARBOR,
-        District::TOWN_HALL,
+            District::TAVERN,
+            District::MARKET,
+            District::TRADING_POST,
+            District::DOCKS,
+            District::HARBOR,
+            District::TOWN_HALL,
 #pragma endregion
 #pragma region BLUE DISTRICTS
-        District::TEMPLE,
-        District::CHURCH,
-        District::MONASTARY,
-        District::CATHEDRAL,
+            District::TEMPLE,
+            District::CHURCH,
+            District::MONASTARY,
+            District::CATHEDRAL,
 #pragma endregion
-    };
+        };
 #pragma endregion
-}
+    }
 
-namespace Citadel
-{
     Boardgame::Boardgame()
     {
         // Setup a basic game

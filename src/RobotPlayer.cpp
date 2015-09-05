@@ -1,23 +1,23 @@
 #include "Randomness.h"
 #include "RobotPlayer.h"
 
-namespace
-{
-    const char* const names[] =
-    {
-        "Hal",
-        "Synapse",
-        "DevNull",
-        "Alpha",
-        "TheOracle",
-        "Alfred",
-        "Corona",
-    };
-    const size_t namesSize = sizeof(names) / sizeof(names[0]);
-}
-
 namespace Citadel
 {
+    namespace
+    {
+        const char* const names[] =
+        {
+            "Hal",
+            "Synapse",
+            "DevNull",
+            "Alpha",
+            "TheOracle",
+            "Alfred",
+            "Corona",
+        };
+        const size_t namesSize = sizeof(names) / sizeof(names[0]);
+    }
+
     RobotPlayer::RobotPlayer()
         : Player(names[Dice::GetRandomNumber(0, namesSize - 1)])
     {

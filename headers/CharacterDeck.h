@@ -5,7 +5,7 @@
 #include <functional>
 #include <set>
 
-#include "GameData.h"
+#include "CharacterData.h"
 #include "Randomness.h"
 
 namespace Citadel
