@@ -6,7 +6,7 @@ Coverity scan: <a href="https://scan.coverity.com/projects/leflou-citadel">
        src="https://scan.coverity.com/projects/6253/badge.svg"/>
 </a>
 
-Travis Continuous Integration: [![Build Status](https://travis-ci.org/LeFlou/Citadel.svg?branch=master)](https://travis-ci.org/LeFlou/Citadel)
+Continuous Integration master branch: [![Build Status](https://travis-ci.org/LeFlou/Citadel.svg?branch=master)](https://travis-ci.org/LeFlou/Citadel)
 
 [Trello Dashboard](https://trello.com/b/Q1hr3yWt/citadels)
 
