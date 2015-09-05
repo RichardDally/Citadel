@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 
+#include "Logger.h"
 #include "Randomness.h"
 #include "HumanPlayer.h"
 #include "RobotPlayer.h"
@@ -30,7 +31,7 @@ namespace Citadel
         // Decide who's starting.
         startingPlayer_ = DecideWhoStarts();
 
-        std::cout << "[" << playerById_[startingPlayer_]->GetName() << "] has the crown." << std::endl;
+        Logger::GetInstance() << Verbosity::INFO << "[" << playerById_[startingPlayer_]->GetName() << "] has the crown." << std::endl;
 
         // Setup basic stuff
         // Each player earns 2 coins
@@ -47,7 +48,7 @@ namespace Citadel
 
         for (currentRound_ = 0; IsGameEnded() == false; ++currentRound_)
         {
-            std::cout << "Debug: round [" << currentRound_ << "]" << std::endl;
+            Logger::GetInstance() << Verbosity::DEBUG << "Round [" << currentRound_ << "]" << std::endl;
             StartRound(GetEdition());
 
             // TODO: remove (debug purpose)
@@ -121,7 +122,7 @@ namespace Citadel
         do
         {
             assert(currentPlayer_ >= 0 && currentPlayer_ < static_cast<int>(playerById_.size()));
-            std::cout << "[" << playerById_[currentPlayer_]->GetName() << "] is now picking a role." << std::endl;
+            Logger::GetInstance() << Verbosity::INFO << "[" << playerById_[currentPlayer_]->GetName() << "] is now picking a role." << std::endl;
 
             const auto pickedCharacter = playerById_[currentPlayer_]->PickCharacter(remainingCards);
 
@@ -137,7 +138,7 @@ namespace Citadel
             {
                 // Even murdered, currentPlayer will be the next king on next round
                 nextStartingPlayer_ = currentPlayer_;
-                std::cout << "Debug: Next king will be [" << playerById_[currentPlayer_]->GetName() << "]" << std::endl;
+                Logger::GetInstance() << Verbosity::DEBUG << "Next king will be [" << playerById_[currentPlayer_]->GetName() << "]" << std::endl;
             }
 
             // Confirm picked character
@@ -180,11 +181,11 @@ namespace Citadel
         {
             assert(character != Character::MAX);
             assert(character != Character::UNINITIALIZED);
-            std::cout << "Calling [" << GetCharacterName(character) << "]" << std::endl;
+            Logger::GetInstance() << Verbosity::INFO << "Calling [" << GetCharacterName(character) << "]" << std::endl;
             auto it = playerByCharacter_.find(character);
             if (it == playerByCharacter_.end())
             {
-                std::cout << "Debug: No one picked [" << GetCharacterName(character) << "]" << std::endl;
+                Logger::GetInstance() << Verbosity::DEBUG << "No one picked [" << GetCharacterName(character) << "]" << std::endl;
                 continue;
             }
 
@@ -192,10 +193,10 @@ namespace Citadel
             if (player == nullptr)
             {
                 assert(!"player pointer should not be nullptr.");
-                std::cerr << "Error: player attached to [" << GetCharacterName(character) << "] was nullptr." << std::endl;
+                Logger::GetInstance() << Verbosity::ERROR << "player attached to [" << GetCharacterName(character) << "] was nullptr." << std::endl;
                 continue;
             }
-            std::cout << "Debug: [" << player->GetName() << "] is [" << GetCharacterName(character) << "]" << std::endl;
+            Logger::GetInstance() << Verbosity::DEBUG << "[" << player->GetName() << "] is [" << GetCharacterName(character) << "]" << std::endl;
 
             // First check if character is murdered (assassin cannot be)
             assert(murderedCharacter != Character::ASSASSIN);
@@ -203,14 +204,14 @@ namespace Citadel
             {
                 // Debug block
                 {
-                    std::cout << "Debug: [" << GetCharacterName(character) << "] has been murdered." << std::endl;
+                    Logger::GetInstance() << Verbosity::DEBUG << "[" << GetCharacterName(character) << "] has been murdered." << std::endl;
                     auto assassin = playerByCharacter_.find(Character::ASSASSIN);
                     auto victim = playerByCharacter_.find(character);
                     assert(assassin != playerByCharacter_.end());
                     assert(victim != playerByCharacter_.end());
                     if (assassin != playerByCharacter_.end() && victim != playerByCharacter_.end())
                     {
-                        std::cout << "Debug: [" << victim->second->GetName() << "] has been murdered by [" << assassin->second->GetName() << "] !" << std::endl;
+                        Logger::GetInstance() << Verbosity::DEBUG << "[" << victim->second->GetName() << "] has been murdered by [" << assassin->second->GetName() << "] !" << std::endl;
                     }
                 }
                 // Current player skip it's turn
@@ -227,12 +228,12 @@ namespace Citadel
 
                 {
                     // Debug block
-                    std::cout << "Debug: [" << GetCharacterName(character) << "] has been stolen !" << std::endl;
+                    Logger::GetInstance() << Verbosity::DEBUG << "[" << GetCharacterName(character) << "] has been stolen !" << std::endl;
                     assert(thief != playerByCharacter_.end());
                     assert(victim != playerByCharacter_.end());
                     if (thief != playerByCharacter_.end() && victim != playerByCharacter_.end())
                     {
-                        std::cout << "Debug: [" << victim->second->GetName() << "] has been stolen by [" << thief->second->GetName() << "] !" << std::endl;
+                        Logger::GetInstance() << Verbosity::DEBUG << "[" << victim->second->GetName() << "] has been stolen by [" << thief->second->GetName() << "] !" << std::endl;
                     }
                 }
 
@@ -423,7 +424,7 @@ namespace Citadel
                         // Record first player ending game to grant bonus points
                         if (player->GetBuiltCitySize() >= numberOfDistrictsToWin_ && firstPlayerEndingGame == -1)
                         {
-                            std::cout << "Debug: [" << player->GetName() << "] is first player to end it's city (" << numberOfDistrictsToWin_ << ") districts built." << std::endl;
+                            Logger::GetInstance() << Verbosity::DEBUG << "[" << player->GetName() << "] is first player to end it's city (" << numberOfDistrictsToWin_ << ") districts built." << std::endl;
                             firstPlayerEndingGame = player->GetID();
                         }
 
@@ -696,20 +697,20 @@ namespace Citadel
             {
                 if (victimIt->second->DestroyDistrict(pair.second) == false)
                 {
-                    std::cerr << "Player [" << pair.first << "] does not have [" << GetDistrictName(pair.second) << "]" << std::endl;
+                    Logger::GetInstance() << Verbosity::ERROR << "Player [" << pair.first << "] does not have [" << GetDistrictName(pair.second) << "]" << std::endl;
                     return false;
                 }
-                std::cout << "Debug: player [" << player->GetName() << "] destroyed [" << GetDistrictName(pair.second) << "] owned by [" << victimIt->second->GetName() << "]" << std::endl;
+                Logger::GetInstance() << Verbosity::DEBUG << "player [" << player->GetName() << "] destroyed [" << GetDistrictName(pair.second) << "] owned by [" << victimIt->second->GetName() << "]" << std::endl;
             }
             else
             {
-                std::cerr << "Player [" << pair.first << "] has not enough gold to destroy this district" << std::endl;
+                Logger::GetInstance() << Verbosity::ERROR << "Player [" << pair.first << "] has not enough gold to destroy this district" << std::endl;
                 return false;
             }
         }
         else
         {
-            std::cerr << "District [" << GetDistrictName(pair.second) << "] has a cost of [" << GetDistrictCost(pair.second) << "] gold coins." << std::endl;
+            Logger::GetInstance() << Verbosity::ERROR << "District [" << GetDistrictName(pair.second) << "] has a cost of [" << GetDistrictCost(pair.second) << "] gold coins." << std::endl;
             return false;
         }
 
@@ -782,7 +783,7 @@ namespace Citadel
 
             scores[player->GetID()] = score;
 
-            std::cout << "Debug: Player [" << player->GetName() << "] has [" << score << "] points." << std::endl;
+            Logger::GetInstance() << Verbosity::DEBUG << "Player [" << player->GetName() << "] has [" << score << "] points." << std::endl;
         }
     }
 }

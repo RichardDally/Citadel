@@ -5,6 +5,7 @@
 #include <functional>
 #include <set>
 
+#include "Logger.h"
 #include "CharacterData.h"
 #include "Randomness.h"
 
@@ -37,7 +38,7 @@ namespace Citadel
 
         void RemoveCard(const Character character)
         {
-            std::cout << "Debug: remove [" << GetCharacterName(character) << "] from remaining cards." << std::endl;
+            Logger::GetInstance() << Verbosity::DEBUG << "remove [" << GetCharacterName(character) << "] from remaining cards." << std::endl;
             remainingCards_.erase(character);
         }
 
@@ -55,7 +56,7 @@ namespace Citadel
 
                 if (characterFilter(character))
                 {
-                    std::cout << "Debug: " << (&container == &faceupCards_ ? "faceup" : "faceoff") << " character: " << GetCharacterName(character) << std::endl;
+                    Logger::GetInstance() << Verbosity::DEBUG << (&container == &faceupCards_ ? "faceup" : "faceoff") << " character: " << GetCharacterName(character) << std::endl;
                     container.insert(character);
                     remainingCards_.erase(it);
                 }
