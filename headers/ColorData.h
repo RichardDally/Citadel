@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef> // size_t definition
+
 namespace Citadel
 {
     enum class Color
