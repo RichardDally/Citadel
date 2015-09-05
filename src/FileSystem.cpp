@@ -7,7 +7,8 @@
 #endif
 
 #include <iostream>
-#include <cerrno> // strerror function
+#include <cstring> // strerror function
+#include <cerrno> // errno
 #include <cstdio>  // defines FILENAME_MAX
 #include "FileSystem.h"
 
