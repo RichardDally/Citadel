@@ -95,4 +95,97 @@ namespace Citadel
             "District::MAX must match districtMetaData number of items");
         return districtMetaData[static_cast<size_t>(district)].quantity_;
     }
+
+    const std::vector<District>& GetDistricts(const Edition edition)
+    {
+        static const std::vector<District> dummy;
+
+        switch (edition)
+        {
+#pragma region REGULAR EDITION
+            case Edition::REGULAR:
+            {
+                static const std::vector<District> districts
+                {
+#pragma region RED DISTRICTS
+                    District::WATCHTOWER,
+                    District::PRISON,
+                    District::BATTLEFIELD,
+                    District::FORTRESS,
+#pragma endregion
+#pragma region YELLOW DISTRICTS
+                    District::MANOR,
+                    District::CASTLE,
+                    District::PALACE,
+#pragma endregion
+#pragma region GREEN DISTRICTS
+                    District::TAVERN,
+                    District::MARKET,
+                    District::TRADING_POST,
+                    District::DOCKS,
+                    District::HARBOR,
+                    District::TOWN_HALL,
+#pragma endregion
+#pragma region BLUE DISTRICTS
+                    District::TEMPLE,
+                    District::CHURCH,
+                    District::MONASTARY,
+                    District::CATHEDRAL,
+#pragma endregion
+#pragma region PURPLE DISTRICTS
+                    District::HAUNTED_CITY,
+                    District::KEEP,
+                    District::LABORATORY,
+                    District::SMITHY,
+                    District::OBSERVATORY,
+                    District::GRAVEYARD,
+                    District::DRAGON_GATE,
+                    District::UNIVERSITY,
+                    District::LIBRARY,
+                    District::GREAT_WALL,
+                    District::SCHOOL_OF_MAGIC,
+#pragma endregion
+                };
+                return districts;
+            }
+#pragma endregion
+
+#pragma region REGULAR EDITION WITHOUT PURPLE DISTRICTS
+            case Edition::REGULAR_WITHOUT_PURPLE_DISTRICTS:
+            {
+                static const std::vector<District> districts
+                {
+#pragma region RED DISTRICTS
+                    District::WATCHTOWER,
+                    District::PRISON,
+                    District::BATTLEFIELD,
+                    District::FORTRESS,
+#pragma endregion
+#pragma region YELLOW DISTRICTS
+                    District::MANOR,
+                    District::CASTLE,
+                    District::PALACE,
+#pragma endregion
+#pragma region GREEN DISTRICTS
+                    District::TAVERN,
+                    District::MARKET,
+                    District::TRADING_POST,
+                    District::DOCKS,
+                    District::HARBOR,
+                    District::TOWN_HALL,
+#pragma endregion
+#pragma region BLUE DISTRICTS
+                    District::TEMPLE,
+                    District::CHURCH,
+                    District::MONASTARY,
+                    District::CATHEDRAL,
+#pragma endregion
+                };
+                return districts;
+            }
+#pragma endregion
+        }
+
+        return dummy;
+    }
 }

@@ -19,7 +19,7 @@ namespace Citadel
         CharacterDeck& operator=(const CharacterDeck&) = default;
 
         void Setup(const std::vector<Character>& availableCharacters, const size_t numberOfPlayers);
-        void RemoveCharactersStep();
+        void RemoveCharactersStep(const Edition edition);
         void ChooseCharactersStep();
 
         // Compute possible opponents of a specific character (useful for Assassin or Thief)
@@ -67,6 +67,7 @@ namespace Citadel
 
         // C++11 note: std::unordered_set does not work with enum class as key.
         // => This is fixed in C++14.
+        // TODO C++14: change to std::unordered_set
         std::set<Character> faceupCards_;
         std::set<Character> faceoffCards_;
         std::set<Character> remainingCards_;

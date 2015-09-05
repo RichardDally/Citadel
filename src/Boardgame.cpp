@@ -8,69 +8,21 @@
 
 namespace Citadel
 {
-    namespace
+    Boardgame::Boardgame(const Edition edition)
+        : edition_(edition)
     {
-#pragma region DEFAULT CHARACTERS
-        static const std::vector<Character> defaultCharacters
-        {
-            Character::ASSASSIN,
-            Character::THIEF,
-            Character::MAGICIAN,
-            Character::KING,
-            Character::BISHOP,
-            Character::MERCHANT,
-            Character::ARCHITECT,
-            Character::WARLORD,
-        };
-#pragma endregion
-
-#pragma region DEFAULT DISTRICTS
-        static const std::vector<District> defaultDistricts
-        {
-#pragma region RED DISTRICTS
-            District::WATCHTOWER,
-            District::PRISON,
-            District::BATTLEFIELD,
-            District::FORTRESS,
-#pragma endregion
-#pragma region YELLOW DISTRICTS
-            District::MANOR,
-            District::CASTLE,
-            District::PALACE,
-#pragma endregion
-#pragma region GREEN DISTRICTS
-            District::TAVERN,
-            District::MARKET,
-            District::TRADING_POST,
-            District::DOCKS,
-            District::HARBOR,
-            District::TOWN_HALL,
-#pragma endregion
-#pragma region BLUE DISTRICTS
-            District::TEMPLE,
-            District::CHURCH,
-            District::MONASTARY,
-            District::CATHEDRAL,
-#pragma endregion
-        };
-#pragma endregion
-    }
-
-    Boardgame::Boardgame()
-    {
-        // Setup a basic game
-
+        // TODO: customize Human/Robot players number
         AddPlayer<HumanPlayer>(4);
         //AddPlayer<RobotPlayer>(3);
 
         // Setup available characters
-        characterDeck_.Setup(defaultCharacters, playerById_.size());
+        characterDeck_.Setup(GetCharacterCallingOrder(edition), playerById_.size());
 
         // Setup available districts
-        districtDeck_.Setup(defaultDistricts);
+        districtDeck_.Setup(GetDistricts(edition));
     }
 
-    void Boardgame::StartBasicGame()
+    void Boardgame::StartGame()
     {
         // Reset ending player
         firstPlayerEndingGame = -1;
@@ -96,9 +48,9 @@ namespace Citadel
         for (currentRound_ = 0; IsGameEnded() == false; ++currentRound_)
         {
             std::cout << "Debug: round [" << currentRound_ << "]" << std::endl;
-            StartRound();
+            StartRound(GetEdition());
 
-            // Debug purpose
+            // TODO: remove (debug purpose)
             if (currentRound_ == 3)
             {
                 break;
@@ -143,26 +95,26 @@ namespace Citadel
         return -1;
     }
 
-    void Boardgame::StartRound()
+    void Boardgame::StartRound(const Edition edition)
     {
         // Step One : Remove characters
-        RemoveCharactersStep();
+        RemoveCharactersStep(edition);
 
         // Step Two : Choose Characters
-        ChooseCharactersStep();
+        ChooseCharactersStep(edition);
 
         // Step Three: Player Turns
-        PlayerTurnsStep();
+        PlayerTurnsStep(edition);
     }
 
     // Step One : Remove characters
-    void Boardgame::RemoveCharactersStep()
+    void Boardgame::RemoveCharactersStep(const Edition edition)
     {
-        characterDeck_.RemoveCharactersStep();
+        characterDeck_.RemoveCharactersStep(edition);
     }
 
     // Step Two : Choose Characters
-    void Boardgame::ChooseCharactersStep()
+    void Boardgame::ChooseCharactersStep(const Edition edition)
     {
         playerByCharacter_.clear();
         const auto& remainingCards = characterDeck_.GetRemainingCards();
@@ -213,27 +165,17 @@ namespace Citadel
     }
 
     // Step Three: Player Turns
-    void Boardgame::PlayerTurnsStep()
+    void Boardgame::PlayerTurnsStep(const Edition edition)
     {
-        // TODO: move calling order to boardgame attribute + manage new roles such as Witch
-        static const std::vector<Character> callingOrder
-        {
-            Character::ASSASSIN,
-            Character::THIEF,
-            Character::MAGICIAN,
-            Character::KING,
-            Character::BISHOP,
-            Character::MERCHANT,
-            Character::ARCHITECT,
-            Character::WARLORD,
-        };
-
         // Assassin can murder any character
         Character murderedCharacter = Character::UNINITIALIZED;
 
         // Thief can steal any character except Assassin
         Character stolenCharacter = Character::UNINITIALIZED;
 
+        const auto& callingOrder = GetCharacterCallingOrder(edition);
+
+        assert(callingOrder.empty() == false);
         for (const auto character : callingOrder)
         {
             assert(character != Character::MAX);

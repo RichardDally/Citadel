@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+#include "GameData.h"
 #include "ColorData.h"
 
 namespace Citadel
@@ -21,6 +23,7 @@ namespace Citadel
     const char* const GetCharacterName(const Character character);
     const char* const GetCharacterDescription(const Character character);
     const Color GetCharacterColor(const Character character);
+    const std::vector<Character>& GetCharacterCallingOrder(const Edition edition);
 #pragma endregion
 
 #pragma region MagicianChoice

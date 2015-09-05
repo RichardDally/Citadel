@@ -87,6 +87,38 @@ namespace Citadel
 
         return result;
     }
+
+    const std::vector<Character>& GetCharacterCallingOrder(const Edition edition)
+    {
+        static const std::vector<Character> dummy;
+
+        switch (edition)
+        {
+            case Edition::REGULAR:
+            {
+                static const std::vector<Character> callingOrder
+                {
+                    Character::ASSASSIN,
+                    Character::THIEF,
+                    Character::MAGICIAN,
+                    Character::KING,
+                    Character::BISHOP,
+                    Character::MERCHANT,
+                    Character::ARCHITECT,
+                    Character::WARLORD,
+                };
+                return callingOrder;
+            }
+            default:
+            {
+                assert(!"Not implemented");
+            }
+        }
+
+        return dummy;
+    }
+
+    
 #pragma endregion
 
 #pragma region MagicianChoice

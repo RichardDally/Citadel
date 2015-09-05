@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+#include "GameData.h"
 #include "ColorData.h"
 
 #pragma region District
@@ -53,5 +55,6 @@ namespace Citadel
     const Color       GetDistrictColor(const District district);
     const int         GetDistrictCost(const District district);
     const size_t      GetDistrictQuantity(const District district);
+    const std::vector<District>& GetDistricts(const Edition edition);
 }
 #pragma endregion

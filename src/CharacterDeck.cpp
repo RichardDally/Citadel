@@ -26,7 +26,7 @@ namespace Citadel
         remainingCards_.clear();
     }
 
-    void CharacterDeck::RemoveCharactersStep()
+    void CharacterDeck::RemoveCharactersStep(const Edition edition)
     {
         // Cleanup
         faceupCards_.clear();
