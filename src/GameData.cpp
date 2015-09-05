@@ -1,3 +1,4 @@
+#include <cstddef> // size_t definition
 #include "GameData.h"
 
 namespace Citadel
@@ -16,7 +17,7 @@ namespace Citadel
     const char* const GetEditionName(const Edition edition)
     {
         static_assert(static_cast<size_t>(Edition::MAX) == sizeof(editionNames) / sizeof(editionNames[0]),
-            "Character::MAX must match characterNames number of items");
+            "Edition::MAX must match editionNames number of items");
         return editionNames[static_cast<size_t>(edition)];
     }
 }
