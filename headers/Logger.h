@@ -65,6 +65,7 @@ private:
     ~Logger();
 
     static std::string GetHeader(const Verbosity verbosity);
+    static void InsertFormattedDateTime(std::stringstream& stream, const char* const dateTimeFormat);
 
     static std::ofstream outputFile_;
     static Verbosity verbosity_;

@@ -52,10 +52,31 @@ const Verbosity Logger::GetStreamVerbosity()
 
 Logger::Logger()
 {
-    // TODO: use std::put_time in GNU/Linux version when it's available in GCC/Clang
     std::stringstream stream;
     stream << GetCurrentWorkingDirectory() << GetOsSeparator();
     static const char* const dateTimeFormat = "%Y%m%d_%H%M%S";
+    InsertFormattedDateTime(stream, dateTimeFormat);
+    stream << "_Citadel.log";
+    outputFile_.open(stream.str());
+}
+
+Logger::~Logger()
+{
+    outputFile_.close();
+}
+
+std::string Logger::GetHeader(const Verbosity verbosity)
+{
+    std::stringstream stream;
+    static const char* const dateTimeFormat = "%Y%m%d_%H:%M:%S";
+    InsertFormattedDateTime(stream, dateTimeFormat);
+    stream << " [" << verbosityNames[verbosity] << "] ";
+    return stream.str();
+}
+
+void Logger::InsertFormattedDateTime(std::stringstream& stream, const char* const dateTimeFormat)
+{
+    // TODO: use std::put_time in GNU/Linux version when it's available in GCC/Clang
 #ifdef _WIN32
     auto now = std::chrono::system_clock::now();
     auto in_time_t = std::chrono::system_clock::to_time_t(now);
@@ -68,22 +89,4 @@ Logger::Logger()
     strftime(buffer, sizeof(buffer) - 1, dateTimeFormat, timeinfo);
     stream << buffer;
 #endif
-    stream << "_Citadel.log";
-    outputFile_.open(stream.str());
-}
-
-Logger::~Logger()
-{
-    outputFile_.close();
-}
-
-std::string Logger::GetHeader(const Verbosity verbosity)
-{
-    auto now = std::chrono::system_clock::now();
-    auto in_time_t = std::chrono::system_clock::to_time_t(now);
-
-    // Header
-    std::stringstream stream;
-    stream << std::put_time(std::gmtime(&in_time_t), "%Y%m%d_%H:%M:%S") << '[' << verbosityNames[verbosity] << "] ";
-    return stream.str();
 }
