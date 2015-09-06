@@ -1,5 +1,5 @@
 #include <chrono>  // chrono::system_clock
-#include <ctime>   // localtime
+#include <ctime>   // gmtime/localtime
 #include <sstream> // stringstream
 #include <iomanip> // put_time
 
@@ -52,13 +52,23 @@ const Verbosity Logger::GetStreamVerbosity()
 
 Logger::Logger()
 {
+    // TODO: use std::put_time in GNU/Linux version when it's available in GCC/Clang
+    std::stringstream stream;
+    stream << GetCurrentWorkingDirectory() << GetOsSeparator();
+    static const char* const dateTimeFormat = "%Y%m%d_%H%M%S";
+#ifdef _WIN32
     auto now = std::chrono::system_clock::now();
     auto in_time_t = std::chrono::system_clock::to_time_t(now);
-
-    // Filename
-    std::stringstream stream;
-    stream << GetCurrentWorkingDirectory() << GetOsSeparator() << std::put_time(std::gmtime(&in_time_t), "%Y%m%d_%H%M%S") << "_Citadel.log";
-
+    stream << std::put_time(std::gmtime(&in_time_t), dateTimeFormat);
+#else
+    time_t rawtime;
+    time(&rawtime);
+    struct tm* timeinfo = gmtime(&rawtime);
+    char buffer[80];
+    strftime(buffer, sizeof(buffer) - 1, dateTimeFormat, timeinfo);
+    stream << buffer;
+#endif
+    stream << "_Citadel.log";
     outputFile_.open(stream.str());
 }
 
