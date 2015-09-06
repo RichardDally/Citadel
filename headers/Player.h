@@ -37,14 +37,14 @@ namespace Citadel
             return name_;
         }
 
-        const size_t GetNumberOfCardsInHand() const
+        const size_t GetNumberOfAvailableDistricts() const
         {
-            return cardsInHand_.size();
+            return availableDistricts_.size();
         }
 
-        std::vector<District>& GetCardsInHand()
+        std::vector<District>& GetAvailableDistricts()
         {
-            return cardsInHand_;
+            return availableDistricts_;
         }
 
         const size_t GetBuiltCitySize() const
@@ -106,7 +106,7 @@ namespace Citadel
         std::string name_;
 
         // Key: district card id
-        std::vector<District> cardsInHand_;
+        std::vector<District> availableDistricts_;
 
         // District card id
         // using std::set because you cannot build twice same district

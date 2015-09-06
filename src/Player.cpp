@@ -22,10 +22,10 @@ namespace Citadel
         {
             if (std::find(builtCity_.begin(), builtCity_.end(), district) == builtCity_.end())
             {
-                auto pos = std::find(std::begin(cardsInHand_), std::end(cardsInHand_), district);
-                if (pos != std::end(cardsInHand_))
+                auto pos = std::find(std::begin(availableDistricts_), std::end(availableDistricts_), district);
+                if (pos != std::end(availableDistricts_))
                 {
-                    cardsInHand_.erase(pos);
+                    availableDistricts_.erase(pos);
                     builtCity_.insert(district);
                     ModifyGoldCoins(-GetDistrictCost(district));
                 }

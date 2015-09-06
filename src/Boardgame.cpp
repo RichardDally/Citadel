@@ -71,7 +71,7 @@ namespace Citadel
                 std::cerr << "There is not enough cards in the deck. Drawn [" << fromDeck.size() << "] instead of [" << numberOfCards << "]" << std::endl;
                 assert(!"District deck should have enough cards.");
             }
-            auto& toHand = player->GetCardsInHand();
+            auto& toHand = player->GetAvailableDistricts();
             toHand.insert(std::end(toHand), std::begin(fromDeck), std::end(fromDeck));
         }
         else
@@ -367,7 +367,7 @@ namespace Citadel
                             }
 
                             // Transfer the card to player
-                            player->GetCardsInHand().push_back(selectedDistrict);
+                            player->GetAvailableDistricts().push_back(selectedDistrict);
 
                             // Discard other cards
                             districts.erase(selectedDistrictIt); // Remove chosen card
@@ -617,14 +617,14 @@ namespace Citadel
         }
 
         // Swap cards in hand
-        std::swap(player->GetCardsInHand(), playerIdPairIt->second->GetCardsInHand());
+        std::swap(player->GetAvailableDistricts(), playerIdPairIt->second->GetAvailableDistricts());
 
         return true;
     }
 
     bool Boardgame::MagicianExchangeFromDistrictDeck(Player* player)
     {
-        auto& cardsInHand = player->GetCardsInHand();
+        auto& cardsInHand = player->GetAvailableDistricts();
         if (cardsInHand.empty())
         {
             std::cerr << "Player has no cards in hand, therefore cannot exchange cards with District deck" << std::endl;

@@ -84,7 +84,7 @@ namespace Citadel
         {
             return PlayerAction::BUILD_DISTRICT_CARDS;
         }
-        else if (std::find(std::begin(availableActions), std::end(availableActions), PlayerAction::WATCH_DISTRICT_CARDS) != std::end(availableActions) && GetCardsInHand().empty())
+        else if (std::find(std::begin(availableActions), std::end(availableActions), PlayerAction::WATCH_DISTRICT_CARDS) != std::end(availableActions) && GetAvailableDistricts().empty())
         {
             return PlayerAction::WATCH_DISTRICT_CARDS;
         }
