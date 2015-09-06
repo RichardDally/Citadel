@@ -92,4 +92,23 @@ namespace Citadel
         return std::vector<District>();
     }
 #pragma endregion
+
+    const size_t RobotPlayer::SimulateDistrictRevenues(const Character character) const
+    {
+        const auto characterColor = GetCharacterColor(character);
+        if (characterColor == Color::UNINITIALIZED)
+        {
+            return 0;
+        }
+
+        size_t revenues = 0;
+        for (const auto district : builtCity_)
+        {
+            if (GetDistrictColor(district) == characterColor)
+            {
+                ++revenues;
+            }
+        }
+        return revenues;
+    }
 }

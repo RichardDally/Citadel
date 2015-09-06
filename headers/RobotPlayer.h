@@ -38,5 +38,8 @@ namespace Citadel
         // Returns discarded districts to be replaced by equivalent number of cards from district deck
         virtual std::vector<District> ChooseDistrictsCardsToSwap() override;
 #pragma endregion
+
+    private:
+        const size_t SimulateDistrictRevenues(const Character character) const;
     };
 }

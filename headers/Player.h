@@ -102,8 +102,6 @@ namespace Citadel
 #pragma endregion
 
     protected:
-        const size_t SimulateDistrictRevenues() const;
-
         Character character_ = Character::UNINITIALIZED;
         std::string name_;
 
