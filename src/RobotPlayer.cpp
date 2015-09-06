@@ -31,10 +31,41 @@ namespace Citadel
 
 #pragma region PURE VIRTUAL METHODS
     // Returns character picked to play
-    Character RobotPlayer::PickCharacter(const std::set<Character>& remainingCards)
+    Character RobotPlayer::PickCharacter(const std::set<Character>& remainingCharacters)
     {
-        assert(remainingCards.size() > 0);
-        return *std::begin(remainingCards);
+        assert(remainingCharacters.size() > 0);
+        if (remainingCharacters.empty())
+        {
+            Logger::GetInstance() << Verbosity::ERROR << "There is no remaining characters" << std::endl;
+            return Character::UNINITIALIZED;
+        }
+
+        Character result = Character::UNINITIALIZED;
+        std::map<Character, size_t> revenuesByCharacter;
+        std::pair<Character, size_t> mostValuableCharacter = std::make_pair(Character::UNINITIALIZED, 0);
+        for (const auto character : remainingCharacters)
+        {
+            const auto revenues = SimulateDistrictRevenues(character);
+            if (revenues > mostValuableCharacter.second)
+            {
+                mostValuableCharacter = std::make_pair(character, revenues);
+            }
+            revenuesByCharacter.insert(std::make_pair(character, revenues));
+        }
+
+        if (mostValuableCharacter.first != Character::UNINITIALIZED)
+        {
+            result = mostValuableCharacter.first;
+            Logger::GetInstance() << Verbosity::DEBUG << "[" << GetCharacterName(result) << "] is the most valuable for [" << GetName() << "]" << std::endl;
+        }
+        else
+        {
+            auto random_it = std::next(std::begin(remainingCharacters), Dice::GetRandomNumber(0, remainingCharacters.size() - 1));
+            result = *random_it;
+            Logger::GetInstance() << Verbosity::DEBUG << "[" << GetName() << "] picked randomly [" << GetCharacterName(result) << "]" << std::endl;
+        }
+
+        return result;
     }
 
     // Returns action to be taken
