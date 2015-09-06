@@ -73,6 +73,11 @@ namespace Citadel
     PlayerAction RobotPlayer::ChooseAction(const std::vector<PlayerAction>& availableActions)
     {
         assert(availableActions.empty() == false);
+        if (availableActions.empty())
+        {
+            Logger::GetInstance() << Verbosity::ERROR << "There is no available action." << std::endl;
+            return PlayerAction::UNITIALIZED;
+        }
 
         // TODO: optimize
         if (std::find(std::begin(availableActions), std::end(availableActions), PlayerAction::BUILD_DISTRICT_CARDS) != std::end(availableActions) && CanBuild())
