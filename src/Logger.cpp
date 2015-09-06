@@ -20,7 +20,7 @@ namespace
 
 // Static Logger attributes
 std::ofstream Logger::outputFile_;
-Verbosity Logger::verbosity_ = Verbosity::INFO;
+Verbosity Logger::verbosity_ = Verbosity::DEBUG;
 Verbosity Logger::streamVerbosity_ = Logger::verbosity_;
 bool Logger::nextLine_ = true;
 
