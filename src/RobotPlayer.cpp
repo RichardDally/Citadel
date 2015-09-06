@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "Logger.h"
 #include "Randomness.h"
 #include "RobotPlayer.h"
