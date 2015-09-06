@@ -77,7 +77,7 @@ namespace Citadel
         virtual Character PickCharacter(const std::set<Character>& remainingCards) = 0;
 
         // Returns action to be taken
-        virtual PlayerAction ChooseAction(const PlayerTurnStep step, const bool canUseMagicPower) = 0;
+        virtual PlayerAction ChooseAction(const std::vector<PlayerAction>& availableActions) = 0;
 
         // Watch proposed district cards and return selected card
         virtual District WatchAndChooseDistrictCard(const std::vector<District>& districts) = 0;

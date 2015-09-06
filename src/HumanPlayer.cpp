@@ -42,47 +42,23 @@ namespace Citadel
     }
 
     // Returns action to be taken
-    PlayerAction HumanPlayer::ChooseAction(const PlayerTurnStep step, const bool canUseMagicPower)
+    PlayerAction HumanPlayer::ChooseAction(const std::vector<PlayerAction>& availableActions)
     {
         std::cout << "@" << GetName() << ", You currently have " << GetGoldCoins() << " gold coins." << std::endl;
-        std::cout << "Current turn step is " << GetPlayerTurnStepName(step) << std::endl;
-
-        std::vector<PlayerAction> indexedAction;
-
         std::cout << "@" << GetName() << ", Select player action among: " << std::endl;
-        switch (step)
-        {
-            case PlayerTurnStep::ACTION_STEP:
-            {
-                indexedAction.push_back(PlayerAction::TAKE_GOLD_COINS);
-                indexedAction.push_back(PlayerAction::WATCH_DISTRICT_CARDS);
-                break;
-            }
-            case PlayerTurnStep::BUILD_STEP:
-            {
-                indexedAction.push_back(PlayerAction::BUILD_DISTRICT_CARDS);
-                break;
-            }
-            default:;
-        }
 
-        if (canUseMagicPower)
-        {
-            indexedAction.push_back(PlayerAction::USE_MAGIC_POWER);
-        }
-
-        const size_t size = indexedAction.size();
+        const size_t size = availableActions.size();
         for (size_t i = 0; i < size; ++i)
         {
-            std::cout << "- " << GetPlayerActionName(indexedAction[i]) << " (" << i << ")" << std::endl;
+            std::cout << "- " << GetPlayerActionName(availableActions[i]) << " (" << i << ")" << std::endl;
         }
 
         size_t playerActionChoice = 0;
         std::cin >> playerActionChoice;
 
-        if (playerActionChoice < indexedAction.size())
+        if (playerActionChoice < availableActions.size())
         {
-            return indexedAction[playerActionChoice];
+            return availableActions[playerActionChoice];
         }
         return PlayerAction::UNITIALIZED;
     }

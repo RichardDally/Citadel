@@ -1,3 +1,4 @@
+#include "Logger.h"
 #include "Randomness.h"
 #include "RobotPlayer.h"
 
@@ -37,7 +38,7 @@ namespace Citadel
     }
 
     // Returns action to be taken
-    PlayerAction RobotPlayer::ChooseAction(const PlayerTurnStep step, const bool canUseMagicPower)
+    PlayerAction RobotPlayer::ChooseAction(const std::vector<PlayerAction>& availableActions)
     {
         assert(!"Boom");
         return PlayerAction::UNITIALIZED;

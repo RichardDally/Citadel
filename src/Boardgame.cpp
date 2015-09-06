@@ -319,8 +319,25 @@ namespace Citadel
             }
             else
             {
-                // Ask player to choose an action (gold coins or district cards)
-                action = player->ChooseAction(step, canUseMagicPower);
+                // TODO: hardcode these containers in static const std::vector<PlayerAction>
+                std::vector<PlayerAction> availableActions;
+                if (step == PlayerTurnStep::ACTION_STEP)
+                {
+                    availableActions.push_back(PlayerAction::TAKE_GOLD_COINS);
+                    availableActions.push_back(PlayerAction::WATCH_DISTRICT_CARDS);
+                }
+                else if (step == PlayerTurnStep::BUILD_STEP)
+                {
+                    availableActions.push_back(PlayerAction::BUILD_DISTRICT_CARDS);
+                }
+                if (canUseMagicPower)
+                {
+                    availableActions.push_back(PlayerAction::USE_MAGIC_POWER);
+                }
+
+                // Ask player to choose an action
+                assert(availableActions.empty() == false);
+                action = player->ChooseAction(availableActions);
             }
 
             switch (action)
