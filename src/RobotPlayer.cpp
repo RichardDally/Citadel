@@ -98,8 +98,24 @@ namespace Citadel
 
     District RobotPlayer::WatchAndChooseDistrictCard(const std::vector<District>& districts)
     {
-        assert(!"Boom");
-        return District::UNINITIALIZED;
+        assert(districts.empty() == false);
+        if (districts.empty())
+        {
+            Logger::GetInstance() << Verbosity::ERROR << "There is no district to watch and choose." << std::endl;
+            return District::UNINITIALIZED;
+        }
+
+        for (const auto district : districts)
+        {
+            if (std::find(std::begin(GetBuiltCity()), std::end(GetBuiltCity()), district) == std::end(GetBuiltCity()))
+            {
+                Logger::GetInstance() << Verbosity::DEBUG << "[" << GetName() << "] hasn't this card [" << GetDistrictName(district) << "]" << std::endl;
+                return district;
+            }
+        }
+        const auto result = districts[Dice::GetRandomNumber(0, districts.size() - 1)];
+        Logger::GetInstance() << Verbosity::DEBUG << "[" << GetName() << "] picked randomly [" << GetDistrictName(result) << "]" << std::endl;
+        return result;
     }
 
     // Returns districts player wants to build
