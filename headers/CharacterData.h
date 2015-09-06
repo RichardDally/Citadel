@@ -29,7 +29,7 @@ namespace Citadel
 #pragma region MagicianChoice
     enum class MagicianChoice
     {
-        UNITIALIZED,
+        UNINITIALIZED,
         EXCHANGE_FROM_PLAYER,
         EXCHANGE_FROM_DISTRICT_DECK,
         DO_NOTHING,

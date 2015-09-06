@@ -76,7 +76,7 @@ namespace Citadel
         if (availableActions.empty())
         {
             Logger::GetInstance() << Verbosity::ERROR << "There is no available action." << std::endl;
-            return PlayerAction::UNITIALIZED;
+            return PlayerAction::UNINITIALIZED;
         }
 
         // TODO: optimize
@@ -98,7 +98,7 @@ namespace Citadel
         }
 
         assert(!"Must return valid PlayerAction");
-        return PlayerAction::UNITIALIZED;
+        return PlayerAction::UNINITIALIZED;
     }
 
     District RobotPlayer::WatchAndChooseDistrictCard(const std::vector<District>& districts)

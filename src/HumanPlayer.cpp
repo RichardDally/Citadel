@@ -60,7 +60,7 @@ namespace Citadel
         {
             return availableActions[playerActionChoice];
         }
-        return PlayerAction::UNITIALIZED;
+        return PlayerAction::UNINITIALIZED;
     }
 
     District HumanPlayer::WatchAndChooseDistrictCard(const std::vector<District>& districts)

@@ -18,7 +18,7 @@ namespace Citadel
 #pragma region PlayerAction
     enum class PlayerAction
     {
-        UNITIALIZED,
+        UNINITIALIZED,
         TAKE_GOLD_COINS,
         WATCH_DISTRICT_CARDS,
         BUILD_DISTRICT_CARDS,

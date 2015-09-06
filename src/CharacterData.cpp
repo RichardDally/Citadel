@@ -126,7 +126,7 @@ namespace Citadel
     {
         const char* const magicianChoiceNames[] =
         {
-            "UNITIALIZED",
+            "UNINITIALIZED",
             "EXCHANGE_FROM_PLAYER",
             "EXCHANGE_FROM_DISTRICT_DECK",
             "DO_NOTHING",
