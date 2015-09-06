@@ -21,21 +21,13 @@ namespace
 // Static Logger attributes
 std::ofstream Logger::outputFile_;
 Verbosity Logger::verbosity_ = Verbosity::INFO;
+Verbosity Logger::streamVerbosity_ = Logger::verbosity_;
 bool Logger::nextLine_ = true;
 
 Logger& Logger::GetInstance()
 {
     static Logger logger;
     return logger;
-}
-
-void Logger::Log(const Verbosity verbosity, const std::string& message)
-{
-    if (verbosity > GetVerbosity())
-    {
-        return;
-    }
-    outputFile_ << GetHeader(verbosity) << message;
 }
 
 void Logger::SetVerbosity(const Verbosity verbosity)
@@ -46,6 +38,16 @@ void Logger::SetVerbosity(const Verbosity verbosity)
 const Verbosity Logger::GetVerbosity()
 {
     return verbosity_;
+}
+
+void Logger::SetStreamVerbosity(const Verbosity verbosity)
+{
+    streamVerbosity_ = verbosity;
+}
+
+const Verbosity Logger::GetStreamVerbosity()
+{
+    return streamVerbosity_;
 }
 
 Logger::Logger()

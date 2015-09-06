@@ -17,36 +17,45 @@ class Logger
 {
 public:
     static Logger& GetInstance();
-    static void Log(const Verbosity verbosity, const std::string& message);
+
     static void SetVerbosity(const Verbosity verbosity);
     static const Verbosity GetVerbosity();
+
+    static void SetStreamVerbosity(const Verbosity verbosity);
+    static const Verbosity GetStreamVerbosity();
 
     using endl_type = std::ostream&(std::ostream&);
 
     Logger& operator<<(endl_type endl)
     {
-        nextLine_ = true;
-        outputFile_ << endl;
+        if (nextLine_ == false)
+        {
+            nextLine_ = true;
+            outputFile_ << endl;
+        }
         return *this;
     }
 
     Logger& operator<<(const Verbosity verbosity)
     {
-        SetVerbosity(verbosity);
+        SetStreamVerbosity(verbosity);
         return *this;
     }
 
     template<typename T>
-    Logger& operator<< (const T& data)
+    Logger& operator<<(const T& data)
     {
-        if (nextLine_)
+        if (GetStreamVerbosity() <= GetVerbosity())
         {
-            outputFile_ << GetHeader(GetVerbosity()) << data;
-            nextLine_ = false;
-        }
-        else
-        {
-            outputFile_ << data;
+            if (nextLine_)
+            {
+                outputFile_ << GetHeader(GetStreamVerbosity()) << data;
+                nextLine_ = false;
+            }
+            else
+            {
+                outputFile_ << data;
+            }
         }
         return *this;
     }
@@ -59,5 +68,6 @@ private:
 
     static std::ofstream outputFile_;
     static Verbosity verbosity_;
+    static Verbosity streamVerbosity_;
     static bool nextLine_;
 };
