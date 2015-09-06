@@ -71,7 +71,27 @@ namespace Citadel
     // Returns action to be taken
     PlayerAction RobotPlayer::ChooseAction(const std::vector<PlayerAction>& availableActions)
     {
-        assert(!"Boom");
+        assert(availableActions.empty() == false);
+
+        // TODO: optimize
+        if (std::find(std::begin(availableActions), std::end(availableActions), PlayerAction::BUILD_DISTRICT_CARDS) != std::end(availableActions) && CanBuild())
+        {
+            return PlayerAction::BUILD_DISTRICT_CARDS;
+        }
+        else if (std::find(std::begin(availableActions), std::end(availableActions), PlayerAction::WATCH_DISTRICT_CARDS) != std::end(availableActions) && GetCardsInHand().empty())
+        {
+            return PlayerAction::WATCH_DISTRICT_CARDS;
+        }
+        else if (std::find(std::begin(availableActions), std::end(availableActions), PlayerAction::TAKE_GOLD_COINS) != std::end(availableActions))
+        {
+            return PlayerAction::TAKE_GOLD_COINS;
+        }
+        else if (std::find(std::begin(availableActions), std::end(availableActions), PlayerAction::USE_MAGIC_POWER) != std::end(availableActions))
+        {
+            return PlayerAction::USE_MAGIC_POWER;
+        }
+
+        assert(!"Must return valid PlayerAction");
         return PlayerAction::UNITIALIZED;
     }
 
@@ -141,5 +161,17 @@ namespace Citadel
             }
         }
         return revenues;
+    }
+
+    bool RobotPlayer::CanBuild() const
+    {
+        for (const auto district : builtCity_)
+        {
+            if (GetDistrictCost(district) <= GetGoldCoins())
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

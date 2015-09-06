@@ -41,5 +41,6 @@ namespace Citadel
 
     private:
         const size_t SimulateDistrictRevenues(const Character character) const;
+        bool CanBuild() const;
     };
 }
