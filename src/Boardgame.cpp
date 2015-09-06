@@ -311,7 +311,7 @@ namespace Citadel
 
         while (step != PlayerTurnStep::ENDING_STEP)
         {
-            PlayerAction action = PlayerAction::UNITIALIZED;
+            PlayerAction action = PlayerAction::UNINITIALIZED;
             if (step == PlayerTurnStep::MAGIC_POWER_STEP && canUseMagicPower)
             {
                 // Go straight to magic power handler
