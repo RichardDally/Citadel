@@ -16,6 +16,16 @@ namespace
         "INFO",
         "DEBUG",
     };
+
+    // TODO: replace by meta programming to deduce longest string
+    const char* const verbosityPadding[] = 
+    {
+        "   ",
+        "  ",
+        "",
+        "   ",
+        "  ",
+    };
 }
 
 // Static Logger attributes
@@ -70,7 +80,7 @@ std::string Logger::GetHeader(const Verbosity verbosity)
     std::stringstream stream;
     static const char* const dateTimeFormat = "%Y%m%d_%H:%M:%S";
     InsertFormattedDateTime(stream, dateTimeFormat);
-    stream << " [" << verbosityNames[verbosity] << "] ";
+    stream << verbosityPadding[verbosity] << " [" << verbosityNames[verbosity] << "] ";
     return stream.str();
 }
 
