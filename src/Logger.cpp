@@ -26,6 +26,8 @@ namespace
         "   ",
         "  ",
     };
+
+    static_assert(sizeof(verbosityPadding) / sizeof(verbosityPadding[0]) == sizeof(verbosityNames) / sizeof(verbosityNames[0]), "Arrays' size must match.");
 }
 
 // Static Logger attributes
