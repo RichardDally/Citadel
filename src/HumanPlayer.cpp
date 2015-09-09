@@ -2,6 +2,8 @@
 #include <array>
 #include <iostream>
 #include <unordered_set>
+
+#include "Logger.h"
 #include "HumanPlayer.h"
 
 namespace Citadel
@@ -183,17 +185,17 @@ namespace Citadel
                 }
                 else
                 {
-                    std::cerr << "District ID [" << districtID << "] does not exist." << std::endl;
+                    Logger::GetInstance() << Verbosity::ERROR << "District ID [" << districtID << "] does not exist." << std::endl;
                 }
             }
             else
             {
-                std::cerr << "Player index [" << playerIndex << "] is not valid, there is only [" << players.size() << "] players available to choose." << std::endl;
+                Logger::GetInstance() << Verbosity::ERROR << "Player index [" << playerIndex << "] is not valid, there is only [" << players.size() << "] players available to choose." << std::endl;
             }
         }
         else
         {
-            std::cout << "All cities are empty, there is nothing to destroy." << std::endl;
+            Logger::GetInstance() << Verbosity::INFO << "All cities are empty, there is nothing to destroy." << std::endl;
         }
 
         return { -1, District::UNINITIALIZED };

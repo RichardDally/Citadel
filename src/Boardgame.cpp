@@ -68,7 +68,7 @@ namespace Citadel
             const auto fromDeck = districtDeck_.Draw(numberOfCards);
             if (fromDeck.size() < numberOfCards)
             {
-                std::cerr << "There is not enough cards in the deck. Drawn [" << fromDeck.size() << "] instead of [" << numberOfCards << "]" << std::endl;
+                Logger::GetInstance() << Verbosity::ERROR << "There is not enough cards in the deck. Drawn [" << fromDeck.size() << "] instead of [" << numberOfCards << "]" << std::endl;
                 assert(!"District deck should have enough cards.");
             }
             auto& toHand = player->GetAvailableDistricts();
@@ -90,8 +90,8 @@ namespace Citadel
         }
         else
         {
+            Logger::GetInstance() << Verbosity::ERROR << "There is no player to pick to start a game" << std::endl;
             assert(!"Player container is empty, cannot start a game");
-            std::cerr << "There is no player to pick to start a game" << std::endl;
         }
         return -1;
     }
@@ -129,7 +129,7 @@ namespace Citadel
             // Check if role is available
             if (remainingCards.find(pickedCharacter) == remainingCards.end())
             {
-                std::cerr << "Error: @" << playerById_[currentPlayer_]->GetName() << ", role is not available, try again..." << std::endl;
+                Logger::GetInstance() << Verbosity::ERROR << "Error: @" << playerById_[currentPlayer_]->GetName() << ", role is not available, try again..." << std::endl;
                 continue;
             }
 
@@ -265,8 +265,8 @@ namespace Citadel
                 return false;
             case Character::UNINITIALIZED:
             {
+                Logger::GetInstance() << Verbosity::ERROR << "Error: CanUseMagicPower called with Character::UNINITIALIZED" << std::endl;
                 assert(!"CanUseMagicPower called with Character::UNINITIALIZED");
-                std::cerr << "Error: CanUseMagicPower called with Character::UNINITIALIZED" << std::endl;
                 return false;
             }
             default:;
@@ -362,7 +362,7 @@ namespace Citadel
                             auto selectedDistrictIt = std::find(std::begin(districts), std::end(districts), selectedDistrict);
                             if (selectedDistrictIt == std::end(districts))
                             {
-                                std::cerr << "Player must pick a card among proposed ones" << std::endl;
+                                Logger::GetInstance() << Verbosity::ERROR << "Player must pick a card among proposed ones" << std::endl;
                                 continue;
                             }
 
@@ -391,11 +391,11 @@ namespace Citadel
                     {
                         if (action == PlayerAction::TAKE_GOLD_COINS)
                         {
-                            std::cerr << "Error: You cannot take gold coins at this step" << std::endl;
+                            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot take gold coins at this step" << std::endl;
                         }
                         else if (action == PlayerAction::WATCH_DISTRICT_CARDS)
                         {
-                            std::cerr << "Error: You cannot watch two cards at this step" << std::endl;
+                            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot watch two cards at this step" << std::endl;
                         }
                         else
                         {
@@ -416,7 +416,7 @@ namespace Citadel
 
                         if (districtCards.size() > authorizedBuilds)
                         {
-                            std::cerr << "Player [" << player->GetName() << "] is not able to build [" << districtCards.size() << "] districts." << std::endl;
+                            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] is not able to build [" << districtCards.size() << "] districts." << std::endl;
                             continue;
                         }
 
@@ -431,7 +431,7 @@ namespace Citadel
                         // Check if player has enough gold coins
                         if (goldCost > player->GetGoldCoins())
                         {
-                            std::cerr << "Player [" << player->GetName() << "] tried to build but doesn't have enough gold coins." << std::endl;
+                            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] tried to build but doesn't have enough gold coins." << std::endl;
                             continue;
                         }
 
@@ -457,7 +457,7 @@ namespace Citadel
                     }
                     else
                     {
-                        std::cerr << "You cannot build at this step" << std::endl;
+                        Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot build at this step." << std::endl;
                     }
                     continue;
                 }
@@ -475,14 +475,14 @@ namespace Citadel
                     }
                     else
                     {
-                        std::cerr << "You cannot use your magic power" << std::endl;
+                        Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot use its magic power." << std::endl;
                     }
                     break;
                 }
 
                 default:
                 {
-                    std::cerr << "Player [" << player->GetName() << "] must pick a choice. Returned [" << static_cast<int>(action) << "]" << std::endl;
+                    Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] must pick a choice. Returned [" << static_cast<int>(action) << "]" << std::endl;
                 }
             }
         }
@@ -512,7 +512,7 @@ namespace Citadel
             }
             default:
             {
-                std::cerr << "No magic power for [" << GetCharacterName(player->GetCharacter()) << "]" << std::endl;
+                Logger::GetInstance() << Verbosity::ERROR << "No magic power for [" << GetCharacterName(player->GetCharacter()) << "]" << std::endl;
             }
         }
         return true;
@@ -524,7 +524,7 @@ namespace Citadel
         victim = player->ChooseCharacterTarget(possibleVictims);
         if (possibleVictims.find(victim) == std::end(possibleVictims))
         {
-            std::cerr << "Player [" << player->GetName() << "] choosed [" << GetCharacterName(victim) << "] but it's impossible." << std::endl;
+            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] choosed [" << GetCharacterName(victim) << "] but it's impossible." << std::endl;
             return false;
         }
         return true;
@@ -581,7 +581,7 @@ namespace Citadel
             }
             default:
             {
-                std::cerr << "Magician choice is not correct: [" << static_cast<int>(magicianChoice) << "]" << std::endl;
+                Logger::GetInstance() << Verbosity::ERROR << "Magician [" << player->GetName() << "] choice is not correct: [" << static_cast<int>(magicianChoice) << "]" << std::endl;
                 return false;
             }
         }
@@ -605,14 +605,14 @@ namespace Citadel
 
         if (victimID == player->GetID())
         {
-            std::cerr << "Cannot self swap card" << std::endl;
+            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot self swap available districts" << std::endl;
             return false;
         }
 
         auto playerIdPairIt = playerById_.find(victimID);
         if (playerIdPairIt == playerById_.end())
         {
-            std::cerr << "Unable to find [" << victimID << "] player ID. Retry." << std::endl;
+            Logger::GetInstance() << Verbosity::ERROR << "Unable to find [" << victimID << "] player ID. Retry." << std::endl;
             return false;
         }
 
@@ -627,20 +627,20 @@ namespace Citadel
         auto& cardsInHand = player->GetAvailableDistricts();
         if (cardsInHand.empty())
         {
-            std::cerr << "Player has no cards in hand, therefore cannot exchange cards with District deck" << std::endl;
+            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot swap with districts deck, no district to swap !" << std::endl;
             return false;
         }
 
         if (districtDeck_.GetPileOfCardSize() < cardsInHand.size())
         {
-            std::cerr << "There is not enough cards in district deck to swap" << std::endl;
+            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot swap with districts deck, there is not enough districts in deck to swap" << std::endl;
             return false;
         }
 
         auto districtsToDiscard = player->ChooseDistrictsCardsToSwap();
         if (districtsToDiscard.empty())
         {
-            std::cerr << "Player returned no cards to exchange <ith District deck" << std::endl;
+            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] returned no districts to exchange with District deck" << std::endl;
             return false;
         }
 
@@ -655,7 +655,7 @@ namespace Citadel
             }
             else
             {
-                std::cerr << "Chosen district card is not in your hand" << std::endl;
+                Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] chose district [" << GetDistrictName(*it) << "] he does not own" << std::endl;
                 // Insert removed cards to rollback
                 cardsInHand.insert(cardsInHand.end(), districtsToDiscard.begin(), it);
                 return false;
@@ -683,27 +683,28 @@ namespace Citadel
         auto victimIt = playerById_.find(pair.first);
         if (victimIt == playerById_.end())
         {
-            std::cerr << "Unable to find player id [" << pair.first << "]" << std::endl;
+            Logger::GetInstance() << Verbosity::ERROR << "Unable to find player id [" << pair.first << "]" << std::endl;
             return false;
         }
 
         // Warlord cannot destroy Bishop districts
         if (victimIt->second->GetCharacter() == Character::BISHOP)
         {
-            std::cerr << "Cannot destroy a Bishop's district." << std::endl;
+            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot destroy Bishop district" << std::endl;
             return false;
         }
 
         // Once a city is completed, one district cannot be destroyed within.
         if (victimIt->second->GetBuiltCitySize() >= numberOfDistrictsToWin_)
         {
-            std::cerr << "Cannot destroy a district in a completed city" << std::endl;
+            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot destroy a district in a finished Citadel" << std::endl;
             return false;
         }
 
         if (pair.second == District::UNINITIALIZED)
         {
-            std::cerr << "Cannot destroy UNINITIALIZED district." << std::endl;
+            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot destroy UNINITIALIZED district" << std::endl;
+            assert(!"Cannot destroy UNINITIALIZED district.");
             return false;
         }
 
