@@ -1,23 +1,25 @@
+#include <algorithm>
+#include "Logger.h"
 #include "Randomness.h"
 #include "RobotPlayer.h"
 
-namespace
-{
-    const char* const names[] =
-    {
-        "Hal",
-        "Synapse",
-        "DevNull",
-        "Alpha",
-        "TheOracle",
-        "Alfred",
-        "Corona",
-    };
-    const size_t namesSize = sizeof(names) / sizeof(names[0]);
-}
-
 namespace Citadel
 {
+    namespace
+    {
+        const char* const names[] =
+        {
+            "Hal",
+            "Synapse",
+            "DevNull",
+            "Alpha",
+            "TheOracle",
+            "Alfred",
+            "Corona",
+        };
+        const size_t namesSize = sizeof(names) / sizeof(names[0]);
+    }
+
     RobotPlayer::RobotPlayer()
         : Player(names[Dice::GetRandomNumber(0, namesSize - 1)])
     {
@@ -30,23 +32,95 @@ namespace Citadel
 
 #pragma region PURE VIRTUAL METHODS
     // Returns character picked to play
-    Character RobotPlayer::PickCharacter(const std::set<Character>& remainingCards)
+    Character RobotPlayer::PickCharacter(const std::set<Character>& remainingCharacters)
     {
-        assert(remainingCards.size() > 0);
-        return *std::begin(remainingCards);
+        assert(remainingCharacters.size() > 0);
+        if (remainingCharacters.empty())
+        {
+            Logger::GetInstance() << Verbosity::ERROR << "There is no remaining characters" << std::endl;
+            return Character::UNINITIALIZED;
+        }
+
+        Character result = Character::UNINITIALIZED;
+        std::map<Character, size_t> revenuesByCharacter;
+        std::pair<Character, size_t> mostValuableCharacter = std::make_pair(Character::UNINITIALIZED, 0);
+        for (const auto character : remainingCharacters)
+        {
+            const auto revenues = SimulateDistrictRevenues(character);
+            if (revenues > mostValuableCharacter.second)
+            {
+                mostValuableCharacter = std::make_pair(character, revenues);
+            }
+            revenuesByCharacter.insert(std::make_pair(character, revenues));
+        }
+
+        if (mostValuableCharacter.first != Character::UNINITIALIZED)
+        {
+            result = mostValuableCharacter.first;
+            Logger::GetInstance() << Verbosity::DEBUG << "[" << GetCharacterName(result) << "] is the most valuable for [" << GetName() << "]" << std::endl;
+        }
+        else
+        {
+            auto random_it = std::next(std::begin(remainingCharacters), Dice::GetRandomNumber(0, remainingCharacters.size() - 1));
+            result = *random_it;
+            Logger::GetInstance() << Verbosity::DEBUG << "[" << GetName() << "] picked randomly [" << GetCharacterName(result) << "]" << std::endl;
+        }
+
+        return result;
     }
 
     // Returns action to be taken
-    PlayerAction RobotPlayer::ChooseAction(const PlayerTurnStep step, const bool canUseMagicPower)
+    PlayerAction RobotPlayer::ChooseAction(const std::vector<PlayerAction>& availableActions)
     {
-        assert(!"Boom");
-        return PlayerAction::UNITIALIZED;
+        assert(availableActions.empty() == false);
+        if (availableActions.empty())
+        {
+            Logger::GetInstance() << Verbosity::ERROR << "There is no available action." << std::endl;
+            return PlayerAction::UNINITIALIZED;
+        }
+
+        // TODO: optimize
+        if (std::find(std::begin(availableActions), std::end(availableActions), PlayerAction::BUILD_DISTRICT_CARDS) != std::end(availableActions) && CanBuild())
+        {
+            return PlayerAction::BUILD_DISTRICT_CARDS;
+        }
+        else if (std::find(std::begin(availableActions), std::end(availableActions), PlayerAction::WATCH_DISTRICT_CARDS) != std::end(availableActions) && GetAvailableDistricts().empty())
+        {
+            return PlayerAction::WATCH_DISTRICT_CARDS;
+        }
+        else if (std::find(std::begin(availableActions), std::end(availableActions), PlayerAction::TAKE_GOLD_COINS) != std::end(availableActions))
+        {
+            return PlayerAction::TAKE_GOLD_COINS;
+        }
+        else if (std::find(std::begin(availableActions), std::end(availableActions), PlayerAction::USE_MAGIC_POWER) != std::end(availableActions))
+        {
+            return PlayerAction::USE_MAGIC_POWER;
+        }
+
+        assert(!"Must return valid PlayerAction");
+        return PlayerAction::UNINITIALIZED;
     }
 
     District RobotPlayer::WatchAndChooseDistrictCard(const std::vector<District>& districts)
     {
-        assert(!"Boom");
-        return District::UNINITIALIZED;
+        assert(districts.empty() == false);
+        if (districts.empty())
+        {
+            Logger::GetInstance() << Verbosity::ERROR << "There is no district to watch and choose." << std::endl;
+            return District::UNINITIALIZED;
+        }
+
+        for (const auto district : districts)
+        {
+            if (std::find(std::begin(GetBuiltCity()), std::end(GetBuiltCity()), district) == std::end(GetBuiltCity()))
+            {
+                Logger::GetInstance() << Verbosity::DEBUG << "[" << GetName() << "] hasn't this card [" << GetDistrictName(district) << "]" << std::endl;
+                return district;
+            }
+        }
+        const auto result = districts[Dice::GetRandomNumber(0, districts.size() - 1)];
+        Logger::GetInstance() << Verbosity::DEBUG << "[" << GetName() << "] picked randomly [" << GetDistrictName(result) << "]" << std::endl;
+        return result;
     }
 
     // Returns districts player wants to build
@@ -91,4 +165,35 @@ namespace Citadel
         return std::vector<District>();
     }
 #pragma endregion
+
+    const size_t RobotPlayer::SimulateDistrictRevenues(const Character character) const
+    {
+        const auto characterColor = GetCharacterColor(character);
+        if (characterColor == Color::UNINITIALIZED)
+        {
+            return 0;
+        }
+
+        size_t revenues = 0;
+        for (const auto district : builtCity_)
+        {
+            if (GetDistrictColor(district) == characterColor)
+            {
+                ++revenues;
+            }
+        }
+        return revenues;
+    }
+
+    bool RobotPlayer::CanBuild() const
+    {
+        for (const auto district : builtCity_)
+        {
+            if (GetDistrictCost(district) <= GetGoldCoins())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

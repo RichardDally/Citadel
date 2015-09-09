@@ -42,49 +42,25 @@ namespace Citadel
     }
 
     // Returns action to be taken
-    PlayerAction HumanPlayer::ChooseAction(const PlayerTurnStep step, const bool canUseMagicPower)
+    PlayerAction HumanPlayer::ChooseAction(const std::vector<PlayerAction>& availableActions)
     {
         std::cout << "@" << GetName() << ", You currently have " << GetGoldCoins() << " gold coins." << std::endl;
-        std::cout << "Current turn step is " << GetPlayerTurnStepName(step) << std::endl;
-
-        std::vector<PlayerAction> indexedAction;
-
         std::cout << "@" << GetName() << ", Select player action among: " << std::endl;
-        switch (step)
-        {
-            case PlayerTurnStep::ACTION_STEP:
-            {
-                indexedAction.push_back(PlayerAction::TAKE_GOLD_COINS);
-                indexedAction.push_back(PlayerAction::WATCH_DISTRICT_CARDS);
-                break;
-            }
-            case PlayerTurnStep::BUILD_STEP:
-            {
-                indexedAction.push_back(PlayerAction::BUILD_DISTRICT_CARDS);
-                break;
-            }
-            default:;
-        }
 
-        if (canUseMagicPower)
-        {
-            indexedAction.push_back(PlayerAction::USE_MAGIC_POWER);
-        }
-
-        const size_t size = indexedAction.size();
+        const size_t size = availableActions.size();
         for (size_t i = 0; i < size; ++i)
         {
-            std::cout << "- " << GetPlayerActionName(indexedAction[i]) << " (" << i << ")" << std::endl;
+            std::cout << "- " << GetPlayerActionName(availableActions[i]) << " (" << i << ")" << std::endl;
         }
 
         size_t playerActionChoice = 0;
         std::cin >> playerActionChoice;
 
-        if (playerActionChoice < indexedAction.size())
+        if (playerActionChoice < availableActions.size())
         {
-            return indexedAction[playerActionChoice];
+            return availableActions[playerActionChoice];
         }
-        return PlayerAction::UNITIALIZED;
+        return PlayerAction::UNINITIALIZED;
     }
 
     District HumanPlayer::WatchAndChooseDistrictCard(const std::vector<District>& districts)
@@ -114,14 +90,14 @@ namespace Citadel
         std::cout << "@" << GetName() << ", You currently have " << GetGoldCoins() << " gold coins." << std::endl;
         std::cout << "@" << GetName() << ", Select up to " << authorizedBuilds << " district among:" << std::endl;
 
-        const size_t size = cardsInHand_.size();
+        const size_t size = availableDistricts_.size();
         for (size_t i = 0; i < size; ++i)
         {
-            DisplayDistrictDetails(cardsInHand_[i], i);
+            DisplayDistrictDetails(availableDistricts_[i], i);
         }
-        std::cout << "- Stop (" << cardsInHand_.size() << ")" << std::endl;
+        std::cout << "- Stop (" << availableDistricts_.size() << ")" << std::endl;
 
-        return SelectMultipleDistricts(cardsInHand_);
+        return SelectMultipleDistricts(availableDistricts_);
     }
 
     // Returns character targeted by assassination or theft
@@ -155,7 +131,7 @@ namespace Citadel
         std::vector<int> indexedPlayers;
         for (const auto player : opponents)
         {
-            std::cout << "- " << player->GetName() << ", " << player->GetNumberOfCardsInHand() << " cards in hand (" << indexedPlayers.size() << ")" << std::endl;
+            std::cout << "- " << player->GetName() << ", " << player->GetNumberOfAvailableDistricts() << " cards in hand (" << indexedPlayers.size() << ")" << std::endl;
             indexedPlayers.push_back(player->GetID());
         }
 
@@ -250,14 +226,14 @@ namespace Citadel
     {
         std::cout << "@" << GetName() << ", Select district cards (one at a time, press enter between each) you want to swap among:" << std::endl;
 
-        const size_t size = cardsInHand_.size();
+        const size_t size = availableDistricts_.size();
         for (size_t i = 0; i < size; ++i)
         {
-            DisplayDistrictDetails(cardsInHand_[i], i);
+            DisplayDistrictDetails(availableDistricts_[i], i);
         }
-        std::cout << "- Stop (" << cardsInHand_.size() << ")" << std::endl;
+        std::cout << "- Stop (" << availableDistricts_.size() << ")" << std::endl;
 
-        return SelectMultipleDistricts(cardsInHand_);
+        return SelectMultipleDistricts(availableDistricts_);
     }
 
     std::vector<District> HumanPlayer::SelectMultipleDistricts(const std::vector<District>& container)

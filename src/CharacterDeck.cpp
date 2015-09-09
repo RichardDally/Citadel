@@ -2,21 +2,21 @@
 #include <iostream>
 #include "CharacterDeck.h"
 
-namespace
-{
-    // Define some rules as lambda functions
-    auto faceupSpecialRule = [](const Character c)
-    {
-        return c == Character::KING ? false : true;
-    };
-    auto faceoffRule = [](const Character)
-    {
-        return true;
-    };
-}
-
 namespace Citadel
 {
+    namespace
+    {
+        // Define some rules as lambda functions
+        auto faceupSpecialRule = [](const Character c)
+        {
+            return c == Character::KING ? false : true;
+        };
+        auto faceoffRule = [](const Character)
+        {
+            return true;
+        };
+    }
+
     void CharacterDeck::Setup(const std::vector<Character>& availableCharacters, const size_t numberOfPlayers)
     {
         availableCharacters_ = availableCharacters;
@@ -26,7 +26,7 @@ namespace Citadel
         remainingCards_.clear();
     }
 
-    void CharacterDeck::RemoveCharactersStep()
+    void CharacterDeck::RemoveCharactersStep(const Edition edition)
     {
         // Cleanup
         faceupCards_.clear();

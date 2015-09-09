@@ -5,7 +5,8 @@
 #include <functional>
 #include <set>
 
-#include "GameData.h"
+#include "Logger.h"
+#include "CharacterData.h"
 #include "Randomness.h"
 
 namespace Citadel
@@ -19,7 +20,7 @@ namespace Citadel
         CharacterDeck& operator=(const CharacterDeck&) = default;
 
         void Setup(const std::vector<Character>& availableCharacters, const size_t numberOfPlayers);
-        void RemoveCharactersStep();
+        void RemoveCharactersStep(const Edition edition);
         void ChooseCharactersStep();
 
         // Compute possible opponents of a specific character (useful for Assassin or Thief)
@@ -37,7 +38,7 @@ namespace Citadel
 
         void RemoveCard(const Character character)
         {
-            std::cout << "Debug: remove [" << GetCharacterName(character) << "] from remaining cards." << std::endl;
+            Logger::GetInstance() << Verbosity::DEBUG << "remove [" << GetCharacterName(character) << "] from remaining cards." << std::endl;
             remainingCards_.erase(character);
         }
 
@@ -55,7 +56,7 @@ namespace Citadel
 
                 if (characterFilter(character))
                 {
-                    std::cout << "Debug: " << (&container == &faceupCards_ ? "faceup" : "faceoff") << " character: " << GetCharacterName(character) << std::endl;
+                    Logger::GetInstance() << Verbosity::DEBUG << (&container == &faceupCards_ ? "faceup" : "faceoff") << " character: " << GetCharacterName(character) << std::endl;
                     container.insert(character);
                     remainingCards_.erase(it);
                 }
@@ -67,6 +68,7 @@ namespace Citadel
 
         // C++11 note: std::unordered_set does not work with enum class as key.
         // => This is fixed in C++14.
+        // TODO C++14: change to std::unordered_set
         std::set<Character> faceupCards_;
         std::set<Character> faceoffCards_;
         std::set<Character> remainingCards_;

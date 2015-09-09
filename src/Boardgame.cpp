@@ -1,76 +1,29 @@
 #include <iostream>
 #include <algorithm>
 
+#include "Logger.h"
 #include "Randomness.h"
 #include "HumanPlayer.h"
 #include "RobotPlayer.h"
 #include "Boardgame.h"
 
-namespace
-{
-#pragma region DEFAULT CHARACTERS
-    static const std::vector<Character> defaultCharacters
-    {
-        Character::ASSASSIN,
-        Character::THIEF,
-        Character::MAGICIAN,
-        Character::KING,
-        Character::BISHOP,
-        Character::MERCHANT,
-        Character::ARCHITECT,
-        Character::WARLORD,
-    };
-#pragma endregion
-
-#pragma region DEFAULT DISTRICTS
-    static const std::vector<District> defaultDistricts
-    {
-#pragma region RED DISTRICTS
-        District::WATCHTOWER,
-        District::PRISON,
-        District::BATTLEFIELD,
-        District::FORTRESS,
-#pragma endregion
-#pragma region YELLOW DISTRICTS
-        District::MANOR,
-        District::CASTLE,
-        District::PALACE,
-#pragma endregion
-#pragma region GREEN DISTRICTS
-        District::TAVERN,
-        District::MARKET,
-        District::TRADING_POST,
-        District::DOCKS,
-        District::HARBOR,
-        District::TOWN_HALL,
-#pragma endregion
-#pragma region BLUE DISTRICTS
-        District::TEMPLE,
-        District::CHURCH,
-        District::MONASTARY,
-        District::CATHEDRAL,
-#pragma endregion
-    };
-#pragma endregion
-}
-
 namespace Citadel
 {
-    Boardgame::Boardgame()
+    Boardgame::Boardgame(const Edition edition)
+        : edition_(edition)
     {
-        // Setup a basic game
-
+        // TODO: customize Human/Robot players number
         AddPlayer<HumanPlayer>(4);
         //AddPlayer<RobotPlayer>(3);
 
         // Setup available characters
-        characterDeck_.Setup(defaultCharacters, playerById_.size());
+        characterDeck_.Setup(GetCharacterCallingOrder(edition), playerById_.size());
 
         // Setup available districts
-        districtDeck_.Setup(defaultDistricts);
+        districtDeck_.Setup(GetDistricts(edition));
     }
 
-    void Boardgame::StartBasicGame()
+    void Boardgame::StartGame()
     {
         // Reset ending player
         firstPlayerEndingGame = -1;
@@ -78,7 +31,7 @@ namespace Citadel
         // Decide who's starting.
         startingPlayer_ = DecideWhoStarts();
 
-        std::cout << "[" << playerById_[startingPlayer_]->GetName() << "] has the crown." << std::endl;
+        Logger::GetInstance() << Verbosity::INFO << "[" << playerById_[startingPlayer_]->GetName() << "] has the crown." << std::endl;
 
         // Setup basic stuff
         // Each player earns 2 coins
@@ -95,10 +48,10 @@ namespace Citadel
 
         for (currentRound_ = 0; IsGameEnded() == false; ++currentRound_)
         {
-            std::cout << "Debug: round [" << currentRound_ << "]" << std::endl;
-            StartRound();
+            Logger::GetInstance() << Verbosity::DEBUG << "Round [" << currentRound_ << "]" << std::endl;
+            StartRound(GetEdition());
 
-            // Debug purpose
+            // TODO: remove (debug purpose)
             if (currentRound_ == 3)
             {
                 break;
@@ -118,7 +71,7 @@ namespace Citadel
                 std::cerr << "There is not enough cards in the deck. Drawn [" << fromDeck.size() << "] instead of [" << numberOfCards << "]" << std::endl;
                 assert(!"District deck should have enough cards.");
             }
-            auto& toHand = player->GetCardsInHand();
+            auto& toHand = player->GetAvailableDistricts();
             toHand.insert(std::end(toHand), std::begin(fromDeck), std::end(fromDeck));
         }
         else
@@ -143,33 +96,33 @@ namespace Citadel
         return -1;
     }
 
-    void Boardgame::StartRound()
+    void Boardgame::StartRound(const Edition edition)
     {
         // Step One : Remove characters
-        RemoveCharactersStep();
+        RemoveCharactersStep(edition);
 
         // Step Two : Choose Characters
-        ChooseCharactersStep();
+        ChooseCharactersStep(edition);
 
         // Step Three: Player Turns
-        PlayerTurnsStep();
+        PlayerTurnsStep(edition);
     }
 
     // Step One : Remove characters
-    void Boardgame::RemoveCharactersStep()
+    void Boardgame::RemoveCharactersStep(const Edition edition)
     {
-        characterDeck_.RemoveCharactersStep();
+        characterDeck_.RemoveCharactersStep(edition);
     }
 
     // Step Two : Choose Characters
-    void Boardgame::ChooseCharactersStep()
+    void Boardgame::ChooseCharactersStep(const Edition edition)
     {
         playerByCharacter_.clear();
         const auto& remainingCards = characterDeck_.GetRemainingCards();
         do
         {
             assert(currentPlayer_ >= 0 && currentPlayer_ < static_cast<int>(playerById_.size()));
-            std::cout << "[" << playerById_[currentPlayer_]->GetName() << "] is now picking a role." << std::endl;
+            Logger::GetInstance() << Verbosity::INFO << "[" << playerById_[currentPlayer_]->GetName() << "] is now picking a role." << std::endl;
 
             const auto pickedCharacter = playerById_[currentPlayer_]->PickCharacter(remainingCards);
 
@@ -185,7 +138,7 @@ namespace Citadel
             {
                 // Even murdered, currentPlayer will be the next king on next round
                 nextStartingPlayer_ = currentPlayer_;
-                std::cout << "Debug: Next king will be [" << playerById_[currentPlayer_]->GetName() << "]" << std::endl;
+                Logger::GetInstance() << Verbosity::DEBUG << "Next king will be [" << playerById_[currentPlayer_]->GetName() << "]" << std::endl;
             }
 
             // Confirm picked character
@@ -213,36 +166,26 @@ namespace Citadel
     }
 
     // Step Three: Player Turns
-    void Boardgame::PlayerTurnsStep()
+    void Boardgame::PlayerTurnsStep(const Edition edition)
     {
-        // TODO: move calling order to boardgame attribute + manage new roles such as Witch
-        static const std::vector<Character> callingOrder
-        {
-            Character::ASSASSIN,
-            Character::THIEF,
-            Character::MAGICIAN,
-            Character::KING,
-            Character::BISHOP,
-            Character::MERCHANT,
-            Character::ARCHITECT,
-            Character::WARLORD,
-        };
-
         // Assassin can murder any character
         Character murderedCharacter = Character::UNINITIALIZED;
 
         // Thief can steal any character except Assassin
         Character stolenCharacter = Character::UNINITIALIZED;
 
+        const auto& callingOrder = GetCharacterCallingOrder(edition);
+
+        assert(callingOrder.empty() == false);
         for (const auto character : callingOrder)
         {
             assert(character != Character::MAX);
             assert(character != Character::UNINITIALIZED);
-            std::cout << "Calling [" << GetCharacterName(character) << "]" << std::endl;
+            Logger::GetInstance() << Verbosity::INFO << "Calling [" << GetCharacterName(character) << "]" << std::endl;
             auto it = playerByCharacter_.find(character);
             if (it == playerByCharacter_.end())
             {
-                std::cout << "Debug: No one picked [" << GetCharacterName(character) << "]" << std::endl;
+                Logger::GetInstance() << Verbosity::DEBUG << "No one picked [" << GetCharacterName(character) << "]" << std::endl;
                 continue;
             }
 
@@ -250,10 +193,10 @@ namespace Citadel
             if (player == nullptr)
             {
                 assert(!"player pointer should not be nullptr.");
-                std::cerr << "Error: player attached to [" << GetCharacterName(character) << "] was nullptr." << std::endl;
+                Logger::GetInstance() << Verbosity::ERROR << "player attached to [" << GetCharacterName(character) << "] was nullptr." << std::endl;
                 continue;
             }
-            std::cout << "Debug: [" << player->GetName() << "] is [" << GetCharacterName(character) << "]" << std::endl;
+            Logger::GetInstance() << Verbosity::DEBUG << "[" << player->GetName() << "] is [" << GetCharacterName(character) << "]" << std::endl;
 
             // First check if character is murdered (assassin cannot be)
             assert(murderedCharacter != Character::ASSASSIN);
@@ -261,14 +204,14 @@ namespace Citadel
             {
                 // Debug block
                 {
-                    std::cout << "Debug: [" << GetCharacterName(character) << "] has been murdered." << std::endl;
+                    Logger::GetInstance() << Verbosity::DEBUG << "[" << GetCharacterName(character) << "] has been murdered." << std::endl;
                     auto assassin = playerByCharacter_.find(Character::ASSASSIN);
                     auto victim = playerByCharacter_.find(character);
                     assert(assassin != playerByCharacter_.end());
                     assert(victim != playerByCharacter_.end());
                     if (assassin != playerByCharacter_.end() && victim != playerByCharacter_.end())
                     {
-                        std::cout << "Debug: [" << victim->second->GetName() << "] has been murdered by [" << assassin->second->GetName() << "] !" << std::endl;
+                        Logger::GetInstance() << Verbosity::DEBUG << "[" << victim->second->GetName() << "] has been murdered by [" << assassin->second->GetName() << "] !" << std::endl;
                     }
                 }
                 // Current player skip it's turn
@@ -285,12 +228,12 @@ namespace Citadel
 
                 {
                     // Debug block
-                    std::cout << "Debug: [" << GetCharacterName(character) << "] has been stolen !" << std::endl;
+                    Logger::GetInstance() << Verbosity::DEBUG << "[" << GetCharacterName(character) << "] has been stolen !" << std::endl;
                     assert(thief != playerByCharacter_.end());
                     assert(victim != playerByCharacter_.end());
                     if (thief != playerByCharacter_.end() && victim != playerByCharacter_.end())
                     {
-                        std::cout << "Debug: [" << victim->second->GetName() << "] has been stolen by [" << thief->second->GetName() << "] !" << std::endl;
+                        Logger::GetInstance() << Verbosity::DEBUG << "[" << victim->second->GetName() << "] has been stolen by [" << thief->second->GetName() << "] !" << std::endl;
                     }
                 }
 
@@ -361,7 +304,6 @@ namespace Citadel
     void Boardgame::PlayerTurn(Player* player, Character& murderedCharacter, Character& stolenCharacter)
     {
         // Starting three steps for player turn
-        // TODO: change ENUM CLASS name...
         PlayerTurnStep step = PlayerTurnStep::ACTION_STEP;
 
         // Determine if this character has special ability to be requested to the player
@@ -369,7 +311,7 @@ namespace Citadel
 
         while (step != PlayerTurnStep::ENDING_STEP)
         {
-            PlayerAction action = PlayerAction::UNITIALIZED;
+            PlayerAction action = PlayerAction::UNINITIALIZED;
             if (step == PlayerTurnStep::MAGIC_POWER_STEP && canUseMagicPower)
             {
                 // Go straight to magic power handler
@@ -377,8 +319,25 @@ namespace Citadel
             }
             else
             {
-                // Ask player to choose an action (gold coins or district cards)
-                action = player->ChooseAction(step, canUseMagicPower);
+                // TODO: hardcode these containers in static const std::vector<PlayerAction>
+                std::vector<PlayerAction> availableActions;
+                if (step == PlayerTurnStep::ACTION_STEP)
+                {
+                    availableActions.push_back(PlayerAction::TAKE_GOLD_COINS);
+                    availableActions.push_back(PlayerAction::WATCH_DISTRICT_CARDS);
+                }
+                else if (step == PlayerTurnStep::BUILD_STEP)
+                {
+                    availableActions.push_back(PlayerAction::BUILD_DISTRICT_CARDS);
+                }
+                if (canUseMagicPower)
+                {
+                    availableActions.push_back(PlayerAction::USE_MAGIC_POWER);
+                }
+
+                // Ask player to choose an action
+                assert(availableActions.empty() == false);
+                action = player->ChooseAction(availableActions);
             }
 
             switch (action)
@@ -408,7 +367,7 @@ namespace Citadel
                             }
 
                             // Transfer the card to player
-                            player->GetCardsInHand().push_back(selectedDistrict);
+                            player->GetAvailableDistricts().push_back(selectedDistrict);
 
                             // Discard other cards
                             districts.erase(selectedDistrictIt); // Remove chosen card
@@ -482,7 +441,7 @@ namespace Citadel
                         // Record first player ending game to grant bonus points
                         if (player->GetBuiltCitySize() >= numberOfDistrictsToWin_ && firstPlayerEndingGame == -1)
                         {
-                            std::cout << "Debug: [" << player->GetName() << "] is first player to end it's city (" << numberOfDistrictsToWin_ << ") districts built." << std::endl;
+                            Logger::GetInstance() << Verbosity::DEBUG << "[" << player->GetName() << "] is first player to end it's city (" << numberOfDistrictsToWin_ << ") districts built." << std::endl;
                             firstPlayerEndingGame = player->GetID();
                         }
 
@@ -658,14 +617,14 @@ namespace Citadel
         }
 
         // Swap cards in hand
-        std::swap(player->GetCardsInHand(), playerIdPairIt->second->GetCardsInHand());
+        std::swap(player->GetAvailableDistricts(), playerIdPairIt->second->GetAvailableDistricts());
 
         return true;
     }
 
     bool Boardgame::MagicianExchangeFromDistrictDeck(Player* player)
     {
-        auto& cardsInHand = player->GetCardsInHand();
+        auto& cardsInHand = player->GetAvailableDistricts();
         if (cardsInHand.empty())
         {
             std::cerr << "Player has no cards in hand, therefore cannot exchange cards with District deck" << std::endl;
@@ -755,20 +714,20 @@ namespace Citadel
             {
                 if (victimIt->second->DestroyDistrict(pair.second) == false)
                 {
-                    std::cerr << "Player [" << pair.first << "] does not have [" << GetDistrictName(pair.second) << "]" << std::endl;
+                    Logger::GetInstance() << Verbosity::ERROR << "Player [" << pair.first << "] does not have [" << GetDistrictName(pair.second) << "]" << std::endl;
                     return false;
                 }
-                std::cout << "Debug: player [" << player->GetName() << "] destroyed [" << GetDistrictName(pair.second) << "] owned by [" << victimIt->second->GetName() << "]" << std::endl;
+                Logger::GetInstance() << Verbosity::DEBUG << "player [" << player->GetName() << "] destroyed [" << GetDistrictName(pair.second) << "] owned by [" << victimIt->second->GetName() << "]" << std::endl;
             }
             else
             {
-                std::cerr << "Player [" << pair.first << "] has not enough gold to destroy this district" << std::endl;
+                Logger::GetInstance() << Verbosity::ERROR << "Player [" << pair.first << "] has not enough gold to destroy this district" << std::endl;
                 return false;
             }
         }
         else
         {
-            std::cerr << "District [" << GetDistrictName(pair.second) << "] has a cost of [" << GetDistrictCost(pair.second) << "] gold coins." << std::endl;
+            Logger::GetInstance() << Verbosity::ERROR << "District [" << GetDistrictName(pair.second) << "] has a cost of [" << GetDistrictCost(pair.second) << "] gold coins." << std::endl;
             return false;
         }
 
@@ -841,7 +800,7 @@ namespace Citadel
 
             scores[player->GetID()] = score;
 
-            std::cout << "Debug: Player [" << player->GetName() << "] has [" << score << "] points." << std::endl;
+            Logger::GetInstance() << Verbosity::DEBUG << "Player [" << player->GetName() << "] has [" << score << "] points." << std::endl;
         }
     }
 }

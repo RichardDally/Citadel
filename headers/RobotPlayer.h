@@ -15,7 +15,7 @@ namespace Citadel
         virtual Character PickCharacter(const std::set<Character>& remainingCards) override;
 
         // Returns action to be taken
-        virtual PlayerAction ChooseAction(const PlayerTurnStep step, const bool canUseMagicPower) override;
+        virtual PlayerAction ChooseAction(const std::vector<PlayerAction>& availableActions) override;
 
         // Watch proposed district cards and return selected card
         virtual District WatchAndChooseDistrictCard(const std::vector<District>& districts) override;
@@ -38,5 +38,9 @@ namespace Citadel
         // Returns discarded districts to be replaced by equivalent number of cards from district deck
         virtual std::vector<District> ChooseDistrictsCardsToSwap() override;
 #pragma endregion
+
+    private:
+        const size_t SimulateDistrictRevenues(const Character character) const;
+        bool CanBuild() const;
     };
 }

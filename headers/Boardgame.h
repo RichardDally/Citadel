@@ -14,10 +14,15 @@ namespace Citadel
     class Boardgame
     {
     public:
-        Boardgame();
-        // TODO: Add ctor to customize game
+        Boardgame(const Edition edition);
+        ~Boardgame() = default;
 
-        void StartBasicGame();
+        const Edition GetEdition() const
+        {
+            return edition_;
+        }
+
+        void StartGame();
 
     private:
         // Transfer district cards to specific player
@@ -26,16 +31,16 @@ namespace Citadel
         // Returns player id
         int DecideWhoStarts();
 
-        void StartRound();
+        void StartRound(const Edition edition);
 
         // Round Step 1
-        void RemoveCharactersStep();
+        void RemoveCharactersStep(const Edition edition);
 
         // Round Step 2
-        void ChooseCharactersStep();
+        void ChooseCharactersStep(const Edition edition);
 
         // Round Step 3
-        void PlayerTurnsStep();
+        void PlayerTurnsStep(const Edition edition);
         // Sub functions
         bool CanUseMagicPower(const Character character) const;
         bool AskCharacterTarget(Player* player, Character& victim);
@@ -66,6 +71,7 @@ namespace Citadel
             }
         }
 
+        Edition edition_ = Edition::UNINITIALIZED;
         size_t currentRound_ = 0;
         int startingPlayer_ = 0;
         int currentPlayer_ = 0;
