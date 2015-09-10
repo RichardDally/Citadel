@@ -14,8 +14,6 @@ addons:
     build_command_prepend: "cmake"
     build_command: "make"
     branch_pattern: coverity_scan
-
-addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
