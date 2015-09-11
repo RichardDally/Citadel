@@ -11,7 +11,7 @@ addons:
     project:
       name: LeFlou/Citadel
     notification_email: leflou@gmx.com
-    build_command_prepend: "cmake"
+    build_command_prepend: "cmake ."
     build_command: "make"
     branch_pattern: coverity_scan
   apt:
