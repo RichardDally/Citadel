@@ -9,22 +9,16 @@
 
 namespace Citadel
 {
-    Boardgame::Boardgame(const Edition edition)
-        : edition_(edition)
+    void Boardgame::StartGame(const Edition edition)
     {
-        // TODO: customize Human/Robot players number
-        AddPlayer<HumanPlayer>(4);
-        //AddPlayer<RobotPlayer>(3);
+        SetEdition(edition);
 
         // Setup available characters
         characterDeck_.Setup(GetCharacterCallingOrder(edition), playerById_.size());
 
         // Setup available districts
         districtDeck_.Setup(GetDistricts(edition));
-    }
 
-    void Boardgame::StartGame()
-    {
         // Reset ending player
         firstPlayerEndingGame = -1;
 
