@@ -112,16 +112,16 @@ namespace Citadel
     void Boardgame::ChooseCharactersStep(const Edition edition)
     {
         playerByCharacter_.clear();
-        const auto& remainingCards = characterDeck_.GetRemainingCards();
+        const auto& remainingCharacters = characterDeck_.GetRemainingCharacters();
         do
         {
             assert(currentPlayer_ >= 0 && currentPlayer_ < static_cast<int>(playerById_.size()));
             Logger::GetInstance() << Verbosity::INFO << "[" << playerById_[currentPlayer_]->GetName() << "] is now picking a role." << std::endl;
 
-            const auto pickedCharacter = playerById_[currentPlayer_]->PickCharacter(remainingCards);
+            const auto pickedCharacter = playerById_[currentPlayer_]->PickCharacter(remainingCharacters);
 
             // Check if role is available
-            if (remainingCards.find(pickedCharacter) == remainingCards.end())
+            if (remainingCharacters.find(pickedCharacter) == remainingCharacters.end())
             {
                 Logger::GetInstance() << Verbosity::ERROR << "Error: @" << playerById_[currentPlayer_]->GetName() << ", role is not available, try again..." << std::endl;
                 continue;

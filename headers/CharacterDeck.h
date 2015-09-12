@@ -31,7 +31,7 @@ namespace Citadel
             return faceupCards_;
         }
 
-        const std::set<Character>& GetRemainingCards() const
+        const std::set<Character>& GetRemainingCharacters() const
         {
             return remainingCards_;
         }

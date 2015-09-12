@@ -73,7 +73,7 @@ namespace Citadel
 
 #pragma region PURE VIRTUAL METHODS
         // Returns character picked to play
-        virtual Character PickCharacter(const std::set<Character>& remainingCards) = 0;
+        virtual Character PickCharacter(const std::set<Character>& remainingCharacters) = 0;
 
         // Returns action to be taken
         virtual PlayerAction ChooseAction(const std::vector<PlayerAction>& availableActions) = 0;

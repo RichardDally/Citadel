@@ -15,13 +15,13 @@ namespace Citadel
     }
 
     // Returns character picked to play
-    Character HumanPlayer::PickCharacter(const std::set<Character>& remainingCards)
+    Character HumanPlayer::PickCharacter(const std::set<Character>& remainingCharacters)
     {
-        assert(remainingCards.size() > 0);
+        assert(remainingCharacters.size() > 0);
         std::vector<Character> indexedCharacters;
         
         std::cout << "@" << GetName() << ", Select character among: " << std::endl;
-        for (const auto character : remainingCards)
+        for (const auto character : remainingCharacters)
         {
             std::cout << "- " << GetCharacterName(character) << " (" << indexedCharacters.size() << ")" << std::endl;
             indexedCharacters.push_back(character);
