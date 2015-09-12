@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef> // size_t definition
 #include <utility>
 #include "GameData.h"
 
