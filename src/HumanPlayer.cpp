@@ -20,6 +20,15 @@ namespace Citadel
         assert(remainingCharacters.size() > 0);
         std::vector<Character> indexedCharacters;
         
+        if (faceupCharacters.empty() == false)
+        {
+            std::cout << "Faceup character" << (faceupCharacters.size() == 1 ? " is" : "s are") << ":" << std::endl;
+        }
+        for (const auto character : faceupCharacters)
+        {
+            std::cout << "- " << GetCharacterName(character) << std::endl;
+        }
+
         std::cout << "@" << GetName() << ", Select character among: " << std::endl;
         for (const auto character : remainingCharacters)
         {
