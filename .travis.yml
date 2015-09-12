@@ -25,4 +25,4 @@ script:
 
 branches:
   only:
-    - unstable
+    - master
