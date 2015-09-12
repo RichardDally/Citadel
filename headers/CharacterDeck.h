@@ -26,7 +26,7 @@ namespace Citadel
         // Compute possible opponents of a specific character (useful for Assassin or Thief)
         std::set<Character> PossibleOpponentsCharacters(const Character playerCharacter);
 
-        const std::set<Character>& GetFaceupCards() const
+        const std::set<Character>& GetFaceupCharacters() const
         {
             return faceupCards_;
         }
