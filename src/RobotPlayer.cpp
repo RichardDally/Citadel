@@ -28,7 +28,7 @@ namespace Citadel
 
 #pragma region PURE VIRTUAL METHODS
     // Returns character picked to play
-    Character RobotPlayer::PickCharacter(const std::set<Character>& remainingCharacters)
+    Character RobotPlayer::PickCharacter(const std::set<Character>& remainingCharacters, const std::set<Character>& faceupCharacters)
     {
         assert(remainingCharacters.size() > 0);
         if (remainingCharacters.empty())

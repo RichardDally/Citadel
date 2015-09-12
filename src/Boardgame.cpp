@@ -118,7 +118,7 @@ namespace Citadel
             assert(currentPlayer_ >= 0 && currentPlayer_ < static_cast<int>(playerById_.size()));
             Logger::GetInstance() << Verbosity::INFO << "[" << playerById_[currentPlayer_]->GetName() << "] is now picking a role." << std::endl;
 
-            const auto pickedCharacter = playerById_[currentPlayer_]->PickCharacter(remainingCharacters);
+            const auto pickedCharacter = playerById_[currentPlayer_]->PickCharacter(remainingCharacters, characterDeck_.GetFaceupCharacters());
 
             // Check if role is available
             if (remainingCharacters.find(pickedCharacter) == remainingCharacters.end())

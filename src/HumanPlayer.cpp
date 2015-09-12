@@ -15,7 +15,7 @@ namespace Citadel
     }
 
     // Returns character picked to play
-    Character HumanPlayer::PickCharacter(const std::set<Character>& remainingCharacters)
+    Character HumanPlayer::PickCharacter(const std::set<Character>& remainingCharacters, const std::set<Character>& faceupCharacters)
     {
         assert(remainingCharacters.size() > 0);
         std::vector<Character> indexedCharacters;
