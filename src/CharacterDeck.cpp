@@ -65,7 +65,7 @@ namespace Citadel
             }
         }
 
-        // There must be remaining cards to pick by players
+        // There must be remaining cards to pick for players
         assert(remainingCards_.size() > numberOfPlayers_);
     }
 
