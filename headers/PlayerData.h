@@ -2,6 +2,11 @@
 
 namespace Citadel
 {
+#pragma region PlayerNumber
+    const size_t GetMinimumPlayers();
+    const size_t GetMaximumPlayers();
+#pragma endregion
+
 #pragma region PlayerTurnStep
     enum class PlayerTurnStep
     {
