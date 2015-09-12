@@ -5,6 +5,7 @@ namespace Citadel
 #pragma region PlayerNumber
     const size_t GetMinimumPlayers();
     const size_t GetMaximumPlayers();
+    const bool ValidateNumberOfPlayers(const size_t playersNumber);
 #pragma endregion
 
 #pragma region PlayerTurnStep

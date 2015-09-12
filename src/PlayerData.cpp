@@ -12,6 +12,14 @@ namespace Citadel
     {
         return 7;
     }
+    const bool ValidateNumberOfPlayers(const size_t totalPlayers)
+    {
+        if (totalPlayers >= GetMinimumPlayers() && totalPlayers <= GetMaximumPlayers())
+        {
+            return true;
+        }
+        return false;
+    }
 #pragma endregion
 
 #pragma region PlayerTurnStep
