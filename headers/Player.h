@@ -16,7 +16,6 @@ namespace Citadel
     class Player
     {
     public:
-        Player() = default;
         Player(const std::string& name)
             : name_(name)
         {

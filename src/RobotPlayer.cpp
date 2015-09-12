@@ -20,14 +20,10 @@ namespace Citadel
         const size_t namesSize = sizeof(names) / sizeof(names[0]);
     }
 
-    RobotPlayer::RobotPlayer()
-        : Player(names[Dice::GetRandomNumber(0, namesSize - 1)])
-    {
-    }
-
     RobotPlayer::RobotPlayer(const std::string& name)
         : Player(name)
     {
+        assert(name.empty() == false);
     }
 
 #pragma region PURE VIRTUAL METHODS

@@ -7,7 +7,6 @@ namespace Citadel
     class RobotPlayer : public Player
     {
     public:
-        RobotPlayer();
         RobotPlayer(const std::string& name);
 
 #pragma region PURE VIRTUAL METHODS

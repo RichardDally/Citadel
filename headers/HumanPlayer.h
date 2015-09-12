@@ -7,7 +7,6 @@ namespace Citadel
     class HumanPlayer : public Player
     {
     public:
-        HumanPlayer();
         HumanPlayer(const std::string& name);
 
 #pragma region PURE VIRTUAL METHODS

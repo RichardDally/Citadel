@@ -8,17 +8,10 @@
 
 namespace Citadel
 {
-    HumanPlayer::HumanPlayer()
-    {
-        name_ = GetID();
-
-        //std::cout << "Enter player " << GetID() << " name: ";
-        //std::cin >> name_;
-    }
-
     HumanPlayer::HumanPlayer(const std::string& name)
         : Player(name)
     {
+        assert(name.empty() == false);
     }
 
     // Returns character picked to play
