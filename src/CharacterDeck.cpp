@@ -66,6 +66,7 @@ namespace Citadel
             }
             default:
             {
+                assert(!"Not implemented");
             }
         }
 
