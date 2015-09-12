@@ -8,27 +8,29 @@
 
 namespace Citadel
 {
-    HumanPlayer::HumanPlayer()
-    {
-        name_ = GetID();
-
-        //std::cout << "Enter player " << GetID() << " name: ";
-        //std::cin >> name_;
-    }
-
     HumanPlayer::HumanPlayer(const std::string& name)
         : Player(name)
     {
+        assert(name.empty() == false);
     }
 
     // Returns character picked to play
-    Character HumanPlayer::PickCharacter(const std::set<Character>& remainingCards)
+    Character HumanPlayer::PickCharacter(const std::set<Character>& remainingCharacters, const std::set<Character>& faceupCharacters)
     {
-        assert(remainingCards.size() > 0);
+        assert(remainingCharacters.size() > 0);
         std::vector<Character> indexedCharacters;
         
+        if (faceupCharacters.empty() == false)
+        {
+            std::cout << "Faceup character" << (faceupCharacters.size() == 1 ? " is" : "s are") << ":" << std::endl;
+        }
+        for (const auto character : faceupCharacters)
+        {
+            std::cout << "- " << GetCharacterName(character) << std::endl;
+        }
+
         std::cout << "@" << GetName() << ", Select character among: " << std::endl;
-        for (const auto character : remainingCards)
+        for (const auto character : remainingCharacters)
         {
             std::cout << "- " << GetCharacterName(character) << " (" << indexedCharacters.size() << ")" << std::endl;
             indexedCharacters.push_back(character);

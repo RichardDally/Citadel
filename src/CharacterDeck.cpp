@@ -42,34 +42,30 @@ namespace Citadel
             case 4:
             {
                 assert(remainingCards_.size() == 8);
-                // Withdraw 1 character card to faceoff heap
                 WithdrawCards(1, faceoffCards_, faceoffRule);
-                // Withdraw 2 character cards to faceup heap
                 WithdrawCards(2, faceupCards_, faceupSpecialRule);
                 break;
             }
             case 5:
             {
                 assert(remainingCards_.size() == 8);
-                // Withdraw 1 character card to faceoff heap
                 WithdrawCards(1, faceoffCards_, faceoffRule);
-                // Withdraw 1 character card to faceup heap
                 WithdrawCards(1, faceupCards_, faceupSpecialRule);
                 break;
             }
             case 6:
-            case 7:
             {
                 assert(remainingCards_.size() == 8);
-                // No character faceup cards
+                WithdrawCards(1, faceoffCards_, faceoffRule);
                 break;
             }
             default:
             {
+                assert(!"Not implemented");
             }
         }
 
-        // There must be remaining cards to pick by players
+        // There must be remaining cards to pick for players
         assert(remainingCards_.size() > numberOfPlayers_);
     }
 

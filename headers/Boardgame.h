@@ -14,7 +14,7 @@ namespace Citadel
     class Boardgame
     {
     public:
-        Boardgame(const Edition edition);
+        Boardgame() = default;
         ~Boardgame() = default;
 
         const Edition GetEdition() const
@@ -22,9 +22,24 @@ namespace Citadel
             return edition_;
         }
 
-        void StartGame();
+        void StartGame(const Edition edition);
+
+        template <typename PlayerType>
+        void AddPlayer(const std::string& name)
+        {
+            static_assert(std::is_same<PlayerType, HumanPlayer>::value ||
+                std::is_same<PlayerType, RobotPlayer>::value,
+                "PlayerType must be HumanPlayer or RobotPlayer");
+            auto newPlayer = std::unique_ptr<PlayerType>(new PlayerType(name));
+            playerById_.insert(std::make_pair(newPlayer->GetID(), std::move(newPlayer)));
+        }
 
     private:
+        void SetEdition(const Edition edition)
+        {
+            edition_ = edition;
+        }
+
         // Transfer district cards to specific player
         void TransferDistrictCards(const size_t numberOfCards, Player* player);
 
@@ -56,20 +71,6 @@ namespace Citadel
 
         bool IsGameEnded() const;
         void ComputeScores();
-
-        template <typename PlayerType>
-        void AddPlayer(const size_t n)
-        {
-            assert(n > 0);
-            static_assert(std::is_same<PlayerType, HumanPlayer>::value || std::is_same<PlayerType, RobotPlayer>::value,
-                "PlayerType must be HumanPlayer or RobotPlayer");
-            for (size_t i = 0; i < n; ++i)
-            {
-                // TODO C++14: replace by std::make_unique
-                auto newPlayer = std::unique_ptr<PlayerType>(new PlayerType);
-                playerById_.insert(std::make_pair(newPlayer->GetID(), std::move(newPlayer)));
-            }
-        }
 
         Edition edition_ = Edition::UNINITIALIZED;
         size_t currentRound_ = 0;

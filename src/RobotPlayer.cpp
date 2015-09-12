@@ -20,19 +20,15 @@ namespace Citadel
         const size_t namesSize = sizeof(names) / sizeof(names[0]);
     }
 
-    RobotPlayer::RobotPlayer()
-        : Player(names[Dice::GetRandomNumber(0, namesSize - 1)])
-    {
-    }
-
     RobotPlayer::RobotPlayer(const std::string& name)
         : Player(name)
     {
+        assert(name.empty() == false);
     }
 
 #pragma region PURE VIRTUAL METHODS
     // Returns character picked to play
-    Character RobotPlayer::PickCharacter(const std::set<Character>& remainingCharacters)
+    Character RobotPlayer::PickCharacter(const std::set<Character>& remainingCharacters, const std::set<Character>& faceupCharacters)
     {
         assert(remainingCharacters.size() > 0);
         if (remainingCharacters.empty())
