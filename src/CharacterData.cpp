@@ -95,7 +95,7 @@ namespace Citadel
 
         switch (edition)
         {
-            case Edition::REGULAR:
+            case Edition::REGULAR_WITHOUT_PURPLE_DISTRICTS:
             {
                 static const std::vector<Character> callingOrder
                 {
