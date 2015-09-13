@@ -39,7 +39,7 @@ namespace Citadel
 #pragma endregion
 
     private:
-        const size_t SimulateDistrictRevenues(const Character character) const;
+        const size_t SimulateDistrictIncome(const Character character) const;
         bool CanBuild() const;
     };
 }

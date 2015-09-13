@@ -38,16 +38,16 @@ namespace Citadel
         }
 
         Character result = Character::UNINITIALIZED;
-        std::map<Character, size_t> revenuesByCharacter;
+        std::map<Character, size_t> incomeByCharacter;
         std::pair<Character, size_t> mostValuableCharacter = std::make_pair(Character::UNINITIALIZED, 0);
         for (const auto character : remainingCharacters)
         {
-            const auto revenues = SimulateDistrictRevenues(character);
-            if (revenues > mostValuableCharacter.second)
+            const auto goldIncome = SimulateDistrictIncome(character);
+            if (goldIncome > mostValuableCharacter.second)
             {
-                mostValuableCharacter = std::make_pair(character, revenues);
+                mostValuableCharacter = std::make_pair(character, goldIncome);
             }
-            revenuesByCharacter.insert(std::make_pair(character, revenues));
+            incomeByCharacter.insert(std::make_pair(character, goldIncome));
         }
 
         if (mostValuableCharacter.first != Character::UNINITIALIZED)
@@ -162,7 +162,7 @@ namespace Citadel
     }
 #pragma endregion
 
-    const size_t RobotPlayer::SimulateDistrictRevenues(const Character character) const
+    const size_t RobotPlayer::SimulateDistrictIncome(const Character character) const
     {
         const auto characterColor = GetCharacterColor(character);
         if (characterColor == Color::UNINITIALIZED)
@@ -170,15 +170,15 @@ namespace Citadel
             return 0;
         }
 
-        size_t revenues = 0;
+        size_t goldIncome = 0;
         for (const auto district : builtCity_)
         {
             if (GetDistrictColor(district) == characterColor)
             {
-                ++revenues;
+                ++goldIncome;
             }
         }
-        return revenues;
+        return goldIncome;
     }
 
     bool RobotPlayer::CanBuild() const
