@@ -62,7 +62,7 @@ namespace Citadel
             const auto fromDeck = districtDeck_.Draw(numberOfCards);
             if (fromDeck.size() < numberOfCards)
             {
-                Logger::GetInstance() << Verbosity::ERROR << "There is not enough cards in the deck. Drawn [" << fromDeck.size() << "] instead of [" << numberOfCards << "]" << std::endl;
+                Logger::GetInstance() << Verbosity::FATAL << "There is not enough cards in the deck. Drawn [" << fromDeck.size() << "] instead of [" << numberOfCards << "]" << std::endl;
                 assert(!"District deck should have enough cards.");
             }
             auto& toHand = player->GetAvailableDistricts();
@@ -70,6 +70,7 @@ namespace Citadel
         }
         else
         {
+            Logger::GetInstance() << Verbosity::FATAL << "Player is nullptr in TransferDistrictCards" << std::endl;
             assert(!"Cannot transfer cards to nullptr player");
         }
     }
