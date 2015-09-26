@@ -10,7 +10,7 @@ namespace
 {
     const char* const verbosityNames[] = 
     {
-        "NONE",
+        "FATAL",
         "ERROR",
         "WARNING",
         "INFO",
@@ -20,7 +20,7 @@ namespace
     // TODO: replace by meta programming to deduce longest string
     const char* const verbosityPadding[] = 
     {
-        "   ",
+        "  ",
         "  ",
         "",
         "   ",
