@@ -5,6 +5,12 @@
 
 namespace Citadel
 {
+    enum class DistrictDeckAction
+    {
+        PEEK,
+        DRAW
+    };
+
     class DistrictDeck
     {
     public:
@@ -20,10 +26,9 @@ namespace Citadel
             return pileOfCards_.size();
         }
 
-        // Pick a district card from top of the stack
-        std::vector<District> Draw(const size_t n);
+        std::vector<District> GetDistricts(const DistrictDeckAction action, const size_t n);
 
-        // Put a district card below the bottom of the stack
+        // Put district(s) below the bottom of pile
         void Discard(const std::vector<District>& districts);
 
     private:
