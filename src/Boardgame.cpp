@@ -832,7 +832,7 @@ namespace Citadel
 
             scores[player->GetID()] = score;
 
-            Logger::GetInstance() << Verbosity::DEBUG << "Player [" << player->GetName() << "] has [" << score << "] points." << std::endl;
+            Logger::GetInstance() << Verbosity::INFO << "Player [" << player->GetName() << "] has [" << score << "] points." << std::endl;
         }
     }
 }
