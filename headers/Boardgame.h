@@ -40,6 +40,17 @@ namespace Citadel
             edition_ = edition;
         }
 
+        bool TakeGoldCoins(Player* player);
+        bool WatchPickDistrict(Player* player);
+        bool BuildDistrict(Player* player);
+        bool UseMagicPower(Player* player);
+        bool EarnDistrictIncome(Player* player);
+
+        void ActionStepTransition(Player* player);
+        void BuildStepTransition(Player* player);
+        void MagicPowerStepTransition(Player* player);
+        void DistrictIncomeStepTransition(Player* player);
+
         // Transfer district cards to specific player
         void TransferDistrictCards(const size_t numberOfCards, Player* player);
 
@@ -59,15 +70,13 @@ namespace Citadel
         // Sub functions
         bool CanUseMagicPower(const Character character) const;
         bool AskCharacterTarget(Player* player, Character& victim);
-        bool AssassinMagicPower(Player* player, Character& murderedCharacter);
-        bool ThiefMagicPower(Player* player, Character& stolenCharacter);
+        bool AssassinMagicPower(Player* player);
+        bool ThiefMagicPower(Player* player);
         bool MagicianMagicPower(Player* player);
         bool MagicianExchangeFromPlayer(Player* player);
         bool MagicianExchangeFromDistrictDeck(Player* player);
         bool WarlordMagicPower(Player* player);
-        void EarnGoldFromDistricts(const Character character, Player* player);
-        void PlayerTurn(Player* player, Character& murderedCharacter, Character& stolenCharacter);
-        bool UseMagicPower(Player* player, Character& murderedCharacter, Character& stolenCharacter);
+        void PlayerTurn(Player* player);
 
         bool IsGameEnded() const;
         void ComputeScores();
@@ -78,6 +87,9 @@ namespace Citadel
         int currentPlayer_ = 0;
         int nextStartingPlayer_ = 0;
         int firstPlayerEndingGame = -1;
+
+        Character murderedCharacter_ = Character::UNINITIALIZED;
+        Character stolenCharacter_ = Character::UNINITIALIZED;
 
         size_t numberOfDistrictsToWin_ = 8;
 

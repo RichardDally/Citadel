@@ -31,7 +31,7 @@ namespace Citadel
             "ACTION_STEP",
             "BUILD_STEP",
             "MAGIC_POWER_STEP",
-            "ENDING_STEP",
+            "DISTRICT_INCOME_STEP",
         };
     }
 
@@ -53,6 +53,7 @@ namespace Citadel
             "WATCH DISTRICT CARDS",
             "BUILD DISTRICT CARDS",
             "USE MAGIC POWER",
+            "EARN_DISTRICT_INCOME",
         };
     }
 

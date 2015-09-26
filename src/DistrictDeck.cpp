@@ -25,7 +25,7 @@ namespace Citadel
         std::shuffle(std::begin(pileOfCards_), std::end(pileOfCards_), randomNumberGenerator);
     }
 
-    // Pick n district card from top of the stack
+    // Remove n districts from top of the stack
     std::vector<District> DistrictDeck::Draw(const size_t n)
     {
         std::vector<District> result;
