@@ -725,7 +725,7 @@ namespace Citadel
             return false;
         }
 
-        // Once a city is completed, one district cannot be destroyed within.
+        // Once a city is completed, this city becomes immune to Warlord
         if (victimIt->second->GetBuiltCitySize() >= numberOfDistrictsToWin_)
         {
             Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot destroy a district in a finished Citadel" << std::endl;
