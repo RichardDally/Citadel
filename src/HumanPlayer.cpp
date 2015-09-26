@@ -128,7 +128,7 @@ namespace Citadel
     }
 
     // Returns opponent player id, current player wants to target
-    int HumanPlayer::ChoosePlayerTarget(std::vector<const Player*> opponents)
+    int HumanPlayer::ChoosePlayerTarget(const std::vector<const Player*>& opponents)
     {
         std::cout << "@" << GetName() << ", Choose a target among:" << std::endl;
 
@@ -151,7 +151,7 @@ namespace Citadel
     }
 
     // Returns a pair containing player id (self district destroy is tolerated) as key and destroyed district as value
-    std::pair<int, District> HumanPlayer::ChoosePlayerDistrictTarget(std::vector<const Player*> players)
+    std::pair<int, District> HumanPlayer::ChoosePlayerDistrictTarget(const std::vector<const Player*>& players)
     {
         std::cout << "@" << GetName() << ", Choose a player id followed by a district id, among:" << std::endl;
 
