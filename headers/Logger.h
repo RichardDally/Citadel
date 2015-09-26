@@ -6,7 +6,7 @@
 
 enum Verbosity
 {
-    NONE,
+    FATAL,
     ERROR,
     WARNING,
     INFO,

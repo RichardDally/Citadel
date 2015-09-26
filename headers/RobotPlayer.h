@@ -26,10 +26,10 @@ namespace Citadel
         virtual Character ChooseCharacterTarget(const std::set<Character>& opponents) override;
 
         // Returns opponent player id, current player wants to target
-        virtual int ChoosePlayerTarget(std::vector<const Player*> opponents) override;
+        virtual int ChoosePlayerTarget(const std::vector<const Player*>& opponents) override;
 
         // Returns a pair containing player id (self district destroy is tolerated) as key and destroyed district as value
-        virtual std::pair<int, District> ChoosePlayerDistrictTarget(std::vector<const Player*> players) override;
+        virtual std::pair<int, District> ChoosePlayerDistrictTarget(const std::vector<const Player*>& players) override;
 
         // Returns a choice specific to Magician character
         virtual MagicianChoice MagicianDecision() override;
@@ -39,7 +39,7 @@ namespace Citadel
 #pragma endregion
 
     private:
-        const size_t SimulateDistrictRevenues(const Character character) const;
+        const size_t SimulateDistrictIncome(const Character character) const;
         bool CanBuild() const;
     };
 }

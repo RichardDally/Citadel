@@ -58,6 +58,7 @@ namespace Citadel
             case Character::ASSASSIN: break;
             case Character::THIEF: break;
             case Character::MAGICIAN: break;
+            case Character::ARCHITECT: break;
             case Character::KING:
             {
                 result = Color::YELLOW;
@@ -73,7 +74,6 @@ namespace Citadel
                 result = Color::GREEN;
                 break;
             }
-            case Character::ARCHITECT: break;
             case Character::WARLORD:
             {
                 result = Color::RED;

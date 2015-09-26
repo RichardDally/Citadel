@@ -12,7 +12,8 @@ namespace Citadel
         do
         {
             edition = ConsoleMenu::ChooseEdition();
-        } while (edition == Edition::UNINITIALIZED);
+        }
+        while (edition == Edition::UNINITIALIZED);
 
         Boardgame boardgame;
 
@@ -22,7 +23,8 @@ namespace Citadel
         do
         {
             totalPlayers = ChoosePlayerNumbers(humanPlayers, robotPlayers);
-        } while (ValidateNumberOfPlayers(totalPlayers) == false);
+        }
+        while (ValidateNumberOfPlayers(totalPlayers) == false);
 
         for (size_t i = 0; i < humanPlayers; ++i)
         {
@@ -31,7 +33,8 @@ namespace Citadel
             {
                 std::cout << "Type human player name (" << i << ")" << std::endl;
                 std::cin >> name;
-            } while (name.empty());
+            }
+            while (name.empty());
             boardgame.AddPlayer<HumanPlayer>(name);
         }
         for (size_t i = 0; i < robotPlayers; ++i)
@@ -41,7 +44,8 @@ namespace Citadel
             {
                 std::cout << "Type robot player name (" << i << ")" << std::endl;
                 std::cin >> name;
-            } while (name.empty());
+            }
+            while (name.empty());
             boardgame.AddPlayer<RobotPlayer>(name);
         }
 
