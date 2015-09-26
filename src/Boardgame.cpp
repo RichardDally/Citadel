@@ -44,12 +44,6 @@ namespace Citadel
         {
             Logger::GetInstance() << Verbosity::DEBUG << "Round [" << currentRound_ << "]" << std::endl;
             StartRound(GetEdition());
-
-            // TODO: remove (debug purpose)
-            if (currentRound_ == 3)
-            {
-                break;
-            }
         }
 
         ComputeScores();
