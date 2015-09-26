@@ -59,7 +59,7 @@ namespace Citadel
     {
         if (player != nullptr)
         {
-            const auto fromDeck = districtDeck_.Draw(numberOfCards);
+            const auto fromDeck = districtDeck_.GetDistricts(DistrictDeckAction::DRAW, numberOfCards);
             if (fromDeck.size() < numberOfCards)
             {
                 Logger::GetInstance() << Verbosity::FATAL << "There is not enough cards in the deck. Drawn [" << fromDeck.size() << "] instead of [" << numberOfCards << "]" << std::endl;
@@ -275,8 +275,7 @@ namespace Citadel
     {
         assert(player != nullptr);
 
-        // TODO: draw later, peek instead
-        auto districts = districtDeck_.Draw(2);
+        auto districts = districtDeck_.GetDistricts(DistrictDeckAction::PEEK, 2);
 
         // Player can watch 2 cards but pick only one.
         auto selectedDistrict = player->WatchAndChooseDistrictCard(districts);
@@ -285,14 +284,14 @@ namespace Citadel
         auto selectedDistrictIt = std::find(std::begin(districts), std::end(districts), selectedDistrict);
         if (selectedDistrictIt == std::end(districts))
         {
-            Logger::GetInstance() << Verbosity::ERROR << "Player must pick a card among proposed ones" << std::endl;
+            Logger::GetInstance() << Verbosity::ERROR << "Player must pick a district among proposed ones" << std::endl;
             return false;
         }
 
         // Transfer the card to player
         player->GetAvailableDistricts().push_back(selectedDistrict);
 
-        // Discard other cards
+        districts = districtDeck_.GetDistricts(DistrictDeckAction::DRAW, 2);
         districts.erase(selectedDistrictIt); // Remove chosen card
         districtDeck_.Discard(districts);    // Add the rest
 
@@ -695,7 +694,7 @@ namespace Citadel
         }
 
         districtDeck_.Discard(districtsToDiscard);
-        auto drawnCards = districtDeck_.Draw(districtsToDiscard.size());
+        auto drawnCards = districtDeck_.GetDistricts(DistrictDeckAction::DRAW, districtsToDiscard.size());
         cardsInHand.insert(cardsInHand.end(), drawnCards.begin(), drawnCards.end());
 
         return true;
