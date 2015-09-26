@@ -828,5 +828,6 @@ namespace Citadel
 
             Logger::GetInstance() << Verbosity::INFO << "Player [" << player->GetName() << "] has [" << score << "] points." << std::endl;
         }
+        // TODO: display player scores
     }
 }
