@@ -759,7 +759,7 @@ namespace Citadel
         }
         else
         {
-            Logger::GetInstance() << Verbosity::ERROR << "District [" << GetDistrictName(pair.second) << "] has a cost of [" << GetDistrictCost(pair.second) << "] gold coins." << std::endl;
+            Logger::GetInstance() << Verbosity::FATAL << "District [" << GetDistrictName(pair.second) << "] has a cost of [" << GetDistrictCost(pair.second) << "] gold coins." << std::endl;
             return false;
         }
 
