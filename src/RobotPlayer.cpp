@@ -65,13 +65,12 @@ namespace Citadel
         return result;
     }
 
-    // Returns action to be taken
     PlayerAction RobotPlayer::ChooseAction(const std::vector<PlayerAction>& availableActions)
     {
         assert(availableActions.empty() == false);
         if (availableActions.empty())
         {
-            Logger::GetInstance() << Verbosity::ERROR << "There is no available action." << std::endl;
+            Logger::GetInstance() << Verbosity::FATAL << "There is no available action." << std::endl;
             return PlayerAction::UNINITIALIZED;
         }
 
@@ -79,6 +78,10 @@ namespace Citadel
         if (std::find(std::begin(availableActions), std::end(availableActions), PlayerAction::BUILD_DISTRICT_CARDS) != std::end(availableActions) && CanBuild())
         {
             return PlayerAction::BUILD_DISTRICT_CARDS;
+        }
+        else if (std::find(std::begin(availableActions), std::end(availableActions), PlayerAction::EARN_DISTRICT_INCOME) != std::end(availableActions))
+        {
+            return PlayerAction::EARN_DISTRICT_INCOME;
         }
         else if (std::find(std::begin(availableActions), std::end(availableActions), PlayerAction::WATCH_DISTRICT_CARDS) != std::end(availableActions) && GetAvailableDistricts().empty())
         {
