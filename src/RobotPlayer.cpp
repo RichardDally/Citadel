@@ -132,7 +132,29 @@ namespace Citadel
     // Returns character targeted by assassination or theft
     Character RobotPlayer::ChooseCharacterTarget(const std::set<Character>& opponents)
     {
-        assert(!"Not implemented yet");
+        // TODO: improve and make dynamic weight for each targets depending on game state
+        static const std::vector<Character> topTargets
+        {
+            Character::MERCHANT, // Greedy basterd
+            Character::ARCHITECT, // Crazy builder
+            Character::MAGICIAN, // Card stealer
+            Character::WARLORD,  // District demolisher
+            Character::KING, // Crown stealer
+            Character::BISHOP,
+            Character::THIEF,
+        };
+
+        // Target most interesting character
+        for (const auto character : topTargets)
+        {
+            if (std::find(std::begin(opponents), std::end(opponents), character) != std::end(opponents))
+            {
+                Logger::GetInstance() << Verbosity::DEBUG << "Robot [" << GetName() << "] targets [" << GetCharacterName(character) << "]" << std::endl;
+                return character;
+            }
+        }
+
+        Logger::GetInstance() << Verbosity::FATAL << "Robot [" << GetName() << "] didn't find a target." << std::endl;
         return Character::UNINITIALIZED;
     }
 
