@@ -40,6 +40,9 @@ namespace Citadel
             edition_ = edition;
         }
 
+        // Build a vector of readonly players
+        std::vector<const Player*> GetOpponentPlayers(const int playerID);
+
         bool TakeGoldCoins(Player* player);
         bool WatchPickDistrict(Player* player);
         bool BuildDistrict(Player* player);

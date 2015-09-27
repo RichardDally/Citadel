@@ -258,6 +258,19 @@ namespace Citadel
         return true;
     }
 
+    std::vector<const Player*> Boardgame::GetOpponentPlayers(const int playerID)
+    {
+        std::vector<const Player*> result;
+        for (const auto& pair : playerById_)
+        {
+            if (pair.first != playerID)
+            {
+                result.push_back(pair.second.get());
+            }
+        }
+        return result;
+    }
+
     bool Boardgame::TakeGoldCoins(Player* player)
     {
         assert(player != nullptr);
