@@ -77,7 +77,7 @@ namespace Citadel
     }
 
     // Compute possible opponents of a specific character (useful for Assassin or Thief)
-    std::set<Character> CharacterDeck::PossibleOpponentsCharacters(const Character playerCharacter)
+    std::set<Character> CharacterDeck::GetOpponentCharacters(const Character playerCharacter)
     {
         assert(playerCharacter != Character::UNINITIALIZED);
         std::set<Character> result;
