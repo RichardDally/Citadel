@@ -139,8 +139,20 @@ namespace Citadel
     // Returns opponent player id, current player wants to target
     int RobotPlayer::ChoosePlayerTarget(const std::vector<const Player*>& opponents)
     {
-        assert(!"Not implemented yet");
-        return -1;
+        int result = -1;
+        size_t maxAvailable = 0;
+
+        assert(opponents.empty() == false);
+        for (const auto player : opponents)
+        {
+            if (player->GetNumberOfAvailableDistricts() >= maxAvailable)
+            {
+                result = player->GetID();
+                maxAvailable = player->GetNumberOfAvailableDistricts();
+            }
+        }
+        assert(result != -1);
+        return result;
     }
 
     // Returns a pair containing player id (self district destroy is tolerated) as key and destroyed district as value
