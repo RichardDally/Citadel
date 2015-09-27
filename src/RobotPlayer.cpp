@@ -142,6 +142,7 @@ namespace Citadel
         int result = -1;
         size_t maxAvailable = 0;
 
+        // Target player with a lot of available districts
         assert(opponents.empty() == false);
         for (const auto player : opponents)
         {
