@@ -186,7 +186,7 @@ namespace Citadel
     }
 
     // Returns a choice specific to Magician character
-    MagicianChoice RobotPlayer::MagicianDecision()
+    MagicianChoice RobotPlayer::MagicianDecision(const std::vector<const Player*>& opponents)
     {
         assert(!"Not implemented yet");
         return MagicianChoice::DO_NOTHING;

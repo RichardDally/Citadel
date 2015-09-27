@@ -204,7 +204,7 @@ namespace Citadel
     }
 
     // Returns a choice specific to Magician character
-    MagicianChoice HumanPlayer::MagicianDecision()
+    MagicianChoice HumanPlayer::MagicianDecision(const std::vector<const Player*>& opponents)
     {
         std::cout << "@" << GetName() << ", As Magician make a choice among:" << std::endl;
 
