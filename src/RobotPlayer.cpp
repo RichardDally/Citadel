@@ -198,10 +198,22 @@ namespace Citadel
         return std::pair<int, District>(-1, District::UNINITIALIZED);
     }
 
-    // Returns a choice specific to Magician character
     MagicianChoice RobotPlayer::MagicianDecision(const std::vector<const Player*>& opponents)
     {
-        assert(!"Not implemented yet");
+        if (GetNumberOfAvailableDistricts() == 0)
+        {
+            return MagicianChoice::EXCHANGE_FROM_PLAYER;
+        }
+        else
+        {
+            for (const auto district : GetAvailableDistricts())
+            {
+                if (std::find(std::begin(GetBuiltCity()), std::end(GetBuiltCity()), district) != std::end(GetBuiltCity()))
+                {
+                    return MagicianChoice::EXCHANGE_FROM_DISTRICT_DECK;
+                }
+            }
+        }
         return MagicianChoice::DO_NOTHING;
     }
 
