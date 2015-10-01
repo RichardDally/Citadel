@@ -217,11 +217,20 @@ namespace Citadel
         return MagicianChoice::DO_NOTHING;
     }
 
-    // Returns discarded districts to be replaced by equivalent number of cards from district deck
     std::vector<District> RobotPlayer::ChooseDistrictsCardsToSwap()
     {
-        assert(!"Not implemented yet");
-        return std::vector<District>();
+        std::vector<District> result;
+
+        for (const auto district : GetAvailableDistricts())
+        {
+            if (std::find(std::begin(GetBuiltCity()), std::end(GetBuiltCity()), district) != std::end(GetBuiltCity()))
+            {
+                result.push_back(district);
+            }
+        }
+
+        assert(result.empty() == false);
+        return result;
     }
 #pragma endregion
 
