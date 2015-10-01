@@ -122,11 +122,32 @@ namespace Citadel
         return result;
     }
 
-    // Returns districts player wants to build
     std::vector<District> RobotPlayer::ChooseDistrictCardsToBuild(const size_t authorizedBuilds)
     {
-        assert(!"Not implemented yet");
-        return std::vector<District>();
+        std::vector<District> result;
+
+        // TODO: improve to build multiple districts
+        auto districtToBuild = District::UNINITIALIZED;
+        for (const auto district : GetAvailableDistricts())
+        {
+            const auto cost = GetDistrictCost(district);
+            if (GetGoldCoins() >= cost)
+            {
+                if (cost > GetDistrictCost(districtToBuild))
+                {
+                    if (std::find(std::begin(GetBuiltCity()), std::end(GetBuiltCity()), district) == std::end(GetBuiltCity()))
+                    {
+                        districtToBuild = district;
+                    }
+                }
+            }
+        }
+
+        if (districtToBuild != District::UNINITIALIZED)
+        {
+            result.push_back(districtToBuild);
+        }
+        return result;
     }
 
     // Returns character targeted by assassination or theft
