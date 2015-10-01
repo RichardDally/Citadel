@@ -258,6 +258,19 @@ namespace Citadel
         return true;
     }
 
+    std::vector<const Player*> Boardgame::GetOpponentPlayers(const int playerID)
+    {
+        std::vector<const Player*> result;
+        for (const auto& pair : playerById_)
+        {
+            if (pair.first != playerID)
+            {
+                result.push_back(pair.second.get());
+            }
+        }
+        return result;
+    }
+
     bool Boardgame::TakeGoldCoins(Player* player)
     {
         assert(player != nullptr);
@@ -545,7 +558,7 @@ namespace Citadel
 
     bool Boardgame::AskCharacterTarget(Player* player, Character& victim)
     {
-        auto possibleVictims = characterDeck_.PossibleOpponentsCharacters(player->GetCharacter());
+        auto possibleVictims = characterDeck_.GetOpponentCharacters(player->GetCharacter());
         victim = player->ChooseCharacterTarget(possibleVictims);
         if (possibleVictims.find(victim) == std::end(possibleVictims))
         {
@@ -588,7 +601,8 @@ namespace Citadel
         // 2)  Place any number of cards from your hand facedown at the bottom of the District Deck, and
         //     then draw an equal number of cards from the top of the District Deck
         // 3) Do nothing
-        const MagicianChoice magicianChoice = player->MagicianDecision();
+        const auto opponents = GetOpponentPlayers(player->GetID());
+        const MagicianChoice magicianChoice = player->MagicianDecision(opponents);
         switch (magicianChoice)
         {
             case MagicianChoice::EXCHANGE_FROM_PLAYER:
@@ -616,16 +630,7 @@ namespace Citadel
 
     bool Boardgame::MagicianExchangeFromPlayer(Player* player)
     {
-        // Build a vector of readonly players
-        std::vector<const Player*> opponents;
-        for (const auto& pair : playerById_)
-        {
-            if (pair.first != player->GetID())
-            {
-                opponents.push_back(pair.second.get());
-            }
-        }
-
+        const auto opponents = GetOpponentPlayers(player->GetID());
         const int victimID = player->ChoosePlayerTarget(opponents);
 
         if (victimID == player->GetID())
