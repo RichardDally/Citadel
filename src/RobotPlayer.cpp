@@ -178,10 +178,23 @@ namespace Citadel
         return result;
     }
 
-    // Returns a pair containing player id (self district destroy is tolerated) as key and destroyed district as value
     std::pair<int, District> RobotPlayer::ChoosePlayerDistrictTarget(const std::vector<const Player*>& players)
     {
-        assert(!"Not implemented yet");
+        for (const auto player : players)
+        {
+            if (player->GetID() != GetID())
+            {
+                for (const auto district : player->GetBuiltCity())
+                {
+                    if (GetDistrictCost(district) == 1)
+                    {
+                        return{ player->GetID(), district };
+                    }
+                }
+            }
+        }
+
+        Logger::GetInstance() << Verbosity::DEBUG << "Player [" << GetName() << "] have not found any 1 gold district to destroy..." << std::endl;
         return std::pair<int, District>(-1, District::UNINITIALIZED);
     }
 
