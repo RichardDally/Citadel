@@ -708,6 +708,11 @@ namespace Citadel
         }
 
         auto pair = player->ChoosePlayerDistrictTarget(players);
+        if (pair.first == -1)
+        {
+            Logger::GetInstance() << Verbosity::DEBUG << "Player [" << player->GetName() << "] finally doesn't destroy a district" << std::endl;
+            return true;
+        }
 
         // Find player
         auto victimIt = playerById_.find(pair.first);
