@@ -74,7 +74,11 @@ namespace Citadel
             return PlayerAction::UNINITIALIZED;
         }
 
-        // TODO: optimize
+        if (availableActions.size() == 1)
+        {
+            return availableActions.front();
+        }
+
         if (std::find(std::begin(availableActions), std::end(availableActions), PlayerAction::BUILD_DISTRICT_CARDS) != std::end(availableActions) && CanBuild())
         {
             return PlayerAction::BUILD_DISTRICT_CARDS;
