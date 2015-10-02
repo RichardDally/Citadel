@@ -282,14 +282,15 @@ namespace Citadel
     {
         assert(player != nullptr);
 
-        auto districts = districtDeck_.GetDistricts(DistrictDeckAction::PEEK, 2);
+        const size_t numberOfDistricts = 2;
+        const auto peekedDistricts = districtDeck_.GetDistricts(DistrictDeckAction::PEEK, numberOfDistricts);
 
         // Player can watch 2 cards but pick only one.
-        auto selectedDistrict = player->WatchAndChooseDistrictCard(districts);
+        const auto selectedDistrict = player->WatchAndChooseDistrictCard(peekedDistricts);
 
         // Check player isn't cheating.
-        auto selectedDistrictIt = std::find(std::begin(districts), std::end(districts), selectedDistrict);
-        if (selectedDistrictIt == std::end(districts))
+        const auto peekedDistrictsIt = std::find(std::begin(peekedDistricts), std::end(peekedDistricts), selectedDistrict);
+        if (peekedDistrictsIt == std::end(peekedDistricts))
         {
             Logger::GetInstance() << Verbosity::ERROR << "Player must pick a district among proposed ones" << std::endl;
             return false;
@@ -298,9 +299,19 @@ namespace Citadel
         // Transfer the card to player
         player->GetAvailableDistricts().push_back(selectedDistrict);
 
-        districts = districtDeck_.GetDistricts(DistrictDeckAction::DRAW, 2);
-        districts.erase(selectedDistrictIt); // Remove chosen card
-        districtDeck_.Discard(districts);    // Add the rest
+        auto drawnDistricts = districtDeck_.GetDistricts(DistrictDeckAction::DRAW, numberOfDistricts);
+        assert(peekedDistricts == drawnDistricts);
+
+        const auto drawnDistrictsIt = std::find(std::begin(drawnDistricts), std::end(drawnDistricts), selectedDistrict);
+        if (drawnDistrictsIt != std::end(drawnDistricts))
+        {
+            drawnDistricts.erase(drawnDistrictsIt); // Remove chosen card
+            districtDeck_.Discard(drawnDistricts);  // Add the rest
+        }
+        else
+        {
+            Logger::GetInstance() << Verbosity::ERROR << "Could not find district [" << GetDistrictName(selectedDistrict) << "] in drawn districts." << std::endl;
+        }
 
         return true;
     }
@@ -545,7 +556,7 @@ namespace Citadel
                 if (result)
                 {
                     // This step is now consumed
-                    Logger::GetInstance() << Verbosity::DEBUG << "Step [" << GetPlayerTurnStepName(stepActionIt->second) << "] is now consumed" << std::endl;
+                    Logger::GetInstance() << Verbosity::DEBUG << "Step [" << GetPlayerTurnStepName(stepActionIt->second) << "] is now consumed for [" << player->GetName() << "]" << std::endl;
                     stepStateIt->second = false;
 
                     // Call state transition function
@@ -708,34 +719,38 @@ namespace Citadel
         }
 
         auto pair = player->ChoosePlayerDistrictTarget(players);
+        if (pair.first == -1)
+        {
+            Logger::GetInstance() << Verbosity::DEBUG << "Player [" << player->GetName() << "] finally doesn't destroy a district" << std::endl;
+            return true;
+        }
 
         // Find player
         auto victimIt = playerById_.find(pair.first);
         if (victimIt == playerById_.end())
         {
             Logger::GetInstance() << Verbosity::ERROR << "Unable to find player id [" << pair.first << "]" << std::endl;
-            return false;
+            return true;
         }
 
         // Warlord cannot destroy Bishop districts
         if (victimIt->second->GetCharacter() == Character::BISHOP)
         {
             Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot destroy Bishop district" << std::endl;
-            return false;
+            return true;
         }
 
         // Once a city is completed, this city becomes immune to Warlord
         if (victimIt->second->GetBuiltCitySize() >= numberOfDistrictsToWin_)
         {
             Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot destroy a district in a finished Citadel" << std::endl;
-            return false;
+            return true;
         }
 
         if (pair.second == District::UNINITIALIZED)
         {
             Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot destroy UNINITIALIZED district" << std::endl;
-            assert(!"Cannot destroy UNINITIALIZED district.");
-            return false;
+            return true;
         }
 
         if (GetDistrictCost(pair.second) >= 1)
