@@ -556,7 +556,7 @@ namespace Citadel
                 if (result)
                 {
                     // This step is now consumed
-                    Logger::GetInstance() << Verbosity::DEBUG << "Step [" << GetPlayerTurnStepName(stepActionIt->second) << "] is now consumed" << std::endl;
+                    Logger::GetInstance() << Verbosity::DEBUG << "Step [" << GetPlayerTurnStepName(stepActionIt->second) << "] is now consumed for [" << player->GetName() << "]" << std::endl;
                     stepStateIt->second = false;
 
                     // Call state transition function
