@@ -730,28 +730,27 @@ namespace Citadel
         if (victimIt == playerById_.end())
         {
             Logger::GetInstance() << Verbosity::ERROR << "Unable to find player id [" << pair.first << "]" << std::endl;
-            return false;
+            return true;
         }
 
         // Warlord cannot destroy Bishop districts
         if (victimIt->second->GetCharacter() == Character::BISHOP)
         {
             Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot destroy Bishop district" << std::endl;
-            return false;
+            return true;
         }
 
         // Once a city is completed, this city becomes immune to Warlord
         if (victimIt->second->GetBuiltCitySize() >= numberOfDistrictsToWin_)
         {
             Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot destroy a district in a finished Citadel" << std::endl;
-            return false;
+            return true;
         }
 
         if (pair.second == District::UNINITIALIZED)
         {
             Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot destroy UNINITIALIZED district" << std::endl;
-            assert(!"Cannot destroy UNINITIALIZED district.");
-            return false;
+            return true;
         }
 
         if (GetDistrictCost(pair.second) >= 1)
