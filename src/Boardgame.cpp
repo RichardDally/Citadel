@@ -738,7 +738,7 @@ namespace Citadel
         {
             if (bishopIt->second->GetID() == victimIt->second->GetID())
             {
-                Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot destroy Bishop district" << std::endl;
+                Logger::GetInstance() << Verbosity::WARNING << "Player [" << player->GetName() << "] cannot destroy Bishop district" << std::endl;
                 return true;
             }
         }
@@ -746,7 +746,7 @@ namespace Citadel
         // Once a city is completed, this city becomes immune to Warlord
         if (victimIt->second->GetBuiltCitySize() >= numberOfDistrictsToWin_)
         {
-            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot destroy a district in a finished Citadel" << std::endl;
+            Logger::GetInstance() << Verbosity::WARNING << "Player [" << player->GetName() << "] cannot destroy a district in a finished Citadel" << std::endl;
             return true;
         }
 
@@ -763,15 +763,15 @@ namespace Citadel
             {
                 if (victimIt->second->DestroyDistrict(pair.second) == false)
                 {
-                    Logger::GetInstance() << Verbosity::ERROR << "Player [" << pair.first << "] does not have [" << GetDistrictName(pair.second) << "]" << std::endl;
-                    return false;
+                    Logger::GetInstance() << Verbosity::WARNING << "Player [" << pair.first << "] does not have [" << GetDistrictName(pair.second) << "]" << std::endl;
+                    return true;
                 }
-                Logger::GetInstance() << Verbosity::DEBUG << "player [" << player->GetName() << "] destroyed [" << GetDistrictName(pair.second) << "] owned by [" << victimIt->second->GetName() << "]" << std::endl;
+                Logger::GetInstance() << Verbosity::INFO << "player [" << player->GetName() << "] destroyed [" << GetDistrictName(pair.second) << "] owned by [" << victimIt->second->GetName() << "]" << std::endl;
             }
             else
             {
-                Logger::GetInstance() << Verbosity::ERROR << "Player [" << pair.first << "] has not enough gold to destroy this district" << std::endl;
-                return false;
+                Logger::GetInstance() << Verbosity::WARNING << "Player [" << pair.first << "] has not enough gold to destroy this district" << std::endl;
+                return true;
             }
         }
         else
