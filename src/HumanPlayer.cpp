@@ -48,8 +48,9 @@ namespace Citadel
     // Returns action to be taken
     PlayerAction HumanPlayer::ChooseAction(const std::vector<PlayerAction>& availableActions)
     {
+        std::cout << "@" << GetName() << ", You are playing [" << GetCharacterName(GetCharacter()) << "]" << std::endl;
         std::cout << "@" << GetName() << ", You currently have " << GetGoldCoins() << " gold coins." << std::endl;
-        std::cout << "@" << GetName() << ", Select player action among: " << std::endl;
+        std::cout << "@" << GetName() << ", Select action among: " << std::endl;
 
         const size_t size = availableActions.size();
         for (size_t i = 0; i < size; ++i)
