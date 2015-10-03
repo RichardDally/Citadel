@@ -42,15 +42,15 @@ namespace Citadel
             case 4:
             {
                 assert(remainingCards_.size() == 8);
-                WithdrawCards(1, faceoffCards_, faceoffRule);
                 WithdrawCards(2, faceupCards_, faceupSpecialRule);
+                WithdrawCards(1, faceoffCards_, faceoffRule);
                 break;
             }
             case 5:
             {
                 assert(remainingCards_.size() == 8);
-                WithdrawCards(1, faceoffCards_, faceoffRule);
                 WithdrawCards(1, faceupCards_, faceupSpecialRule);
+                WithdrawCards(1, faceoffCards_, faceoffRule);
                 break;
             }
             case 6:
