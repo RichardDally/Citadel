@@ -39,6 +39,12 @@ namespace Citadel
         assert(numberOfPlayers_ >= 2 && numberOfPlayers_ <= 7);
         switch (numberOfPlayers_)
         {
+            case 2:
+            {
+                assert(remainingCards_.size() == 8);
+                WithdrawCards(1, faceoffCards_, faceoffRule);
+                break;
+            }
             case 4:
             {
                 assert(remainingCards_.size() == 8);

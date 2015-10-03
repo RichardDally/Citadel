@@ -130,9 +130,6 @@ namespace Citadel
                 Logger::GetInstance() << Verbosity::DEBUG << "Next king will be [" << playerById_[currentPlayer_]->GetName() << "]" << std::endl;
             }
 
-            // Confirm picked character
-            playerById_[currentPlayer_]->SetCharacter(pickedCharacter);
-
             // Update player by role index (speed-up calling roles on next step)
             playerByCharacter_[pickedCharacter] = playerById_[currentPlayer_].get();
 
@@ -148,7 +145,7 @@ namespace Citadel
                 currentPlayer_ = 0;
             }
         }
-        while (currentPlayer_ != startingPlayer_);
+        while (remainingCharacters.size() != 1);
 
         // Withdraw remaining cards (if necessary) to faceoff heap
         characterDeck_.ChooseCharactersStep();
@@ -178,10 +175,11 @@ namespace Citadel
             Player* player = it->second;
             if (player == nullptr)
             {
-                assert(!"player pointer should not be nullptr.");
                 Logger::GetInstance() << Verbosity::ERROR << "player attached to [" << GetCharacterName(character) << "] was nullptr." << std::endl;
+                assert(!"player pointer should not be nullptr.");
                 continue;
             }
+            player->SetCharacter(character);
             Logger::GetInstance() << Verbosity::DEBUG << "[" << player->GetName() << "] is [" << GetCharacterName(character) << "]" << std::endl;
 
             // First check if character is murdered (assassin cannot be)
@@ -734,10 +732,15 @@ namespace Citadel
         }
 
         // Warlord cannot destroy Bishop districts
-        if (victimIt->second->GetCharacter() == Character::BISHOP)
+
+        const auto bishopIt = playerByCharacter_.find(Character::BISHOP);
+        if (bishopIt != std::end(playerByCharacter_))
         {
-            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot destroy Bishop district" << std::endl;
-            return true;
+            if (bishopIt->second->GetID() == victimIt->second->GetID())
+            {
+                Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot destroy Bishop district" << std::endl;
+                return true;
+            }
         }
 
         // Once a city is completed, this city becomes immune to Warlord
