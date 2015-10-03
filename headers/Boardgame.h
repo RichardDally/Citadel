@@ -72,9 +72,8 @@ namespace Citadel
         void PlayerTurnsStep(const Edition edition);
         // Sub functions
         bool CanUseMagicPower(const Character character) const;
-        bool AskCharacterTarget(Player* player, Character& victim);
-        bool AssassinMagicPower(Player* player);
-        bool ThiefMagicPower(Player* player);
+        bool AskCharacterTarget(Player* player);
+        bool SelectVictim(Player* player);
         bool MagicianMagicPower(Player* player);
         bool MagicianExchangeFromPlayer(Player* player);
         bool MagicianExchangeFromDistrictDeck(Player* player);
@@ -91,8 +90,9 @@ namespace Citadel
         int nextStartingPlayer_ = 0;
         int firstPlayerEndingGame = -1;
 
-        Character murderedCharacter_ = Character::UNINITIALIZED;
-        Character stolenCharacter_ = Character::UNINITIALIZED;
+        // Key: victim character (e.g. Character::MERCHANT)
+        // Value: offensive character (e.g. Character::ASSASSIN)
+        std::map<Character, Character> victims;
 
         size_t numberOfDistrictsToWin_ = 8;
 
