@@ -24,14 +24,14 @@ namespace Citadel
         void ChooseCharactersStep();
 
         // Compute possible opponents of a specific character (useful for Assassin or Thief)
-        std::set<Character> PossibleOpponentsCharacters(const Character playerCharacter);
+        std::set<Character> GetOpponentCharacters(const Character playerCharacter);
 
-        const std::set<Character>& GetFaceupCards() const
+        const std::set<Character>& GetFaceupCharacters() const
         {
             return faceupCards_;
         }
 
-        const std::set<Character>& GetRemainingCards() const
+        const std::set<Character>& GetRemainingCharacters() const
         {
             return remainingCards_;
         }
@@ -41,6 +41,8 @@ namespace Citadel
             Logger::GetInstance() << Verbosity::DEBUG << "remove [" << GetCharacterName(character) << "] from remaining cards." << std::endl;
             remainingCards_.erase(character);
         }
+
+        void WithdrawCharacterToFaceOff();
 
     private:
         // Move character cards from remaining heap to faceup or faceoff heaps.

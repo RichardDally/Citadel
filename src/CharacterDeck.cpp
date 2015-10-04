@@ -1,5 +1,6 @@
 #include <cassert>
 #include <iostream>
+#include "PlayerData.h"
 #include "CharacterDeck.h"
 
 namespace Citadel
@@ -36,40 +37,39 @@ namespace Citadel
         // Copy every available cards to remaining ones
         remainingCards_.insert(std::begin(availableCharacters_), std::end(availableCharacters_));
 
-        assert(numberOfPlayers_ >= 2 && numberOfPlayers_ <= 7);
+        assert(numberOfPlayers_ >= GetMinimumPlayers() && numberOfPlayers_ <= GetMaximumPlayers());
         switch (numberOfPlayers_)
         {
+            case 2:
+            case 3:
+            case 6:
+            {
+                assert(remainingCards_.size() == 8);
+                WithdrawCards(1, faceoffCards_, faceoffRule);
+                break;
+            }
             case 4:
             {
                 assert(remainingCards_.size() == 8);
-                // Withdraw 1 character card to faceoff heap
-                WithdrawCards(1, faceoffCards_, faceoffRule);
-                // Withdraw 2 character cards to faceup heap
                 WithdrawCards(2, faceupCards_, faceupSpecialRule);
+                WithdrawCards(1, faceoffCards_, faceoffRule);
                 break;
             }
             case 5:
             {
                 assert(remainingCards_.size() == 8);
-                // Withdraw 1 character card to faceoff heap
-                WithdrawCards(1, faceoffCards_, faceoffRule);
-                // Withdraw 1 character card to faceup heap
                 WithdrawCards(1, faceupCards_, faceupSpecialRule);
-                break;
-            }
-            case 6:
-            case 7:
-            {
-                assert(remainingCards_.size() == 8);
-                // No character faceup cards
+                WithdrawCards(1, faceoffCards_, faceoffRule);
                 break;
             }
             default:
             {
+                Logger::GetInstance() << Verbosity::ERROR << "[" << numberOfPlayers_ << "] players game is not implemented." << std::endl;
+                assert(!"Not implemented");
             }
         }
 
-        // There must be remaining cards to pick by players
+        // There must be remaining cards to pick for players
         assert(remainingCards_.size() > numberOfPlayers_);
     }
 
@@ -81,7 +81,7 @@ namespace Citadel
     }
 
     // Compute possible opponents of a specific character (useful for Assassin or Thief)
-    std::set<Character> CharacterDeck::PossibleOpponentsCharacters(const Character playerCharacter)
+    std::set<Character> CharacterDeck::GetOpponentCharacters(const Character playerCharacter)
     {
         assert(playerCharacter != Character::UNINITIALIZED);
         std::set<Character> result;
@@ -107,5 +107,10 @@ namespace Citadel
         }
 
         return result;
+    }
+
+    void CharacterDeck::WithdrawCharacterToFaceOff()
+    {
+        WithdrawCards(1, faceoffCards_, faceoffRule);
     }
 }

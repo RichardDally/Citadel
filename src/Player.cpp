@@ -1,4 +1,5 @@
 #include <algorithm>
+#include "Logger.h"
 #include "Player.h"
 
 namespace Citadel
@@ -32,7 +33,7 @@ namespace Citadel
             }
             else
             {
-                std::cerr << "District [" << GetDistrictName(district) << "] is already built. Cannot build again." << std::endl;
+                Logger::GetInstance() << Verbosity::ERROR << "District [" << GetDistrictName(district) << "] is already built. Cannot build again." << std::endl;
             }
         }
     }

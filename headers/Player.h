@@ -16,7 +16,6 @@ namespace Citadel
     class Player
     {
     public:
-        Player() = default;
         Player(const std::string& name)
             : name_(name)
         {
@@ -74,7 +73,7 @@ namespace Citadel
 
 #pragma region PURE VIRTUAL METHODS
         // Returns character picked to play
-        virtual Character PickCharacter(const std::set<Character>& remainingCards) = 0;
+        virtual Character PickCharacter(const std::set<Character>& remainingCharacters, const std::set<Character>& faceupCharacters) = 0;
 
         // Returns action to be taken
         virtual PlayerAction ChooseAction(const std::vector<PlayerAction>& availableActions) = 0;
@@ -89,13 +88,13 @@ namespace Citadel
         virtual Character ChooseCharacterTarget(const std::set<Character>& opponents) = 0;
 
         // Returns opponent player id, current player wants to target
-        virtual int ChoosePlayerTarget(std::vector<const Player*> opponents) = 0;
+        virtual int ChoosePlayerTarget(const std::vector<const Player*>& opponents) = 0;
 
         // Returns a pair containing player id (self district destroy is tolerated) as key and destroyed district as value
-        virtual std::pair<int, District> ChoosePlayerDistrictTarget(std::vector<const Player*> players) = 0;
+        virtual std::pair<int, District> ChoosePlayerDistrictTarget(const std::vector<const Player*>& players) = 0;
 
         // Returns a choice specific to Magician character
-        virtual MagicianChoice MagicianDecision() = 0;
+        virtual MagicianChoice MagicianDecision(const std::vector<const Player*>& opponents) = 0;
 
         // Returns discarded districts to be replaced by equivalent number of cards from district deck
         virtual std::vector<District> ChooseDistrictsCardsToSwap() = 0;

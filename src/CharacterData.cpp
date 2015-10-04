@@ -1,5 +1,6 @@
 #include <cassert>
 #include <iostream>
+#include "Logger.h"
 #include "CharacterData.h"
 
 namespace Citadel
@@ -57,6 +58,7 @@ namespace Citadel
             case Character::ASSASSIN: break;
             case Character::THIEF: break;
             case Character::MAGICIAN: break;
+            case Character::ARCHITECT: break;
             case Character::KING:
             {
                 result = Color::YELLOW;
@@ -72,7 +74,6 @@ namespace Citadel
                 result = Color::GREEN;
                 break;
             }
-            case Character::ARCHITECT: break;
             case Character::WARLORD:
             {
                 result = Color::RED;
@@ -80,8 +81,8 @@ namespace Citadel
             }
             default:
             {
+                Logger::GetInstance() << Verbosity::ERROR << "Character [" << static_cast<int>(character) << "] is not handled." << std::endl;
                 assert(!"This character is not handled to get it's color");
-                std::cerr << "Character [" << static_cast<int>(character) << "] is not handled." << std::endl;
             }
         }
 
@@ -94,7 +95,7 @@ namespace Citadel
 
         switch (edition)
         {
-            case Edition::REGULAR:
+            case Edition::REGULAR_WITHOUT_PURPLE_DISTRICTS:
             {
                 static const std::vector<Character> callingOrder
                 {

@@ -20,19 +20,15 @@ namespace Citadel
         const size_t namesSize = sizeof(names) / sizeof(names[0]);
     }
 
-    RobotPlayer::RobotPlayer()
-        : Player(names[Dice::GetRandomNumber(0, namesSize - 1)])
-    {
-    }
-
     RobotPlayer::RobotPlayer(const std::string& name)
         : Player(name)
     {
+        assert(name.empty() == false);
     }
 
 #pragma region PURE VIRTUAL METHODS
     // Returns character picked to play
-    Character RobotPlayer::PickCharacter(const std::set<Character>& remainingCharacters)
+    Character RobotPlayer::PickCharacter(const std::set<Character>& remainingCharacters, const std::set<Character>& faceupCharacters)
     {
         assert(remainingCharacters.size() > 0);
         if (remainingCharacters.empty())
@@ -42,16 +38,16 @@ namespace Citadel
         }
 
         Character result = Character::UNINITIALIZED;
-        std::map<Character, size_t> revenuesByCharacter;
+        std::map<Character, size_t> incomeByCharacter;
         std::pair<Character, size_t> mostValuableCharacter = std::make_pair(Character::UNINITIALIZED, 0);
         for (const auto character : remainingCharacters)
         {
-            const auto revenues = SimulateDistrictRevenues(character);
-            if (revenues > mostValuableCharacter.second)
+            const auto goldIncome = SimulateDistrictIncome(character);
+            if (goldIncome > mostValuableCharacter.second)
             {
-                mostValuableCharacter = std::make_pair(character, revenues);
+                mostValuableCharacter = std::make_pair(character, goldIncome);
             }
-            revenuesByCharacter.insert(std::make_pair(character, revenues));
+            incomeByCharacter.insert(std::make_pair(character, goldIncome));
         }
 
         if (mostValuableCharacter.first != Character::UNINITIALIZED)
@@ -69,20 +65,27 @@ namespace Citadel
         return result;
     }
 
-    // Returns action to be taken
     PlayerAction RobotPlayer::ChooseAction(const std::vector<PlayerAction>& availableActions)
     {
         assert(availableActions.empty() == false);
         if (availableActions.empty())
         {
-            Logger::GetInstance() << Verbosity::ERROR << "There is no available action." << std::endl;
+            Logger::GetInstance() << Verbosity::FATAL << "There is no available action." << std::endl;
             return PlayerAction::UNINITIALIZED;
         }
 
-        // TODO: optimize
+        if (availableActions.size() == 1)
+        {
+            return availableActions.front();
+        }
+
         if (std::find(std::begin(availableActions), std::end(availableActions), PlayerAction::BUILD_DISTRICT_CARDS) != std::end(availableActions) && CanBuild())
         {
             return PlayerAction::BUILD_DISTRICT_CARDS;
+        }
+        else if (std::find(std::begin(availableActions), std::end(availableActions), PlayerAction::EARN_DISTRICT_INCOME) != std::end(availableActions))
+        {
+            return PlayerAction::EARN_DISTRICT_INCOME;
         }
         else if (std::find(std::begin(availableActions), std::end(availableActions), PlayerAction::WATCH_DISTRICT_CARDS) != std::end(availableActions) && GetAvailableDistricts().empty())
         {
@@ -123,50 +126,140 @@ namespace Citadel
         return result;
     }
 
-    // Returns districts player wants to build
     std::vector<District> RobotPlayer::ChooseDistrictCardsToBuild(const size_t authorizedBuilds)
     {
-        assert(!"Boom");
-        return std::vector<District>();
+        std::vector<District> result;
+
+        // TODO: improve to build multiple districts
+        auto districtToBuild = District::UNINITIALIZED;
+        for (const auto district : GetAvailableDistricts())
+        {
+            const auto cost = GetDistrictCost(district);
+            if (GetGoldCoins() >= cost)
+            {
+                if (cost > GetDistrictCost(districtToBuild))
+                {
+                    if (std::find(std::begin(GetBuiltCity()), std::end(GetBuiltCity()), district) == std::end(GetBuiltCity()))
+                    {
+                        districtToBuild = district;
+                    }
+                }
+            }
+        }
+
+        if (districtToBuild != District::UNINITIALIZED)
+        {
+            result.push_back(districtToBuild);
+        }
+        return result;
     }
 
     // Returns character targeted by assassination or theft
     Character RobotPlayer::ChooseCharacterTarget(const std::set<Character>& opponents)
     {
-        assert(!"Boom");
+        // TODO: improve and make dynamic weight for each targets depending on game state
+        static const std::vector<Character> topTargets
+        {
+            Character::MERCHANT, // Greedy basterd
+            Character::ARCHITECT, // Crazy builder
+            Character::MAGICIAN, // Card stealer
+            Character::WARLORD,  // District demolisher
+            Character::KING, // Crown stealer
+            Character::BISHOP,
+            Character::THIEF,
+        };
+
+        // Target most interesting character
+        for (const auto character : topTargets)
+        {
+            if (std::find(std::begin(opponents), std::end(opponents), character) != std::end(opponents))
+            {
+                Logger::GetInstance() << Verbosity::DEBUG << "Robot [" << GetName() << "] targets [" << GetCharacterName(character) << "]" << std::endl;
+                return character;
+            }
+        }
+
+        Logger::GetInstance() << Verbosity::FATAL << "Robot [" << GetName() << "] didn't find a target." << std::endl;
         return Character::UNINITIALIZED;
     }
 
     // Returns opponent player id, current player wants to target
-    int RobotPlayer::ChoosePlayerTarget(std::vector<const Player*> opponents)
+    int RobotPlayer::ChoosePlayerTarget(const std::vector<const Player*>& opponents)
     {
-        assert(!"Boom");
-        return -1;
+        int result = -1;
+        size_t maxAvailable = 0;
+
+        // Target player with a lot of available districts
+        assert(opponents.empty() == false);
+        for (const auto player : opponents)
+        {
+            if (player->GetNumberOfAvailableDistricts() >= maxAvailable)
+            {
+                result = player->GetID();
+                maxAvailable = player->GetNumberOfAvailableDistricts();
+            }
+        }
+        assert(result != -1);
+        return result;
     }
 
-    // Returns a pair containing player id (self district destroy is tolerated) as key and destroyed district as value
-    std::pair<int, District> RobotPlayer::ChoosePlayerDistrictTarget(std::vector<const Player*> players)
+    std::pair<int, District> RobotPlayer::ChoosePlayerDistrictTarget(const std::vector<const Player*>& players)
     {
-        assert(!"Boom");
+        for (const auto player : players)
+        {
+            if (player->GetID() != GetID())
+            {
+                for (const auto district : player->GetBuiltCity())
+                {
+                    if (GetDistrictCost(district) == 1)
+                    {
+                        return{ player->GetID(), district };
+                    }
+                }
+            }
+        }
+
+        Logger::GetInstance() << Verbosity::DEBUG << "Player [" << GetName() << "] have not found any 1 gold district to destroy..." << std::endl;
         return std::pair<int, District>(-1, District::UNINITIALIZED);
     }
 
-    // Returns a choice specific to Magician character
-    MagicianChoice RobotPlayer::MagicianDecision()
+    MagicianChoice RobotPlayer::MagicianDecision(const std::vector<const Player*>& opponents)
     {
-        assert(!"Boom");
+        if (GetNumberOfAvailableDistricts() == 0)
+        {
+            return MagicianChoice::EXCHANGE_FROM_PLAYER;
+        }
+        else
+        {
+            for (const auto district : GetAvailableDistricts())
+            {
+                if (std::find(std::begin(GetBuiltCity()), std::end(GetBuiltCity()), district) != std::end(GetBuiltCity()))
+                {
+                    return MagicianChoice::EXCHANGE_FROM_DISTRICT_DECK;
+                }
+            }
+        }
         return MagicianChoice::DO_NOTHING;
     }
 
-    // Returns discarded districts to be replaced by equivalent number of cards from district deck
     std::vector<District> RobotPlayer::ChooseDistrictsCardsToSwap()
     {
-        assert(!"Boom");
-        return std::vector<District>();
+        std::vector<District> result;
+
+        for (const auto district : GetAvailableDistricts())
+        {
+            if (std::find(std::begin(GetBuiltCity()), std::end(GetBuiltCity()), district) != std::end(GetBuiltCity()))
+            {
+                result.push_back(district);
+            }
+        }
+
+        assert(result.empty() == false);
+        return result;
     }
 #pragma endregion
 
-    const size_t RobotPlayer::SimulateDistrictRevenues(const Character character) const
+    const size_t RobotPlayer::SimulateDistrictIncome(const Character character) const
     {
         const auto characterColor = GetCharacterColor(character);
         if (characterColor == Color::UNINITIALIZED)
@@ -174,15 +267,15 @@ namespace Citadel
             return 0;
         }
 
-        size_t revenues = 0;
+        size_t goldIncome = 0;
         for (const auto district : builtCity_)
         {
             if (GetDistrictColor(district) == characterColor)
             {
-                ++revenues;
+                ++goldIncome;
             }
         }
-        return revenues;
+        return goldIncome;
     }
 
     bool RobotPlayer::CanBuild() const

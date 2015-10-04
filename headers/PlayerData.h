@@ -2,6 +2,12 @@
 
 namespace Citadel
 {
+#pragma region PlayerNumber
+    const size_t GetMinimumPlayers();
+    const size_t GetMaximumPlayers();
+    const bool ValidateNumberOfPlayers(const size_t playersNumber);
+#pragma endregion
+
 #pragma region PlayerTurnStep
     enum class PlayerTurnStep
     {
@@ -9,7 +15,7 @@ namespace Citadel
         ACTION_STEP,
         BUILD_STEP,
         MAGIC_POWER_STEP,
-        ENDING_STEP,
+        DISTRICT_INCOME_STEP,
         MAX
     };
     const char* const GetPlayerTurnStepName(const PlayerTurnStep step);
@@ -23,6 +29,7 @@ namespace Citadel
         WATCH_DISTRICT_CARDS,
         BUILD_DISTRICT_CARDS,
         USE_MAGIC_POWER,
+        EARN_DISTRICT_INCOME,
         MAX
     };
     const char* const GetPlayerActionName(const PlayerAction action);

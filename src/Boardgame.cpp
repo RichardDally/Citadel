@@ -9,22 +9,16 @@
 
 namespace Citadel
 {
-    Boardgame::Boardgame(const Edition edition)
-        : edition_(edition)
+    void Boardgame::StartGame(const Edition edition)
     {
-        // TODO: customize Human/Robot players number
-        AddPlayer<HumanPlayer>(4);
-        //AddPlayer<RobotPlayer>(3);
+        SetEdition(edition);
 
         // Setup available characters
         characterDeck_.Setup(GetCharacterCallingOrder(edition), playerById_.size());
 
         // Setup available districts
         districtDeck_.Setup(GetDistricts(edition));
-    }
 
-    void Boardgame::StartGame()
-    {
         // Reset ending player
         firstPlayerEndingGame = -1;
 
@@ -50,12 +44,6 @@ namespace Citadel
         {
             Logger::GetInstance() << Verbosity::DEBUG << "Round [" << currentRound_ << "]" << std::endl;
             StartRound(GetEdition());
-
-            // TODO: remove (debug purpose)
-            if (currentRound_ == 3)
-            {
-                break;
-            }
         }
 
         ComputeScores();
@@ -65,10 +53,10 @@ namespace Citadel
     {
         if (player != nullptr)
         {
-            const auto fromDeck = districtDeck_.Draw(numberOfCards);
+            const auto fromDeck = districtDeck_.GetDistricts(DistrictDeckAction::DRAW, numberOfCards);
             if (fromDeck.size() < numberOfCards)
             {
-                std::cerr << "There is not enough cards in the deck. Drawn [" << fromDeck.size() << "] instead of [" << numberOfCards << "]" << std::endl;
+                Logger::GetInstance() << Verbosity::FATAL << "There is not enough cards in the deck. Drawn [" << fromDeck.size() << "] instead of [" << numberOfCards << "]" << std::endl;
                 assert(!"District deck should have enough cards.");
             }
             auto& toHand = player->GetAvailableDistricts();
@@ -76,6 +64,7 @@ namespace Citadel
         }
         else
         {
+            Logger::GetInstance() << Verbosity::FATAL << "Player is nullptr in TransferDistrictCards" << std::endl;
             assert(!"Cannot transfer cards to nullptr player");
         }
     }
@@ -90,8 +79,8 @@ namespace Citadel
         }
         else
         {
+            Logger::GetInstance() << Verbosity::ERROR << "There is no player to pick to start a game" << std::endl;
             assert(!"Player container is empty, cannot start a game");
-            std::cerr << "There is no player to pick to start a game" << std::endl;
         }
         return -1;
     }
@@ -118,18 +107,18 @@ namespace Citadel
     void Boardgame::ChooseCharactersStep(const Edition edition)
     {
         playerByCharacter_.clear();
-        const auto& remainingCards = characterDeck_.GetRemainingCards();
+        const auto& remainingCharacters = characterDeck_.GetRemainingCharacters();
         do
         {
             assert(currentPlayer_ >= 0 && currentPlayer_ < static_cast<int>(playerById_.size()));
             Logger::GetInstance() << Verbosity::INFO << "[" << playerById_[currentPlayer_]->GetName() << "] is now picking a role." << std::endl;
 
-            const auto pickedCharacter = playerById_[currentPlayer_]->PickCharacter(remainingCards);
+            const auto pickedCharacter = playerById_[currentPlayer_]->PickCharacter(remainingCharacters, characterDeck_.GetFaceupCharacters());
 
             // Check if role is available
-            if (remainingCards.find(pickedCharacter) == remainingCards.end())
+            if (remainingCharacters.find(pickedCharacter) == remainingCharacters.end())
             {
-                std::cerr << "Error: @" << playerById_[currentPlayer_]->GetName() << ", role is not available, try again..." << std::endl;
+                Logger::GetInstance() << Verbosity::ERROR << "Error: @" << playerById_[currentPlayer_]->GetName() << ", role is not available, try again..." << std::endl;
                 continue;
             }
 
@@ -140,9 +129,6 @@ namespace Citadel
                 nextStartingPlayer_ = currentPlayer_;
                 Logger::GetInstance() << Verbosity::DEBUG << "Next king will be [" << playerById_[currentPlayer_]->GetName() << "]" << std::endl;
             }
-
-            // Confirm picked character
-            playerById_[currentPlayer_]->SetCharacter(pickedCharacter);
 
             // Update player by role index (speed-up calling roles on next step)
             playerByCharacter_[pickedCharacter] = playerById_[currentPlayer_].get();
@@ -159,7 +145,15 @@ namespace Citadel
                 currentPlayer_ = 0;
             }
 
-        } while (currentPlayer_ != startingPlayer_);
+            if (playerById_.size() == 2)
+            {
+                if (remainingCharacters.size() == 5 || remainingCharacters.size() == 3)
+                {
+                    characterDeck_.WithdrawCharacterToFaceOff();
+                }
+            }
+        }
+        while (remainingCharacters.size() != 1);
 
         // Withdraw remaining cards (if necessary) to faceoff heap
         characterDeck_.ChooseCharactersStep();
@@ -168,14 +162,8 @@ namespace Citadel
     // Step Three: Player Turns
     void Boardgame::PlayerTurnsStep(const Edition edition)
     {
-        // Assassin can murder any character
-        Character murderedCharacter = Character::UNINITIALIZED;
-
-        // Thief can steal any character except Assassin
-        Character stolenCharacter = Character::UNINITIALIZED;
-
+        victims.clear();
         const auto& callingOrder = GetCharacterCallingOrder(edition);
-
         assert(callingOrder.empty() == false);
         for (const auto character : callingOrder)
         {
@@ -192,64 +180,65 @@ namespace Citadel
             Player* player = it->second;
             if (player == nullptr)
             {
-                assert(!"player pointer should not be nullptr.");
                 Logger::GetInstance() << Verbosity::ERROR << "player attached to [" << GetCharacterName(character) << "] was nullptr." << std::endl;
+                assert(!"player pointer should not be nullptr.");
                 continue;
             }
+            player->SetCharacter(character);
             Logger::GetInstance() << Verbosity::DEBUG << "[" << player->GetName() << "] is [" << GetCharacterName(character) << "]" << std::endl;
 
-            // First check if character is murdered (assassin cannot be)
-            assert(murderedCharacter != Character::ASSASSIN);
-            if (character == murderedCharacter)
+            
+            const auto victimsIt = victims.find(character);
+            if (victimsIt != std::end(victims))
             {
-                // Debug block
-                {
-                    Logger::GetInstance() << Verbosity::DEBUG << "[" << GetCharacterName(character) << "] has been murdered." << std::endl;
-                    auto assassin = playerByCharacter_.find(Character::ASSASSIN);
-                    auto victim = playerByCharacter_.find(character);
-                    assert(assassin != playerByCharacter_.end());
-                    assert(victim != playerByCharacter_.end());
-                    if (assassin != playerByCharacter_.end() && victim != playerByCharacter_.end())
-                    {
-                        Logger::GetInstance() << Verbosity::DEBUG << "[" << victim->second->GetName() << "] has been murdered by [" << assassin->second->GetName() << "] !" << std::endl;
-                    }
-                }
-                // Current player skip it's turn
-                continue;
-            }
-
-            // Then check if character is stolen
-            assert(stolenCharacter != Character::ASSASSIN);
-            assert(stolenCharacter != Character::THIEF);
-            if (character == stolenCharacter)
-            {
-                auto thief = playerByCharacter_.find(Character::THIEF);
-                auto victim = playerByCharacter_.find(character);
-
+                const auto victim = victimsIt->first;
+                const auto offenser = victimsIt->second;
+                assert(victim != Character::ASSASSIN);
+                if (offenser == Character::ASSASSIN)
                 {
                     // Debug block
-                    Logger::GetInstance() << Verbosity::DEBUG << "[" << GetCharacterName(character) << "] has been stolen !" << std::endl;
-                    assert(thief != playerByCharacter_.end());
-                    assert(victim != playerByCharacter_.end());
-                    if (thief != playerByCharacter_.end() && victim != playerByCharacter_.end())
                     {
-                        Logger::GetInstance() << Verbosity::DEBUG << "[" << victim->second->GetName() << "] has been stolen by [" << thief->second->GetName() << "] !" << std::endl;
+                        Logger::GetInstance() << Verbosity::DEBUG << "[" << GetCharacterName(character) << "] has been murdered." << std::endl;
+                        const auto assassinPlayer = playerByCharacter_.find(Character::ASSASSIN);
+                        const auto victimPlayer = playerByCharacter_.find(character);
+                        assert(assassinPlayer != playerByCharacter_.end());
+                        assert(victimPlayer != playerByCharacter_.end());
+                        if (assassinPlayer != playerByCharacter_.end() && victimPlayer != playerByCharacter_.end())
+                        {
+                            Logger::GetInstance() << Verbosity::DEBUG << "[" << victimPlayer->second->GetName() << "] has been murdered by [" << assassinPlayer->second->GetName() << "] !" << std::endl;
+                        }
                     }
+                    // Current player skip it's turn
+                    continue;
                 }
+                else if (offenser == Character::THIEF)
+                {
+                    auto thiefPlayer = playerByCharacter_.find(Character::THIEF);
+                    auto victimPlayer = playerByCharacter_.find(character);
 
-                const auto stolenGold = victim->second->GetGoldCoins();
-                thief->second->ModifyGoldCoins(stolenGold);
-                victim->second->ModifyGoldCoins(-stolenGold);
+                    {
+                        // Debug block
+                        Logger::GetInstance() << Verbosity::DEBUG << "[" << GetCharacterName(character) << "] has been stolen !" << std::endl;
+                        assert(thiefPlayer != playerByCharacter_.end());
+                        assert(victimPlayer != playerByCharacter_.end());
+                        if (thiefPlayer != playerByCharacter_.end() && victimPlayer != playerByCharacter_.end())
+                        {
+                            Logger::GetInstance() << Verbosity::DEBUG << "[" << victimPlayer->second->GetName() << "] has been stolen by [" << thiefPlayer->second->GetName() << "] !" << std::endl;
+                        }
+                    }
+
+                    const auto stolenGold = victimPlayer->second->GetGoldCoins();
+                    thiefPlayer->second->ModifyGoldCoins(stolenGold);
+                    victimPlayer->second->ModifyGoldCoins(-stolenGold);
+                }
             }
 
-            // 1) Earn gold from district cards
-            EarnGoldFromDistricts(character, player);
-
             // Note Player uses his magic power whenever he wants but will be requested after building
-            // 2) Take an action: player earns 2 gold coins OR watch 2 district cards, pick one, place the other to district cards heap bottom
-            // 3) Build a district card from his hand
-            // 4) Use magic power if any
-            PlayerTurn(player, murderedCharacter, stolenCharacter);
+            // 1) Take an action: player earns 2 gold coins OR watch 2 district cards, pick one, place the other to district cards heap bottom
+            // 2) Build a district card from his hand
+            // 3) Any moment during player turn, magic power can be used (if any)
+            // 4) Any moment during player turn, income can be received (if any)
+            PlayerTurn(player);
         }
     }
 
@@ -265,8 +254,8 @@ namespace Citadel
                 return false;
             case Character::UNINITIALIZED:
             {
+                Logger::GetInstance() << Verbosity::ERROR << "Error: CanUseMagicPower called with Character::UNINITIALIZED" << std::endl;
                 assert(!"CanUseMagicPower called with Character::UNINITIALIZED");
-                std::cerr << "Error: CanUseMagicPower called with Character::UNINITIALIZED" << std::endl;
                 return false;
             }
             default:;
@@ -274,18 +263,147 @@ namespace Citadel
         return true;
     }
 
-    void Boardgame::EarnGoldFromDistricts(const Character character, Player* player)
+    std::vector<const Player*> Boardgame::GetOpponentPlayers(const int playerID)
     {
-        Color playerColor = Color::UNINITIALIZED;
+        std::vector<const Player*> result;
+        for (const auto& pair : playerById_)
+        {
+            if (pair.first != playerID)
+            {
+                result.push_back(pair.second.get());
+            }
+        }
+        return result;
+    }
 
+    bool Boardgame::TakeGoldCoins(Player* player)
+    {
+        assert(player != nullptr);
+        player->ModifyGoldCoins(2);
+        return true;
+    }
+
+    bool Boardgame::WatchPickDistrict(Player* player)
+    {
+        assert(player != nullptr);
+
+        const size_t numberOfDistricts = 2;
+        const auto peekedDistricts = districtDeck_.GetDistricts(DistrictDeckAction::PEEK, numberOfDistricts);
+
+        // Player can watch 2 cards but pick only one.
+        const auto selectedDistrict = player->WatchAndChooseDistrictCard(peekedDistricts);
+
+        // Check player isn't cheating.
+        const auto peekedDistrictsIt = std::find(std::begin(peekedDistricts), std::end(peekedDistricts), selectedDistrict);
+        if (peekedDistrictsIt == std::end(peekedDistricts))
+        {
+            Logger::GetInstance() << Verbosity::ERROR << "Player must pick a district among proposed ones" << std::endl;
+            return false;
+        }
+
+        // Transfer the card to player
+        player->GetAvailableDistricts().push_back(selectedDistrict);
+
+        auto drawnDistricts = districtDeck_.GetDistricts(DistrictDeckAction::DRAW, numberOfDistricts);
+        assert(peekedDistricts == drawnDistricts);
+
+        const auto drawnDistrictsIt = std::find(std::begin(drawnDistricts), std::end(drawnDistricts), selectedDistrict);
+        if (drawnDistrictsIt != std::end(drawnDistricts))
+        {
+            drawnDistricts.erase(drawnDistrictsIt); // Remove chosen card
+            districtDeck_.Discard(drawnDistricts);  // Add the rest
+        }
+        else
+        {
+            Logger::GetInstance() << Verbosity::ERROR << "Could not find district [" << GetDistrictName(selectedDistrict) << "] in drawn districts." << std::endl;
+        }
+
+        return true;
+    }
+
+    bool Boardgame::BuildDistrict(Player* player)
+    {
+        assert(player != nullptr);
+
+        // Ask player for building
+        // Note Architect can build up to three district cards
+        // TODO: make a function instead of ternary operator
+        const size_t authorizedBuilds = player->GetCharacter() == Character::ARCHITECT ? 3 : 1;
+        auto districtCards = player->ChooseDistrictCardsToBuild(authorizedBuilds);
+
+        if (districtCards.empty())
+        {
+            Logger::GetInstance() << Verbosity::DEBUG << "Player [" << player->GetName() << "] do not build during this round." << std::endl;
+            return true;
+        }
+
+        if (districtCards.size() > authorizedBuilds)
+        {
+            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] is not able to build [" << districtCards.size() << "] districts." << std::endl;
+            return false;
+        }
+
+        // Iterate over chosen districts by player
+        int goldCost = 0;
+        for (const auto district : districtCards)
+        {
+            // Price each district to get the sum
+            goldCost += GetDistrictCost(district);
+        }
+
+        // Check if player has enough gold coins
+        if (goldCost > player->GetGoldCoins())
+        {
+            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] tried to build but doesn't have enough gold coins." << std::endl;
+            return false;
+        }
+
+        // Finally build the district
+        player->BuildDistrict(districtCards);
+
+        // Record first player ending game to grant bonus points
+        if (player->GetBuiltCitySize() >= numberOfDistrictsToWin_ && firstPlayerEndingGame == -1)
+        {
+            Logger::GetInstance() << Verbosity::DEBUG << "[" << player->GetName() << "] is first player to end it's city (" << numberOfDistrictsToWin_ << ") districts built." << std::endl;
+            firstPlayerEndingGame = player->GetID();
+        }
+
+        return true;
+    }
+
+    bool Boardgame::UseMagicPower(Player* player)
+    {
+        const auto character = player->GetCharacter();
         switch (character)
         {
-            // Only these characters earn gold from their respective district
-            case Character::KING: playerColor = Color::YELLOW; break;
-            case Character::BISHOP: playerColor = Color::BLUE; break;
-            case Character::MERCHANT: playerColor = Color::GREEN; break;
-            case Character::WARLORD: playerColor = Color::RED; break;
-            default: return; // Current character cannot earn gold.
+            case Character::ASSASSIN:
+            case Character::THIEF:
+            {
+                return AskCharacterTarget(player);
+            }
+            case Character::MAGICIAN:
+            {
+                return MagicianMagicPower(player);
+            }
+            case Character::WARLORD:
+            {
+                return WarlordMagicPower(player);
+            }
+            default:
+            {
+                Logger::GetInstance() << Verbosity::ERROR << "No magic power for [" << GetCharacterName(player->GetCharacter()) << "]" << std::endl;
+            }
+        }
+        return true;
+    }
+
+    bool Boardgame::EarnDistrictIncome(Player* player)
+    {
+        const Color playerColor = GetCharacterColor(player->GetCharacter());
+
+        if (playerColor == Color::UNINITIALIZED)
+        {
+            return true;
         }
 
         // For each built district with a color matching current character color, earn 1 gold
@@ -299,261 +417,177 @@ namespace Citadel
             }
         }
         player->ModifyGoldCoins(earnedGoldCoins);
-    }
 
-    void Boardgame::PlayerTurn(Player* player, Character& murderedCharacter, Character& stolenCharacter)
-    {
-        // Starting three steps for player turn
-        PlayerTurnStep step = PlayerTurnStep::ACTION_STEP;
-
-        // Determine if this character has special ability to be requested to the player
-        bool canUseMagicPower = CanUseMagicPower(player->GetCharacter());
-
-        while (step != PlayerTurnStep::ENDING_STEP)
-        {
-            PlayerAction action = PlayerAction::UNINITIALIZED;
-            if (step == PlayerTurnStep::MAGIC_POWER_STEP && canUseMagicPower)
-            {
-                // Go straight to magic power handler
-                action = PlayerAction::USE_MAGIC_POWER;
-            }
-            else
-            {
-                // TODO: hardcode these containers in static const std::vector<PlayerAction>
-                std::vector<PlayerAction> availableActions;
-                if (step == PlayerTurnStep::ACTION_STEP)
-                {
-                    availableActions.push_back(PlayerAction::TAKE_GOLD_COINS);
-                    availableActions.push_back(PlayerAction::WATCH_DISTRICT_CARDS);
-                }
-                else if (step == PlayerTurnStep::BUILD_STEP)
-                {
-                    availableActions.push_back(PlayerAction::BUILD_DISTRICT_CARDS);
-                }
-                if (canUseMagicPower)
-                {
-                    availableActions.push_back(PlayerAction::USE_MAGIC_POWER);
-                }
-
-                // Ask player to choose an action
-                assert(availableActions.empty() == false);
-                action = player->ChooseAction(availableActions);
-            }
-
-            switch (action)
-            {
-                case PlayerAction::TAKE_GOLD_COINS:
-                case PlayerAction::WATCH_DISTRICT_CARDS:
-                {
-                    if (step == PlayerTurnStep::ACTION_STEP)
-                    {
-                        if (action == PlayerAction::TAKE_GOLD_COINS)
-                        {
-                            player->ModifyGoldCoins(2);
-                        }
-                        else if (action == PlayerAction::WATCH_DISTRICT_CARDS)
-                        {
-                            auto districts = districtDeck_.Draw(2);
-
-                            // Player can watch 2 cards but pick only one.
-                            auto selectedDistrict = player->WatchAndChooseDistrictCard(districts);
-
-                            // Check player isn't cheating.
-                            auto selectedDistrictIt = std::find(std::begin(districts), std::end(districts), selectedDistrict);
-                            if (selectedDistrictIt == std::end(districts))
-                            {
-                                std::cerr << "Player must pick a card among proposed ones" << std::endl;
-                                continue;
-                            }
-
-                            // Transfer the card to player
-                            player->GetAvailableDistricts().push_back(selectedDistrict);
-
-                            // Discard other cards
-                            districts.erase(selectedDistrictIt); // Remove chosen card
-                            districtDeck_.Discard(districts);    // Add the rest
-                        }
-
-                        if (player->GetCharacter() == Character::ARCHITECT)
-                        {
-                            // Architect gains 2 card just after taking an action.
-                            TransferDistrictCards(2, player);
-                        }
-                        else if (player->GetCharacter() == Character::MERCHANT)
-                        {
-                            // Merchant gains 1 gold coin just after taking an action.
-                            player->ModifyGoldCoins(1);
-                        }
-
-                        step = PlayerTurnStep::BUILD_STEP;
-                    }
-                    else
-                    {
-                        if (action == PlayerAction::TAKE_GOLD_COINS)
-                        {
-                            std::cerr << "Error: You cannot take gold coins at this step" << std::endl;
-                        }
-                        else if (action == PlayerAction::WATCH_DISTRICT_CARDS)
-                        {
-                            std::cerr << "Error: You cannot watch two cards at this step" << std::endl;
-                        }
-                        else
-                        {
-                            assert(!"LOGIC FAILURE");
-                        }
-                    }
-                    continue;
-                }
-
-                case PlayerAction::BUILD_DISTRICT_CARDS:
-                {
-                    if (step == PlayerTurnStep::BUILD_STEP)
-                    {
-                        // Ask player for building
-                        // Note Architect can build up to three district cards
-                        const size_t authorizedBuilds = player->GetCharacter() == Character::ARCHITECT ? 3 : 1;
-                        auto districtCards = player->ChooseDistrictCardsToBuild(authorizedBuilds);
-
-                        if (districtCards.size() > authorizedBuilds)
-                        {
-                            std::cerr << "Player [" << player->GetName() << "] is not able to build [" << districtCards.size() << "] districts." << std::endl;
-                            continue;
-                        }
-
-                        // Iterate over chosen districts by player
-                        int goldCost = 0;
-                        for (const auto district : districtCards)
-                        {
-                            // Price each district to get the sum
-                            goldCost += GetDistrictCost(district);
-                        }
-
-                        // Check if player has enough gold coins
-                        if (goldCost > player->GetGoldCoins())
-                        {
-                            std::cerr << "Player [" << player->GetName() << "] tried to build but doesn't have enough gold coins." << std::endl;
-                            continue;
-                        }
-
-                        // Finally build the district
-                        player->BuildDistrict(districtCards);
-
-                        // Record first player ending game to grant bonus points
-                        if (player->GetBuiltCitySize() >= numberOfDistrictsToWin_ && firstPlayerEndingGame == -1)
-                        {
-                            Logger::GetInstance() << Verbosity::DEBUG << "[" << player->GetName() << "] is first player to end it's city (" << numberOfDistrictsToWin_ << ") districts built." << std::endl;
-                            firstPlayerEndingGame = player->GetID();
-                        }
-
-                        // Proceed to next step
-                        if (canUseMagicPower)
-                        {
-                            step = PlayerTurnStep::MAGIC_POWER_STEP;
-                        }
-                        else
-                        {
-                            step = PlayerTurnStep::ENDING_STEP;
-                        }
-                    }
-                    else
-                    {
-                        std::cerr << "You cannot build at this step" << std::endl;
-                    }
-                    continue;
-                }
-
-                case PlayerAction::USE_MAGIC_POWER:
-                {
-                    if (canUseMagicPower)
-                    {
-                        const auto magicPowerConsumed = UseMagicPower(player, murderedCharacter, stolenCharacter);
-                        canUseMagicPower = !magicPowerConsumed;
-                        if (magicPowerConsumed && step == PlayerTurnStep::MAGIC_POWER_STEP)
-                        {
-                            step = PlayerTurnStep::ENDING_STEP;
-                        }
-                    }
-                    else
-                    {
-                        std::cerr << "You cannot use your magic power" << std::endl;
-                    }
-                    break;
-                }
-
-                default:
-                {
-                    std::cerr << "Player [" << player->GetName() << "] must pick a choice. Returned [" << static_cast<int>(action) << "]" << std::endl;
-                }
-            }
-        }
-    }
-
-    // Boolean return: does magic power has been consumed ?
-    bool Boardgame::UseMagicPower(Player* player, Character& murderedCharacter, Character& stolenCharacter)
-    {
-        const auto character = player->GetCharacter();
-        switch (character)
-        {
-            case Character::ASSASSIN:
-            {
-                return AssassinMagicPower(player, murderedCharacter);
-            }
-            case Character::THIEF:
-            {
-                return ThiefMagicPower(player, stolenCharacter);
-            }
-            case Character::MAGICIAN:
-            {
-                return MagicianMagicPower(player);
-            }
-            case Character::WARLORD:
-            {
-                return WarlordMagicPower(player);
-            }
-            default:
-            {
-                std::cerr << "No magic power for [" << GetCharacterName(player->GetCharacter()) << "]" << std::endl;
-            }
-        }
         return true;
     }
 
-    bool Boardgame::AskCharacterTarget(Player* player, Character& victim)
+    void Boardgame::ActionStepTransition(Player* player)
     {
-        auto possibleVictims = characterDeck_.PossibleOpponentsCharacters(player->GetCharacter());
-        victim = player->ChooseCharacterTarget(possibleVictims);
+        if (player->GetCharacter() == Character::ARCHITECT)
+        {
+            // Architect gains 2 card just after taking an action.
+            TransferDistrictCards(2, player);
+        }
+        else if (player->GetCharacter() == Character::MERCHANT)
+        {
+            // Merchant gains 1 gold coin just after taking an action.
+            player->ModifyGoldCoins(1);
+        }
+    }
+
+    void Boardgame::BuildStepTransition(Player* player)
+    {
+    }
+
+    void Boardgame::MagicPowerStepTransition(Player* player)
+    {
+    }
+
+    void Boardgame::DistrictIncomeStepTransition(Player* player)
+    {
+    }
+
+    void Boardgame::PlayerTurn(Player* player)
+    {
+        // TODO: Move these data to relevant place
+        static const std::map<PlayerTurnStep, std::vector<PlayerAction>> actionsMapping
+        {
+            { PlayerTurnStep::ACTION_STEP, { PlayerAction::TAKE_GOLD_COINS, PlayerAction::WATCH_DISTRICT_CARDS } },
+            { PlayerTurnStep::BUILD_STEP, { PlayerAction::BUILD_DISTRICT_CARDS } },
+            { PlayerTurnStep::MAGIC_POWER_STEP, { PlayerAction::USE_MAGIC_POWER } },
+            { PlayerTurnStep::DISTRICT_INCOME_STEP, { PlayerAction::EARN_DISTRICT_INCOME } },
+        };
+
+        static const std::map<PlayerAction, PlayerTurnStep> stepByAction
+        {
+            { PlayerAction::TAKE_GOLD_COINS, PlayerTurnStep::ACTION_STEP },
+            { PlayerAction::WATCH_DISTRICT_CARDS, PlayerTurnStep::ACTION_STEP },
+            { PlayerAction::BUILD_DISTRICT_CARDS, PlayerTurnStep::BUILD_STEP },
+            { PlayerAction::USE_MAGIC_POWER, PlayerTurnStep::MAGIC_POWER_STEP },
+            { PlayerAction::EARN_DISTRICT_INCOME, PlayerTurnStep::DISTRICT_INCOME_STEP },
+        };
+
+        using PairOfFunctions = std::pair<std::function<bool(Boardgame&, Player*)>, std::function<void (Boardgame&, Player*)>>;
+        static const std::map<PlayerAction, PairOfFunctions> functionByAction
+        {
+            { PlayerAction::TAKE_GOLD_COINS, { std::mem_fn(&Boardgame::TakeGoldCoins), std::mem_fn(&Boardgame::ActionStepTransition) } },
+            { PlayerAction::WATCH_DISTRICT_CARDS, { std::mem_fn(&Boardgame::WatchPickDistrict), std::mem_fn(&Boardgame::ActionStepTransition) } },
+            { PlayerAction::BUILD_DISTRICT_CARDS, { std::mem_fn(&Boardgame::BuildDistrict), std::mem_fn(&Boardgame::BuildStepTransition) } },
+            { PlayerAction::USE_MAGIC_POWER, { std::mem_fn(&Boardgame::UseMagicPower), std::mem_fn(&Boardgame::MagicPowerStepTransition) } },
+            { PlayerAction::EARN_DISTRICT_INCOME, { std::mem_fn(&Boardgame::EarnDistrictIncome), std::mem_fn(&Boardgame::DistrictIncomeStepTransition) } },
+        };
+
+        std::map<PlayerTurnStep, bool> stepState
+        {
+            { PlayerTurnStep::ACTION_STEP, true },
+            { PlayerTurnStep::BUILD_STEP, true },
+            { PlayerTurnStep::MAGIC_POWER_STEP, CanUseMagicPower(player->GetCharacter()) },
+            { PlayerTurnStep::DISTRICT_INCOME_STEP, true },
+        };
+
+        auto allStepsAreDone = [&stepState]()
+        {
+            for (const auto& pair : stepState)
+            {
+                if (pair.second == true)
+                {
+                    return false;
+                }
+            }
+            return true;
+        };
+
+        do
+        {
+            std::vector<PlayerAction> availableActions;
+            for (const auto& step : stepState)
+            {
+                if (step.second)
+                {
+                    const auto it = actionsMapping.find(step.first);
+                    if (it != std::end(actionsMapping))
+                    {
+                        availableActions.insert(std::begin(availableActions), std::begin(it->second), std::end(it->second));
+                    }
+                }
+            }
+            assert(availableActions.empty() == false);
+            assert(std::find(std::begin(availableActions), std::end(availableActions), PlayerAction::UNINITIALIZED) == std::end(availableActions));
+
+            PlayerAction action = PlayerAction::UNINITIALIZED;
+            bool validAction = false;
+            size_t attempts = 0;
+            static const size_t maximumAttempts = 3;
+            do
+            {
+                // Ask player to choose an action
+                action = player->ChooseAction(availableActions);
+                // Ensure action is available
+                validAction = std::find(std::begin(availableActions), std::end(availableActions), action) != std::end(availableActions);
+            }
+            while (validAction == false && attempts++ < maximumAttempts);
+
+            if (validAction == false)
+            {
+                Logger::GetInstance() << Verbosity::ERROR << "Maximum attempts [" << attempts << "] reached to choose action" << std::endl;
+                return;
+            }
+
+            // Which PlayerTurnStep will be consumed by PlayerAction ?
+            const auto stepActionIt = stepByAction.find(action);
+            if (stepActionIt == std::end(stepByAction))
+            {
+                Logger::GetInstance() << Verbosity::FATAL << "Cannot find value from PlayerAction key [" << GetPlayerActionName(action) << "]" << std::endl;
+                return;
+            }
+
+            auto stepStateIt = stepState.find(stepActionIt->second);
+            if (stepStateIt == std::end(stepState))
+            {
+                Logger::GetInstance() << Verbosity::FATAL << "Cannot find value from PlayerTurnStep key [" << GetPlayerTurnStepName(stepActionIt->second) << "]" << std::endl;
+                return;
+            }
+
+            auto functionActionIt = functionByAction.find(action);
+            if (functionActionIt != std::end(functionByAction))
+            {
+                PairOfFunctions pair = functionActionIt->second;
+
+                // Call state processing function
+                const bool result = pair.first(*this, player);
+                if (result)
+                {
+                    // This step is now consumed
+                    Logger::GetInstance() << Verbosity::DEBUG << "Step [" << GetPlayerTurnStepName(stepActionIt->second) << "] is now consumed for [" << player->GetName() << "]" << std::endl;
+                    stepStateIt->second = false;
+
+                    // Call state transition function
+                    pair.second(*this, player);
+                }
+            }
+        }
+        while (allStepsAreDone() == false);
+    }
+
+    bool Boardgame::AskCharacterTarget(Player* player)
+    {
+        const auto possibleVictims = characterDeck_.GetOpponentCharacters(player->GetCharacter());
+        const auto victim = player->ChooseCharacterTarget(possibleVictims);
         if (possibleVictims.find(victim) == std::end(possibleVictims))
         {
-            std::cerr << "Player [" << player->GetName() << "] choosed [" << GetCharacterName(victim) << "] but it's impossible." << std::endl;
-            return false;
+            Logger::GetInstance() << Verbosity::WARNING << "Player [" << player->GetName() << "] choosed [" << GetCharacterName(victim) << "] but it's impossible." << std::endl;
         }
+        else if (victims.find(victim) != std::end(victims))
+        {
+            Logger::GetInstance() << Verbosity::WARNING << "Character [" << GetCharacterName(victim) << "] is already a victim. Cannot target a victim." << std::endl;
+        }
+        else
+        {
+            assert(player->GetCharacter() != Character::UNINITIALIZED);
+            victims.insert({ victim, player->GetCharacter() });
+        }
+        
         return true;
-    }
-
-    bool Boardgame::AssassinMagicPower(Player* player, Character& murderedCharacter)
-    {
-        Character victim = Character::UNINITIALIZED;
-
-        if (AskCharacterTarget(player, victim))
-        {
-            murderedCharacter = victim;
-            return true;
-        }
-
-        return false;
-    }
-
-    bool Boardgame::ThiefMagicPower(Player* player, Character& stolenCharacter)
-    {
-        Character victim = Character::UNINITIALIZED;
-
-        if (AskCharacterTarget(player, victim))
-        {
-            stolenCharacter = victim;
-            return true;
-        }
-
-        return false;
     }
 
     bool Boardgame::MagicianMagicPower(Player* player)
@@ -563,7 +597,8 @@ namespace Citadel
         // 2)  Place any number of cards from your hand facedown at the bottom of the District Deck, and
         //     then draw an equal number of cards from the top of the District Deck
         // 3) Do nothing
-        const MagicianChoice magicianChoice = player->MagicianDecision();
+        const auto opponents = GetOpponentPlayers(player->GetID());
+        const MagicianChoice magicianChoice = player->MagicianDecision(opponents);
         switch (magicianChoice)
         {
             case MagicianChoice::EXCHANGE_FROM_PLAYER:
@@ -581,7 +616,7 @@ namespace Citadel
             }
             default:
             {
-                std::cerr << "Magician choice is not correct: [" << static_cast<int>(magicianChoice) << "]" << std::endl;
+                Logger::GetInstance() << Verbosity::ERROR << "Magician [" << player->GetName() << "] choice is not correct: [" << static_cast<int>(magicianChoice) << "]" << std::endl;
                 return false;
             }
         }
@@ -591,28 +626,19 @@ namespace Citadel
 
     bool Boardgame::MagicianExchangeFromPlayer(Player* player)
     {
-        // Build a vector of readonly players
-        std::vector<const Player*> opponents;
-        for (const auto& pair : playerById_)
-        {
-            if (pair.first != player->GetID())
-            {
-                opponents.push_back(pair.second.get());
-            }
-        }
-
+        const auto opponents = GetOpponentPlayers(player->GetID());
         const int victimID = player->ChoosePlayerTarget(opponents);
 
         if (victimID == player->GetID())
         {
-            std::cerr << "Cannot self swap card" << std::endl;
+            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot self swap available districts" << std::endl;
             return false;
         }
 
         auto playerIdPairIt = playerById_.find(victimID);
         if (playerIdPairIt == playerById_.end())
         {
-            std::cerr << "Unable to find [" << victimID << "] player ID. Retry." << std::endl;
+            Logger::GetInstance() << Verbosity::ERROR << "Unable to find [" << victimID << "] player ID. Retry." << std::endl;
             return false;
         }
 
@@ -627,20 +653,20 @@ namespace Citadel
         auto& cardsInHand = player->GetAvailableDistricts();
         if (cardsInHand.empty())
         {
-            std::cerr << "Player has no cards in hand, therefore cannot exchange cards with District deck" << std::endl;
+            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot swap with districts deck, no district to swap !" << std::endl;
             return false;
         }
 
         if (districtDeck_.GetPileOfCardSize() < cardsInHand.size())
         {
-            std::cerr << "There is not enough cards in district deck to swap" << std::endl;
+            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot swap with districts deck, there is not enough districts in deck to swap" << std::endl;
             return false;
         }
 
         auto districtsToDiscard = player->ChooseDistrictsCardsToSwap();
         if (districtsToDiscard.empty())
         {
-            std::cerr << "Player returned no cards to exchange <ith District deck" << std::endl;
+            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] returned no districts to exchange with District deck" << std::endl;
             return false;
         }
 
@@ -655,7 +681,7 @@ namespace Citadel
             }
             else
             {
-                std::cerr << "Chosen district card is not in your hand" << std::endl;
+                Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] chose district [" << GetDistrictName(*it) << "] he does not own" << std::endl;
                 // Insert removed cards to rollback
                 cardsInHand.insert(cardsInHand.end(), districtsToDiscard.begin(), it);
                 return false;
@@ -663,7 +689,7 @@ namespace Citadel
         }
 
         districtDeck_.Discard(districtsToDiscard);
-        auto drawnCards = districtDeck_.Draw(districtsToDiscard.size());
+        auto drawnCards = districtDeck_.GetDistricts(DistrictDeckAction::DRAW, districtsToDiscard.size());
         cardsInHand.insert(cardsInHand.end(), drawnCards.begin(), drawnCards.end());
 
         return true;
@@ -678,33 +704,43 @@ namespace Citadel
         }
 
         auto pair = player->ChoosePlayerDistrictTarget(players);
+        if (pair.first == -1)
+        {
+            Logger::GetInstance() << Verbosity::DEBUG << "Player [" << player->GetName() << "] finally doesn't destroy a district" << std::endl;
+            return true;
+        }
 
         // Find player
         auto victimIt = playerById_.find(pair.first);
         if (victimIt == playerById_.end())
         {
-            std::cerr << "Unable to find player id [" << pair.first << "]" << std::endl;
-            return false;
+            Logger::GetInstance() << Verbosity::ERROR << "Unable to find player id [" << pair.first << "]" << std::endl;
+            return true;
         }
 
         // Warlord cannot destroy Bishop districts
-        if (victimIt->second->GetCharacter() == Character::BISHOP)
+
+        const auto bishopIt = playerByCharacter_.find(Character::BISHOP);
+        if (bishopIt != std::end(playerByCharacter_))
         {
-            std::cerr << "Cannot destroy a Bishop's district." << std::endl;
-            return false;
+            if (bishopIt->second->GetID() == victimIt->second->GetID())
+            {
+                Logger::GetInstance() << Verbosity::WARNING << "Player [" << player->GetName() << "] cannot destroy Bishop district" << std::endl;
+                return true;
+            }
         }
 
-        // Once a city is completed, one district cannot be destroyed within.
+        // Once a city is completed, this city becomes immune to Warlord
         if (victimIt->second->GetBuiltCitySize() >= numberOfDistrictsToWin_)
         {
-            std::cerr << "Cannot destroy a district in a completed city" << std::endl;
-            return false;
+            Logger::GetInstance() << Verbosity::WARNING << "Player [" << player->GetName() << "] cannot destroy a district in a finished Citadel" << std::endl;
+            return true;
         }
 
         if (pair.second == District::UNINITIALIZED)
         {
-            std::cerr << "Cannot destroy UNINITIALIZED district." << std::endl;
-            return false;
+            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot destroy UNINITIALIZED district" << std::endl;
+            return true;
         }
 
         if (GetDistrictCost(pair.second) >= 1)
@@ -714,20 +750,20 @@ namespace Citadel
             {
                 if (victimIt->second->DestroyDistrict(pair.second) == false)
                 {
-                    Logger::GetInstance() << Verbosity::ERROR << "Player [" << pair.first << "] does not have [" << GetDistrictName(pair.second) << "]" << std::endl;
-                    return false;
+                    Logger::GetInstance() << Verbosity::WARNING << "Player [" << pair.first << "] does not have [" << GetDistrictName(pair.second) << "]" << std::endl;
+                    return true;
                 }
-                Logger::GetInstance() << Verbosity::DEBUG << "player [" << player->GetName() << "] destroyed [" << GetDistrictName(pair.second) << "] owned by [" << victimIt->second->GetName() << "]" << std::endl;
+                Logger::GetInstance() << Verbosity::INFO << "player [" << player->GetName() << "] destroyed [" << GetDistrictName(pair.second) << "] owned by [" << victimIt->second->GetName() << "]" << std::endl;
             }
             else
             {
-                Logger::GetInstance() << Verbosity::ERROR << "Player [" << pair.first << "] has not enough gold to destroy this district" << std::endl;
-                return false;
+                Logger::GetInstance() << Verbosity::WARNING << "Player [" << pair.first << "] has not enough gold to destroy this district" << std::endl;
+                return true;
             }
         }
         else
         {
-            Logger::GetInstance() << Verbosity::ERROR << "District [" << GetDistrictName(pair.second) << "] has a cost of [" << GetDistrictCost(pair.second) << "] gold coins." << std::endl;
+            Logger::GetInstance() << Verbosity::FATAL << "District [" << GetDistrictName(pair.second) << "] has a cost of [" << GetDistrictCost(pair.second) << "] gold coins." << std::endl;
             return false;
         }
 
@@ -800,7 +836,8 @@ namespace Citadel
 
             scores[player->GetID()] = score;
 
-            Logger::GetInstance() << Verbosity::DEBUG << "Player [" << player->GetName() << "] has [" << score << "] points." << std::endl;
+            Logger::GetInstance() << Verbosity::INFO << "Player [" << player->GetName() << "] has [" << score << "] points." << std::endl;
         }
+        // TODO: display player scores
     }
 }

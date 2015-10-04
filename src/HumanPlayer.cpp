@@ -2,31 +2,35 @@
 #include <array>
 #include <iostream>
 #include <unordered_set>
+
+#include "Logger.h"
 #include "HumanPlayer.h"
 
 namespace Citadel
 {
-    HumanPlayer::HumanPlayer()
-    {
-        name_ = GetID();
-
-        //std::cout << "Enter player " << GetID() << " name: ";
-        //std::cin >> name_;
-    }
-
     HumanPlayer::HumanPlayer(const std::string& name)
         : Player(name)
     {
+        assert(name.empty() == false);
     }
 
     // Returns character picked to play
-    Character HumanPlayer::PickCharacter(const std::set<Character>& remainingCards)
+    Character HumanPlayer::PickCharacter(const std::set<Character>& remainingCharacters, const std::set<Character>& faceupCharacters)
     {
-        assert(remainingCards.size() > 0);
+        assert(remainingCharacters.size() > 0);
         std::vector<Character> indexedCharacters;
         
+        if (faceupCharacters.empty() == false)
+        {
+            std::cout << "Faceup character" << (faceupCharacters.size() == 1 ? " is" : "s are") << ":" << std::endl;
+        }
+        for (const auto character : faceupCharacters)
+        {
+            std::cout << "- " << GetCharacterName(character) << std::endl;
+        }
+
         std::cout << "@" << GetName() << ", Select character among: " << std::endl;
-        for (const auto character : remainingCards)
+        for (const auto character : remainingCharacters)
         {
             std::cout << "- " << GetCharacterName(character) << " (" << indexedCharacters.size() << ")" << std::endl;
             indexedCharacters.push_back(character);
@@ -44,8 +48,9 @@ namespace Citadel
     // Returns action to be taken
     PlayerAction HumanPlayer::ChooseAction(const std::vector<PlayerAction>& availableActions)
     {
+        std::cout << "@" << GetName() << ", You are playing [" << GetCharacterName(GetCharacter()) << "]" << std::endl;
         std::cout << "@" << GetName() << ", You currently have " << GetGoldCoins() << " gold coins." << std::endl;
-        std::cout << "@" << GetName() << ", Select player action among: " << std::endl;
+        std::cout << "@" << GetName() << ", Select action among: " << std::endl;
 
         const size_t size = availableActions.size();
         for (size_t i = 0; i < size; ++i)
@@ -124,7 +129,7 @@ namespace Citadel
     }
 
     // Returns opponent player id, current player wants to target
-    int HumanPlayer::ChoosePlayerTarget(std::vector<const Player*> opponents)
+    int HumanPlayer::ChoosePlayerTarget(const std::vector<const Player*>& opponents)
     {
         std::cout << "@" << GetName() << ", Choose a target among:" << std::endl;
 
@@ -147,7 +152,7 @@ namespace Citadel
     }
 
     // Returns a pair containing player id (self district destroy is tolerated) as key and destroyed district as value
-    std::pair<int, District> HumanPlayer::ChoosePlayerDistrictTarget(std::vector<const Player*> players)
+    std::pair<int, District> HumanPlayer::ChoosePlayerDistrictTarget(const std::vector<const Player*>& players)
     {
         std::cout << "@" << GetName() << ", Choose a player id followed by a district id, among:" << std::endl;
 
@@ -183,24 +188,24 @@ namespace Citadel
                 }
                 else
                 {
-                    std::cerr << "District ID [" << districtID << "] does not exist." << std::endl;
+                    Logger::GetInstance() << Verbosity::ERROR << "District ID [" << districtID << "] does not exist." << std::endl;
                 }
             }
             else
             {
-                std::cerr << "Player index [" << playerIndex << "] is not valid, there is only [" << players.size() << "] players available to choose." << std::endl;
+                Logger::GetInstance() << Verbosity::ERROR << "Player index [" << playerIndex << "] is not valid, there is only [" << players.size() << "] players available to choose." << std::endl;
             }
         }
         else
         {
-            std::cout << "All cities are empty, there is nothing to destroy." << std::endl;
+            Logger::GetInstance() << Verbosity::INFO << "All cities are empty, there is nothing to destroy." << std::endl;
         }
 
         return { -1, District::UNINITIALIZED };
     }
 
     // Returns a choice specific to Magician character
-    MagicianChoice HumanPlayer::MagicianDecision()
+    MagicianChoice HumanPlayer::MagicianDecision(const std::vector<const Player*>& opponents)
     {
         std::cout << "@" << GetName() << ", As Magician make a choice among:" << std::endl;
 

@@ -1,9 +1,7 @@
-#include "GameData.h"
-#include "Boardgame.h"
+#include "ConsoleMenu.h"
 
 int main()
 {
-    Citadel::Boardgame boardgame(Citadel::Edition::REGULAR);
-    boardgame.StartGame();
+    Citadel::ConsoleMenu::Start();
     return 0;
 }

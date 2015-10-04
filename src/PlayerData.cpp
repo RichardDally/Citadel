@@ -3,6 +3,25 @@
 
 namespace Citadel
 {
+#pragma region PlayerNumber
+    const size_t GetMinimumPlayers()
+    {
+        return 2;
+    }
+    const size_t GetMaximumPlayers()
+    {
+        return 7;
+    }
+    const bool ValidateNumberOfPlayers(const size_t totalPlayers)
+    {
+        if (totalPlayers >= GetMinimumPlayers() && totalPlayers <= GetMaximumPlayers())
+        {
+            return true;
+        }
+        return false;
+    }
+#pragma endregion
+
 #pragma region PlayerTurnStep
     namespace
     {
@@ -12,7 +31,7 @@ namespace Citadel
             "ACTION_STEP",
             "BUILD_STEP",
             "MAGIC_POWER_STEP",
-            "ENDING_STEP",
+            "DISTRICT_INCOME_STEP",
         };
     }
 
@@ -34,6 +53,7 @@ namespace Citadel
             "WATCH DISTRICT CARDS",
             "BUILD DISTRICT CARDS",
             "USE MAGIC POWER",
+            "EARN_DISTRICT_INCOME",
         };
     }
 
