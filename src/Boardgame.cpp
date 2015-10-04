@@ -144,6 +144,14 @@ namespace Citadel
             {
                 currentPlayer_ = 0;
             }
+
+            if (playerById_.size() == 2)
+            {
+                if (remainingCharacters.size() == 5 || remainingCharacters.size() == 3)
+                {
+                    characterDeck_.WithdrawCharacterToFaceOff();
+                }
+            }
         }
         while (remainingCharacters.size() != 1);
 
