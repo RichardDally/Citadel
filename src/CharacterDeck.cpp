@@ -40,6 +40,7 @@ namespace Citadel
         switch (numberOfPlayers_)
         {
             case 2:
+            case 3:
             {
                 assert(remainingCards_.size() == 8);
                 WithdrawCards(1, faceoffCards_, faceoffRule);
@@ -109,5 +110,10 @@ namespace Citadel
         }
 
         return result;
+    }
+
+    void CharacterDeck::WithdrawCharacterToFaceOff()
+    {
+        WithdrawCards(1, faceoffCards_, faceoffRule);
     }
 }

@@ -42,6 +42,8 @@ namespace Citadel
             remainingCards_.erase(character);
         }
 
+        void WithdrawCharacterToFaceOff();
+
     private:
         // Move character cards from remaining heap to faceup or faceoff heaps.
         template <typename DestContainer>
