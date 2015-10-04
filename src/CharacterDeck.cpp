@@ -1,5 +1,6 @@
 #include <cassert>
 #include <iostream>
+#include "PlayerData.h"
 #include "CharacterDeck.h"
 
 namespace Citadel
@@ -36,11 +37,12 @@ namespace Citadel
         // Copy every available cards to remaining ones
         remainingCards_.insert(std::begin(availableCharacters_), std::end(availableCharacters_));
 
-        assert(numberOfPlayers_ >= 2 && numberOfPlayers_ <= 7);
+        assert(numberOfPlayers_ >= GetMinimumPlayers() && numberOfPlayers_ <= GetMaximumPlayers());
         switch (numberOfPlayers_)
         {
             case 2:
             case 3:
+            case 6:
             {
                 assert(remainingCards_.size() == 8);
                 WithdrawCards(1, faceoffCards_, faceoffRule);
@@ -60,14 +62,9 @@ namespace Citadel
                 WithdrawCards(1, faceoffCards_, faceoffRule);
                 break;
             }
-            case 6:
-            {
-                assert(remainingCards_.size() == 8);
-                WithdrawCards(1, faceoffCards_, faceoffRule);
-                break;
-            }
             default:
             {
+                Logger::GetInstance() << Verbosity::ERROR << "[" << numberOfPlayers_ << "] players game is not implemented." << std::endl;
                 assert(!"Not implemented");
             }
         }
