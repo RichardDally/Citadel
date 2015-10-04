@@ -563,18 +563,22 @@ namespace Citadel
 
     bool Boardgame::AskCharacterTarget(Player* player)
     {
-        assert(player->GetCharacter() != Character::UNINITIALIZED);
-
         const auto possibleVictims = characterDeck_.GetOpponentCharacters(player->GetCharacter());
         const auto victim = player->ChooseCharacterTarget(possibleVictims);
         if (possibleVictims.find(victim) == std::end(possibleVictims))
         {
-            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] choosed [" << GetCharacterName(victim) << "] but it's impossible." << std::endl;
-            return false;
+            Logger::GetInstance() << Verbosity::WARNING << "Player [" << player->GetName() << "] choosed [" << GetCharacterName(victim) << "] but it's impossible." << std::endl;
         }
-        // TODO: Ensure victim isn't present in victims container
-
-        victims.insert({ victim, player->GetCharacter() });
+        else if (victims.find(victim) != std::end(victims))
+        {
+            Logger::GetInstance() << Verbosity::WARNING << "Character [" << GetCharacterName(victim) << "] is already a victim. Cannot target a victim." << std::endl;
+        }
+        else
+        {
+            assert(player->GetCharacter() != Character::UNINITIALIZED);
+            victims.insert({ victim, player->GetCharacter() });
+        }
+        
         return true;
     }
 
