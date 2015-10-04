@@ -54,7 +54,7 @@ namespace Citadel
 
     const Edition ConsoleMenu::ChooseEdition()
     {
-        // TODO: remove EDITION when they are implemented
+        // TODO: remove this container when these editions are implemented
         std::set<Edition> notImplementedEditions { Edition::REGULAR, Edition::DARK_CITY };
 
         std::cout << "Choose edition among:" << std::endl;

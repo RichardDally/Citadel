@@ -130,9 +130,6 @@ namespace Citadel
                 Logger::GetInstance() << Verbosity::DEBUG << "Next king will be [" << playerById_[currentPlayer_]->GetName() << "]" << std::endl;
             }
 
-            // Confirm picked character
-            playerById_[currentPlayer_]->SetCharacter(pickedCharacter);
-
             // Update player by role index (speed-up calling roles on next step)
             playerByCharacter_[pickedCharacter] = playerById_[currentPlayer_].get();
 
@@ -147,8 +144,16 @@ namespace Citadel
             {
                 currentPlayer_ = 0;
             }
+
+            if (playerById_.size() == 2)
+            {
+                if (remainingCharacters.size() == 5 || remainingCharacters.size() == 3)
+                {
+                    characterDeck_.WithdrawCharacterToFaceOff();
+                }
+            }
         }
-        while (currentPlayer_ != startingPlayer_);
+        while (remainingCharacters.size() != 1);
 
         // Withdraw remaining cards (if necessary) to faceoff heap
         characterDeck_.ChooseCharactersStep();
@@ -157,11 +162,8 @@ namespace Citadel
     // Step Three: Player Turns
     void Boardgame::PlayerTurnsStep(const Edition edition)
     {
-        murderedCharacter_ = Character::UNINITIALIZED;
-        stolenCharacter_ = Character::UNINITIALIZED;
-
+        victims.clear();
         const auto& callingOrder = GetCharacterCallingOrder(edition);
-
         assert(callingOrder.empty() == false);
         for (const auto character : callingOrder)
         {
@@ -178,54 +180,57 @@ namespace Citadel
             Player* player = it->second;
             if (player == nullptr)
             {
-                assert(!"player pointer should not be nullptr.");
                 Logger::GetInstance() << Verbosity::ERROR << "player attached to [" << GetCharacterName(character) << "] was nullptr." << std::endl;
+                assert(!"player pointer should not be nullptr.");
                 continue;
             }
+            player->SetCharacter(character);
             Logger::GetInstance() << Verbosity::DEBUG << "[" << player->GetName() << "] is [" << GetCharacterName(character) << "]" << std::endl;
 
-            // First check if character is murdered (assassin cannot be)
-            assert(murderedCharacter_ != Character::ASSASSIN);
-            if (character == murderedCharacter_)
+            
+            const auto victimsIt = victims.find(character);
+            if (victimsIt != std::end(victims))
             {
-                // Debug block
-                {
-                    Logger::GetInstance() << Verbosity::DEBUG << "[" << GetCharacterName(character) << "] has been murdered." << std::endl;
-                    auto assassin = playerByCharacter_.find(Character::ASSASSIN);
-                    auto victim = playerByCharacter_.find(character);
-                    assert(assassin != playerByCharacter_.end());
-                    assert(victim != playerByCharacter_.end());
-                    if (assassin != playerByCharacter_.end() && victim != playerByCharacter_.end())
-                    {
-                        Logger::GetInstance() << Verbosity::DEBUG << "[" << victim->second->GetName() << "] has been murdered by [" << assassin->second->GetName() << "] !" << std::endl;
-                    }
-                }
-                // Current player skip it's turn
-                continue;
-            }
-
-            // Then check if character is stolen
-            assert(stolenCharacter_ != Character::ASSASSIN);
-            assert(stolenCharacter_ != Character::THIEF);
-            if (character == stolenCharacter_)
-            {
-                auto thief = playerByCharacter_.find(Character::THIEF);
-                auto victim = playerByCharacter_.find(character);
-
+                const auto victim = victimsIt->first;
+                const auto offenser = victimsIt->second;
+                assert(victim != Character::ASSASSIN);
+                if (offenser == Character::ASSASSIN)
                 {
                     // Debug block
-                    Logger::GetInstance() << Verbosity::DEBUG << "[" << GetCharacterName(character) << "] has been stolen !" << std::endl;
-                    assert(thief != playerByCharacter_.end());
-                    assert(victim != playerByCharacter_.end());
-                    if (thief != playerByCharacter_.end() && victim != playerByCharacter_.end())
                     {
-                        Logger::GetInstance() << Verbosity::DEBUG << "[" << victim->second->GetName() << "] has been stolen by [" << thief->second->GetName() << "] !" << std::endl;
+                        Logger::GetInstance() << Verbosity::DEBUG << "[" << GetCharacterName(character) << "] has been murdered." << std::endl;
+                        const auto assassinPlayer = playerByCharacter_.find(Character::ASSASSIN);
+                        const auto victimPlayer = playerByCharacter_.find(character);
+                        assert(assassinPlayer != playerByCharacter_.end());
+                        assert(victimPlayer != playerByCharacter_.end());
+                        if (assassinPlayer != playerByCharacter_.end() && victimPlayer != playerByCharacter_.end())
+                        {
+                            Logger::GetInstance() << Verbosity::DEBUG << "[" << victimPlayer->second->GetName() << "] has been murdered by [" << assassinPlayer->second->GetName() << "] !" << std::endl;
+                        }
                     }
+                    // Current player skip it's turn
+                    continue;
                 }
+                else if (offenser == Character::THIEF)
+                {
+                    auto thiefPlayer = playerByCharacter_.find(Character::THIEF);
+                    auto victimPlayer = playerByCharacter_.find(character);
 
-                const auto stolenGold = victim->second->GetGoldCoins();
-                thief->second->ModifyGoldCoins(stolenGold);
-                victim->second->ModifyGoldCoins(-stolenGold);
+                    {
+                        // Debug block
+                        Logger::GetInstance() << Verbosity::DEBUG << "[" << GetCharacterName(character) << "] has been stolen !" << std::endl;
+                        assert(thiefPlayer != playerByCharacter_.end());
+                        assert(victimPlayer != playerByCharacter_.end());
+                        if (thiefPlayer != playerByCharacter_.end() && victimPlayer != playerByCharacter_.end())
+                        {
+                            Logger::GetInstance() << Verbosity::DEBUG << "[" << victimPlayer->second->GetName() << "] has been stolen by [" << thiefPlayer->second->GetName() << "] !" << std::endl;
+                        }
+                    }
+
+                    const auto stolenGold = victimPlayer->second->GetGoldCoins();
+                    thiefPlayer->second->ModifyGoldCoins(stolenGold);
+                    victimPlayer->second->ModifyGoldCoins(-stolenGold);
+                }
             }
 
             // Note Player uses his magic power whenever he wants but will be requested after building
@@ -372,12 +377,9 @@ namespace Citadel
         switch (character)
         {
             case Character::ASSASSIN:
-            {
-                return AssassinMagicPower(player);
-            }
             case Character::THIEF:
             {
-                return ThiefMagicPower(player);
+                return AskCharacterTarget(player);
             }
             case Character::MAGICIAN:
             {
@@ -567,42 +569,25 @@ namespace Citadel
         while (allStepsAreDone() == false);
     }
 
-    bool Boardgame::AskCharacterTarget(Player* player, Character& victim)
+    bool Boardgame::AskCharacterTarget(Player* player)
     {
-        auto possibleVictims = characterDeck_.GetOpponentCharacters(player->GetCharacter());
-        victim = player->ChooseCharacterTarget(possibleVictims);
+        const auto possibleVictims = characterDeck_.GetOpponentCharacters(player->GetCharacter());
+        const auto victim = player->ChooseCharacterTarget(possibleVictims);
         if (possibleVictims.find(victim) == std::end(possibleVictims))
         {
-            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] choosed [" << GetCharacterName(victim) << "] but it's impossible." << std::endl;
-            return false;
+            Logger::GetInstance() << Verbosity::WARNING << "Player [" << player->GetName() << "] choosed [" << GetCharacterName(victim) << "] but it's impossible." << std::endl;
         }
+        else if (victims.find(victim) != std::end(victims))
+        {
+            Logger::GetInstance() << Verbosity::WARNING << "Character [" << GetCharacterName(victim) << "] is already a victim. Cannot target a victim." << std::endl;
+        }
+        else
+        {
+            assert(player->GetCharacter() != Character::UNINITIALIZED);
+            victims.insert({ victim, player->GetCharacter() });
+        }
+        
         return true;
-    }
-
-    bool Boardgame::AssassinMagicPower(Player* player)
-    {
-        Character victim = Character::UNINITIALIZED;
-
-        if (AskCharacterTarget(player, victim))
-        {
-            murderedCharacter_ = victim;
-            return true;
-        }
-
-        return false;
-    }
-
-    bool Boardgame::ThiefMagicPower(Player* player)
-    {
-        Character victim = Character::UNINITIALIZED;
-
-        if (AskCharacterTarget(player, victim))
-        {
-            stolenCharacter_ = victim;
-            return true;
-        }
-
-        return false;
     }
 
     bool Boardgame::MagicianMagicPower(Player* player)
@@ -734,16 +719,21 @@ namespace Citadel
         }
 
         // Warlord cannot destroy Bishop districts
-        if (victimIt->second->GetCharacter() == Character::BISHOP)
+
+        const auto bishopIt = playerByCharacter_.find(Character::BISHOP);
+        if (bishopIt != std::end(playerByCharacter_))
         {
-            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot destroy Bishop district" << std::endl;
-            return true;
+            if (bishopIt->second->GetID() == victimIt->second->GetID())
+            {
+                Logger::GetInstance() << Verbosity::WARNING << "Player [" << player->GetName() << "] cannot destroy Bishop district" << std::endl;
+                return true;
+            }
         }
 
         // Once a city is completed, this city becomes immune to Warlord
         if (victimIt->second->GetBuiltCitySize() >= numberOfDistrictsToWin_)
         {
-            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot destroy a district in a finished Citadel" << std::endl;
+            Logger::GetInstance() << Verbosity::WARNING << "Player [" << player->GetName() << "] cannot destroy a district in a finished Citadel" << std::endl;
             return true;
         }
 
@@ -760,15 +750,15 @@ namespace Citadel
             {
                 if (victimIt->second->DestroyDistrict(pair.second) == false)
                 {
-                    Logger::GetInstance() << Verbosity::ERROR << "Player [" << pair.first << "] does not have [" << GetDistrictName(pair.second) << "]" << std::endl;
-                    return false;
+                    Logger::GetInstance() << Verbosity::WARNING << "Player [" << pair.first << "] does not have [" << GetDistrictName(pair.second) << "]" << std::endl;
+                    return true;
                 }
-                Logger::GetInstance() << Verbosity::DEBUG << "player [" << player->GetName() << "] destroyed [" << GetDistrictName(pair.second) << "] owned by [" << victimIt->second->GetName() << "]" << std::endl;
+                Logger::GetInstance() << Verbosity::INFO << "player [" << player->GetName() << "] destroyed [" << GetDistrictName(pair.second) << "] owned by [" << victimIt->second->GetName() << "]" << std::endl;
             }
             else
             {
-                Logger::GetInstance() << Verbosity::ERROR << "Player [" << pair.first << "] has not enough gold to destroy this district" << std::endl;
-                return false;
+                Logger::GetInstance() << Verbosity::WARNING << "Player [" << pair.first << "] has not enough gold to destroy this district" << std::endl;
+                return true;
             }
         }
         else
