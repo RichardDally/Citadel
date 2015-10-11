@@ -180,7 +180,7 @@ namespace Citadel
             Player* player = it->second;
             if (player == nullptr)
             {
-                Logger::GetInstance() << Verbosity::ERROR << "player attached to [" << GetCharacterName(character) << "] was nullptr." << std::endl;
+                Logger::GetInstance() << Verbosity::FATAL << "player attached to [" << GetCharacterName(character) << "] was nullptr." << std::endl;
                 assert(!"player pointer should not be nullptr.");
                 continue;
             }
