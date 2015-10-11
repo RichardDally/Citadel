@@ -326,9 +326,7 @@ namespace Citadel
         assert(player != nullptr);
 
         // Ask player for building
-        // Note Architect can build up to three district cards
-        // TODO: make a function instead of ternary operator
-        const size_t authorizedBuilds = player->GetCharacter() == Character::ARCHITECT ? 3 : 1;
+        const size_t authorizedBuilds = GetNumberOfAuthorizedBuilds(player->GetCharacter());
         auto districtCards = player->ChooseDistrictCardsToBuild(authorizedBuilds);
 
         if (districtCards.empty())
