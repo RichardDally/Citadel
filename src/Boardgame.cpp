@@ -20,7 +20,7 @@ namespace Citadel
         districtDeck_.Setup(GetDistricts(edition));
 
         // Reset ending player
-        firstPlayerEndingGame = -1;
+        firstPlayerEndingGame_ = -1;
 
         // Decide who's starting.
         startingPlayer_ = DecideWhoStarts();
@@ -360,10 +360,10 @@ namespace Citadel
         player->BuildDistrict(districtCards);
 
         // Record first player ending game to grant bonus points
-        if (player->GetBuiltCitySize() >= numberOfDistrictsToWin_ && firstPlayerEndingGame == -1)
+        if (player->GetBuiltCitySize() >= numberOfDistrictsToWin_ && firstPlayerEndingGame_ == -1)
         {
             Logger::GetInstance() << Verbosity::DEBUG << "[" << player->GetName() << "] is first player to end it's city (" << numberOfDistrictsToWin_ << ") districts built." << std::endl;
-            firstPlayerEndingGame = player->GetID();
+            firstPlayerEndingGame_ = player->GetID();
         }
 
         return true;
@@ -822,7 +822,7 @@ namespace Citadel
             }
 
             // Rule 3
-            if (player->GetID() == firstPlayerEndingGame)
+            if (player->GetID() == firstPlayerEndingGame_)
             {
                 score += 4;
             }

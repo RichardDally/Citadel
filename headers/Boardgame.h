@@ -118,7 +118,7 @@ namespace Citadel
         int startingPlayer_ = 0;
         int currentPlayer_ = 0;
         int nextStartingPlayer_ = 0;
-        int firstPlayerEndingGame = -1;
+        int firstPlayerEndingGame_ = -1;
 
         // Key: victim character (e.g. Character::MERCHANT)
         // Value: offensive character (e.g. Character::ASSASSIN)
