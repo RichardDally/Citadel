@@ -1,14 +1,10 @@
 Citadels - Famous boardgame coded in C++
 ===================================================
 
-Continuous Integration `master` branch: [![Build Status](https://travis-ci.org/RichardDally/Citadel.svg?branch=master)](https://travis-ci.org/RichardDally/Citadel)
-
-Continuous Integration `unstable` branch: [![Build Status](https://travis-ci.org/RichardDally/Citadel.svg?branch=unstable)](https://travis-ci.org/RichardDally/Citadel)
-
-Static analysis `coverity_scan` branch: <a href="https://scan.coverity.com/projects/RichardDally-citadel">
-  <img alt="Coverity Scan Build Status"
-       src="https://scan.coverity.com/projects/6253/badge.svg"/>
-</a>
+| Continuous Integration |                                                                                   master                                                                                   |                                                                                    unstable                                                                                    | coverity_scan |
+|:----------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:-------------:|
+| GNU/Linux              |                         [![Build Status](https://travis-ci.org/RichardDally/Citadel.svg?branch=master)](https://travis-ci.org/RichardDally/Citadel)                        |                                                  [![Build Status](https://travis-ci.org/RichardDally/Citadel.svg?branch=unstable)](https://travis-ci.org/RichardDally/Citadel) | <a href="https://scan.coverity.com/projects/richarddally-citadel"> <img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/6253/badge.svg"/> </a>     |
+| Windows                | [![Build status](https://ci.appveyor.com/api/projects/status/08pocyyslo6gpvkx/branch/master?svg=true)](https://ci.appveyor.com/project/RichardDally/citadel/branch/master) | [![Build status](https://ci.appveyor.com/api/projects/status/08pocyyslo6gpvkx/branch/unstable?svg=true)](https://ci.appveyor.com/project/RichardDally/citadel/branch/unstable) |               |
 
 [Trello Dashboard](https://trello.com/b/Q1hr3yWt/citadels)
 
