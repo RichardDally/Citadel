@@ -1,0 +1,12 @@
+version: 1.0.{build}
+configuration: Release
+platform:
+- x86
+- x64
+before_build:
+- cmd: >-
+    cmake .
+
+    cmake --build
+build:
+  verbosity: detailed
