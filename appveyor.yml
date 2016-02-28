@@ -9,6 +9,6 @@ before_build:
 
     mkdir build
 
-    cmake --build
+    cmake --build build
 build:
   verbosity: detailed
