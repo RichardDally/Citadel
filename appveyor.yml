@@ -1,0 +1,19 @@
+version: 1.0.{build}
+
+configuration:
+  - Release
+
+build_script:
+- set PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
+- mkdir VS2015
+- cd VS2015
+- cmake -G "Visual Studio 14 2015 Win64" ..
+- cmake --build . --target ALL_BUILD --config %CONFIGURATION%
+- cd ..
+- mkdir VS2013
+- cd VS2013
+- cmake -G "Visual Studio 12 2013 Win64" ..
+- cmake --build . --target ALL_BUILD --config %CONFIGURATION%
+
+build:
+  verbosity: detailed
