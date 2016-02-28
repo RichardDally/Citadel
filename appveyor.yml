@@ -5,8 +5,10 @@ platform:
 - x64
 before_build:
 - cmd: >-
-    cmake -Bbuild .
+    cmake .
 
-    cmake --build build
+    mkdir build
+
+    cmake --build
 build:
   verbosity: detailed
