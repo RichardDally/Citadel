@@ -130,7 +130,7 @@ namespace Citadel
     {
         std::vector<District> result;
 
-        // TODO: improve to build multiple districts
+        // TODO: improve AI to build multiple districts
         auto districtToBuild = District::UNINITIALIZED;
         for (const auto district : GetAvailableDistricts())
         {

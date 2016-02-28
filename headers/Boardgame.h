@@ -34,6 +34,36 @@ namespace Citadel
             playerById_.insert(std::make_pair(newPlayer->GetID(), std::move(newPlayer)));
         }
 
+        static const size_t GetNumberOfAuthorizedBuilds(const Character character)
+        {
+            size_t result = 0;
+            switch (character)
+            {
+                case Character::ASSASSIN:
+                case Character::THIEF:
+                case Character::MAGICIAN:
+                case Character::KING:
+                case Character::BISHOP:
+                case Character::MERCHANT:
+                case Character::WARLORD:
+                {
+                    result = 1;
+                    break;
+                }
+                case Character::ARCHITECT:
+                {
+                    result = 3;
+                    break;
+                }
+                default:
+                {
+                    Logger::GetInstance() << Verbosity::ERROR << "Character [" << static_cast<int>(character) << "] is not handled." << std::endl;
+                    assert(!"This character is not handled");
+                }
+            }
+            return result;
+        }
+
     private:
         void SetEdition(const Edition edition)
         {
@@ -88,7 +118,7 @@ namespace Citadel
         int startingPlayer_ = 0;
         int currentPlayer_ = 0;
         int nextStartingPlayer_ = 0;
-        int firstPlayerEndingGame = -1;
+        int firstPlayerEndingGame_ = -1;
 
         // Key: victim character (e.g. Character::MERCHANT)
         // Value: offensive character (e.g. Character::ASSASSIN)
