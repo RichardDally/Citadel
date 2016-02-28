@@ -1,11 +1,11 @@
 Citadels - Famous boardgame coded in C++
 ===================================================
 
-Continuous Integration `master` branch: [![Build Status](https://travis-ci.org/LeFlou/Citadel.svg?branch=master)](https://travis-ci.org/LeFlou/Citadel)
+Continuous Integration `master` branch: [![Build Status](https://travis-ci.org/RichardDally/Citadel.svg?branch=master)](https://travis-ci.org/RichardDally/Citadel)
 
-Continuous Integration `unstable` branch: [![Build Status](https://travis-ci.org/LeFlou/Citadel.svg?branch=unstable)](https://travis-ci.org/LeFlou/Citadel)
+Continuous Integration `unstable` branch: [![Build Status](https://travis-ci.org/RichardDally/Citadel.svg?branch=unstable)](https://travis-ci.org/RichardDally/Citadel)
 
-Static analysis `coverity_scan` branch: <a href="https://scan.coverity.com/projects/leflou-citadel">
+Static analysis `coverity_scan` branch: <a href="https://scan.coverity.com/projects/RichardDally-citadel">
   <img alt="Coverity Scan Build Status"
        src="https://scan.coverity.com/projects/6253/badge.svg"/>
 </a>
