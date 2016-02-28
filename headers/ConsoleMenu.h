@@ -13,6 +13,6 @@ namespace Citadel
 
     private:
         static const Edition ChooseEdition();
-        static size_t ChoosePlayerNumbers(size_t& humanPlayers, size_t& robotPlayers);
+        static void ChoosePlayerNumbers(size_t& humanPlayers, size_t& robotPlayers);
     };
 }
