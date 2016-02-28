@@ -17,14 +17,8 @@ namespace Citadel
 
         Boardgame boardgame;
 
-        size_t humanPlayers = 0;
-        size_t robotPlayers = 0;
-        size_t totalPlayers = 0;
-        do
-        {
-            totalPlayers = ChoosePlayerNumbers(humanPlayers, robotPlayers);
-        }
-        while (ValidateNumberOfPlayers(totalPlayers) == false);
+        size_t humanPlayers, robotPlayers;
+        ChoosePlayerNumbers(humanPlayers, robotPlayers);
 
         for (size_t i = 0; i < humanPlayers; ++i)
         {
@@ -77,17 +71,19 @@ namespace Citadel
         return Edition::UNINITIALIZED;
     }
 
-    size_t ConsoleMenu::ChoosePlayerNumbers(size_t& humanPlayers, size_t& robotPlayers)
+    void ConsoleMenu::ChoosePlayerNumbers(size_t& humanPlayers, size_t& robotPlayers)
     {
-        std::cout << "Minimum players: " << GetMinimumPlayers() << std::endl;
-        std::cout << "Maximum players: " << GetMaximumPlayers() << std::endl;
+        do
+        {
+            std::cout << "Minimum players: " << GetMinimumPlayers() << std::endl;
+            std::cout << "Maximum players: " << GetMaximumPlayers() << std::endl;
 
-        std::cout << "Choose number of human players: ";
-        std::cin >> humanPlayers;
+            std::cout << "Choose number of human players: ";
+            std::cin >> humanPlayers;
 
-        std::cout << "Choose number of robot players: ";
-        std::cin >> robotPlayers;
-
-        return humanPlayers + robotPlayers;
+            std::cout << "Choose number of robot players: ";
+            std::cin >> robotPlayers;
+        }
+        while (ValidateNumberOfPlayers(humanPlayers, robotPlayers) == false);
     }
 }

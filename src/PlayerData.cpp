@@ -12,8 +12,14 @@ namespace Citadel
     {
         return 7;
     }
-    const bool ValidateNumberOfPlayers(const size_t totalPlayers)
+    const bool ValidateNumberOfPlayers(const size_t humanPlayers, const size_t robotPlayers)
     {
+        if (humanPlayers > GetMaximumPlayers() || robotPlayers > GetMaximumPlayers())
+        {
+            return false;
+        }
+
+        const size_t totalPlayers = humanPlayers + robotPlayers;
         if (totalPlayers >= GetMinimumPlayers() && totalPlayers <= GetMaximumPlayers())
         {
             return true;
