@@ -1,25 +1,10 @@
 Citadels - Famous boardgame coded in C++
 ===================================================
 
-<table>
-    <tr>
-        <td><b>Continuous Integration</b></td>
-        <td>master</td>
-        <td>unstable</td>
-        <td>coverity_scan</td>
-    </tr>
-    <tr>
-        <td>GNU/Linux</td>
-        <td><img src="https://travis-ci.org/RichardDally/Citadel.svg?branch=master" alt="TravisCI badge for master branch" /></td>
-        <td><img src="https://travis-ci.org/RichardDally/Citadel.svg?branch=unstable" alt="TravisCI badge for unstable branch" /></td>
-        <td><img src="https://scan.coverity.com/projects/6253/badge.svg" alt="Coverity Scan badge for coverity_scan branch" /></td>
-    </tr>
-    <tr>
-        <td>Windows</td>
-        <td><img src="https://ci.appveyor.com/api/projects/status/08pocyyslo6gpvkx/branch/master?svg=true" alt="AppVeyor badge for master branch"></td>
-        <td><img src="https://ci.appveyor.com/api/projects/status/08pocyyslo6gpvkx/branch/unstable?svg=true" alt="AppVeyor badge for unstable branch"></td>
-    </tr>
-</table>
+| Continuous Integration |                                                                                   master                                                                                   |                                                                                    unstable                                                                                    | coverity_scan |
+|:----------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:-------------:|
+| GNU/Linux              |                         [![Build Status](https://travis-ci.org/RichardDally/Citadel.svg?branch=master)](https://travis-ci.org/RichardDally/Citadel)                        |                                                  [![Build Status](https://travis-ci.org/RichardDally/Citadel.svg?branch=unstable)](https://travis-ci.org/RichardDally/Citadel) | <a href="https://scan.coverity.com/projects/richarddally-citadel"> <img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/6253/badge.svg"/> </a>     |
+| Windows                | [![Build status](https://ci.appveyor.com/api/projects/status/08pocyyslo6gpvkx/branch/master?svg=true)](https://ci.appveyor.com/project/RichardDally/citadel/branch/master) | [![Build status](https://ci.appveyor.com/api/projects/status/08pocyyslo6gpvkx/branch/unstable?svg=true)](https://ci.appveyor.com/project/RichardDally/citadel/branch/unstable) |               |
 
 [Trello Dashboard](https://trello.com/b/Q1hr3yWt/citadels)
 
