@@ -1,4 +1,4 @@
-Citadels - Famous boardgame coded in C++
+Citadel - Famous boardgame coded in C++
 ===================================================
 
 | Continuous Integration |                                                                                   master                                                                                   |                                                                                    unstable                                                                                    | coverity_scan |
