@@ -22,6 +22,17 @@ if("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
 endif()
 
 include_directories(headers)
-file(GLOB_RECURSE SOURCE_FILES headers/* src/*)
-
+file(GLOB_RECURSE SOURCE_FILES headers/*.h src/*.cpp)
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+
+# Package Citadel with CPack
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION bin
+    ARCHIVE DESTINATION bin
+	)
+include (InstallRequiredSystemLibraries)
+
+set(CPACK_GENERATOR "ZIP")
+set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
+include(CPack)
