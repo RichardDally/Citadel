@@ -1,5 +1,6 @@
 #include <set>
 #include <iostream>
+#include "Logger.h"
 #include "Boardgame.h"
 #include "PlayerData.h"
 #include "ConsoleMenu.h"
@@ -70,11 +71,12 @@ namespace Citadel
 
         if (displayedEditions > 1)
         {
+            Logger::GetInstance() << Verbosity::DEBUG << displayedEditions << " editions are available" << std::endl;
             std::cin >> pickedEdition;
         }
         else
         {
-            std::cout << "Skipping choice, only " << GetEditionName(static_cast<Edition>(pickedEdition)) << " is available\n";
+            Logger::GetInstance() << Verbosity::DEBUG << "Skipping choice, only " << GetEditionName(static_cast<Edition>(pickedEdition)) << " is available" << std::endl;
         }
 
         if (pickedEdition >= firstAvailableEdition && pickedEdition < static_cast<size_t>(Edition::MAX))
