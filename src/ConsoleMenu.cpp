@@ -1,9 +1,11 @@
 #include <set>
 #include <iostream>
+#include <unordered_set>
 #include "Logger.h"
 #include "Boardgame.h"
 #include "PlayerData.h"
 #include "ConsoleMenu.h"
+#include "Randomness.h"
 
 namespace Citadel
 {
@@ -32,16 +34,30 @@ namespace Citadel
             while (name.empty());
             boardgame.AddPlayer<HumanPlayer>(name);
         }
+
+        std::vector<std::string> robotNames =
+        {
+            "Minotaur",
+            "Todd",
+            "HAL",
+            "Frost",
+            "Karl V",
+            "42",
+            "Golem 9000"
+        };
+
+        // TODO: turn this check into constexpr/static_assert
+        if (GetMaximumPlayers() > robotNames.size())
+        {
+            throw std::logic_error("Not enough robot names");
+        }
+
         for (size_t i = 0; i < robotPlayers; ++i)
         {
-            std::string name;
-            do
-            {
-                std::cout << "Type robot player name (" << i << ")" << std::endl;
-                std::cin >> name;
-            }
-            while (name.empty());
-            boardgame.AddPlayer<RobotPlayer>(name);
+            const int robotNameIndex = Dice::GetRandomNumber(0, robotNames.size() - 1);
+            const auto& robotName = robotNames.at(robotNameIndex);
+            boardgame.AddPlayer<RobotPlayer>(robotName);
+            robotNames.erase(robotNames.begin() + robotNameIndex);
         }
 
         boardgame.StartGame(edition);
