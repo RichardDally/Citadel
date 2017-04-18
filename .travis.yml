@@ -1,14 +1,19 @@
 language: cpp
 
-compiler:
-  - gcc
-  - clang
-
-install:
-# Use g++4.8 and not 4.6 (C++11 missing)
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "UEHXnbNPk49F6Ta/+d+UZl74EhtIevExwCo1l6qBndw+LvIXQDNSfsFiIJsZVfSgacBEOtd7CSY6rtccDpGeS9oX5/G/pnCz/2Cu+NOCCWlpy/S3qcUtdz52nMVatTgRhEi14WfrghpHk7nxxSi1W5+VIBfew+In11V1Xln3W06hhGOOK17Ljik18LbjSY1K9yVwK60r3tzwzSBMm/MArsqCeigzw15c0THQUtLlaLg/5nfP31f1QV9W1WlF4zIHjzd0970M385vNDDPyG+qRCfMPDEJrWb9/hJVi5x2poHLDObSE25rSQqfzc5nfiSDbH888mkdbBZXSwMVveVEhufyEk0nxI0Tddh/WNYFs+7g1gyV9409Tj288Omx++zpb0jM7/++wgkRwvBnqfBN7GWxoZJ9rHTxauJ+IIOR1jvskCTFMFMLI3C1+IpT4SgV0i6v2PtRsdGbXgI9qywhmPEjC+lS6Nu/rZQItr27rZowvw1ITYwJrDX4YQOAZxJkYNLFdGfqEMSjx0nfq6Kpl/4PaHQ7X0OtnJNgssMk3LNcYEwV1tLhTt+qODONjB7yWilcsWo8yVurr4vnFS2nIV7N4XgBvJcZHWfovxiQhfJU2UQxDvCYlDJ0RpM8kxpze+LR2vh+BbYOgPcr7YKG9MoAbsQXDGiF7yTz1VjVQr4="
 
 addons:
+  coverity_scan:
+    project:
+      name: LeFlou/Citadel
+    notification_email: leflou@gmx.com
+    build_command_prepend: "cmake ."
+    build_command: "make"
+    branch_pattern: coverity_scan
   apt:
     sources:
     - ubuntu-toolchain-r-test
@@ -17,12 +22,20 @@ addons:
     - g++-4.8
     - clang
 
+compiler:
+  - gcc
+  - clang
+
 before_script:
   - cmake .
 
 script:
   - make
 
+install:
+# Use g++4.8 and not 4.6 (C++11 missing)
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+
 branches:
   only:
-    - master
+    - coverity_scan
