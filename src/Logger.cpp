@@ -80,7 +80,7 @@ Logger::~Logger()
 std::string Logger::GetHeader(const Verbosity verbosity)
 {
     std::stringstream stream;
-    static const char* const dateTimeFormat = "%Y%m%d_%H:%M:%S";
+    static const char* const dateTimeFormat = "%Y/%m/%d_%H:%M:%S";
     InsertFormattedDateTime(stream, dateTimeFormat);
     stream << verbosityPadding[verbosity] << " [" << verbosityNames[verbosity] << "] ";
     return stream.str();

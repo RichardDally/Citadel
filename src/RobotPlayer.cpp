@@ -5,25 +5,13 @@
 
 namespace Citadel
 {
-    namespace
-    {
-        const char* const names[] =
-        {
-            "Hal",
-            "Synapse",
-            "DevNull",
-            "Alpha",
-            "TheOracle",
-            "Alfred",
-            "Corona",
-        };
-        const size_t namesSize = sizeof(names) / sizeof(names[0]);
-    }
-
     RobotPlayer::RobotPlayer(const std::string& name)
         : Player(name)
     {
-        assert(name.empty() == false);
+        if (name.empty())
+        {
+            throw std::runtime_error("Name is empty");
+        }
     }
 
 #pragma region PURE VIRTUAL METHODS
