@@ -1,28 +1,28 @@
 version: 1.0.{build}
 
-image:
-  - Visual Studio 2017
-  - Previous Visual Studio 2019
+  image:
+    - Visual Studio 2017
+    - Previous Visual Studio 2019
 
-configuration:
-  - Release
+  configuration:
+    - Release
 
-platform:
-  - x64
+  platform:
+    - x64
 
-init:
-  - echo %APPVEYOR_BUILD_WORKER_IMAGE%
-  - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set generator="Visual Studio 15 2017%arch%" )
-  - echo %generator%
+  init:
+    - echo %APPVEYOR_BUILD_WORKER_IMAGE%
+    - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set generator="Visual Studio 15 2017%arch%" )
+    - echo %generator%
 
-before_build:
-  - cmd: |-
-      mkdir build
-      cd build
-      cmake --version
-      cmake .. -G %generator%
+  before_build:
+    - cmd: |-
+        mkdir build
+        cd build
+        cmake --version
+        cmake .. -G %generator%
 
-build:
-  project: c:\projects\cmake-init\build\template.sln
-  verbosity: detailed
-  parallel: true
+  build:
+    - cmd: cmake --build . --target ALL_BUILD --config %CONFIGURATION%
+    verbosity: detailed
+    parallel: true
