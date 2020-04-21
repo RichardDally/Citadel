@@ -40,6 +40,7 @@ namespace Citadel
 
         if (characterChoice < indexedCharacters.size())
         {
+            std::cout << "You have picked [" << GetCharacterName(indexedCharacters[characterChoice]) << "]" << std::endl;
             return indexedCharacters[characterChoice];
         }
         return Character::UNINITIALIZED;

@@ -10,7 +10,7 @@ namespace Citadel
     }
     const size_t GetMaximumPlayers()
     {
-        return 7;
+        return 6;
     }
     const bool ValidateNumberOfPlayers(const size_t humanPlayers, const size_t robotPlayers)
     {
@@ -59,7 +59,7 @@ namespace Citadel
             "WATCH DISTRICT CARDS",
             "BUILD DISTRICT CARDS",
             "USE MAGIC POWER",
-            "EARN_DISTRICT_INCOME",
+            "EARN DISTRICT INCOME",
         };
     }
 
