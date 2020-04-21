@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.1)
 
 set(PROJECT_NAME Citadel)
 project(${PROJECT_NAME} CXX)
