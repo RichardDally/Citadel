@@ -1,19 +1,28 @@
 version: 1.0.{build}
 
+image:
+  - Visual Studio 2017
+  - Previous Visual Studio 2019
+
 configuration:
   - Release
 
-build_script:
-- set PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
-- mkdir VS2015
-- cd VS2015
-- cmake -G "Visual Studio 14 2015 Win64" ..
-- cmake --build . --target ALL_BUILD --config %CONFIGURATION%
-- cd ..
-- mkdir VS2013
-- cd VS2013
-- cmake -G "Visual Studio 12 2013 Win64" ..
-- cmake --build . --target ALL_BUILD --config %CONFIGURATION%
+platform:
+  - x64
+
+init:
+  - echo %APPVEYOR_BUILD_WORKER_IMAGE%
+  - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set generator="Visual Studio 15 2017%arch%" )
+  - echo %generator%
+
+before_build:
+  - cmd: |-
+      mkdir build
+      cd build
+      cmake --version
+      cmake .. -G %generator%
 
 build:
+  project: c:\projects\cmake-init\build\template.sln
   verbosity: detailed
+  parallel: true
