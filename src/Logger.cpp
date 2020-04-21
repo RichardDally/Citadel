@@ -6,29 +6,26 @@
 #include "Logger.h"
 #include "FileSystem.h"
 
-namespace
+static const char* const verbosityNames[] =
 {
-    const char* const verbosityNames[] = 
-    {
-        "FATAL",
-        "ERROR",
-        "WARNING",
-        "INFO",
-        "DEBUG",
-    };
+    "FATAL",
+    "ERROR",
+    "WARNING",
+    "INFO",
+    "DEBUG",
+};
 
-    // TODO: replace by meta programming to deduce longest string
-    const char* const verbosityPadding[] = 
-    {
-        "  ",
-        "  ",
-        "",
-        "   ",
-        "  ",
-    };
+// TODO: replace by meta programming to deduce longest string
+static const char* const verbosityPadding[] =
+{
+    "  ",
+    "  ",
+    "",
+    "   ",
+    "  ",
+};
 
-    static_assert(sizeof(verbosityPadding) / sizeof(verbosityPadding[0]) == sizeof(verbosityNames) / sizeof(verbosityNames[0]), "Arrays' size must match.");
-}
+static_assert(sizeof(verbosityPadding) / sizeof(verbosityPadding[0]) == sizeof(verbosityNames) / sizeof(verbosityNames[0]), "Arrays' size must match.");
 
 // Static Logger attributes
 std::ofstream Logger::outputFile_;

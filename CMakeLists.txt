@@ -1,16 +1,38 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.1)
 
-project(Citadel CXX)
+set(PROJECT_NAME Citadel)
+project(${PROJECT_NAME} CXX)
 
-# Enabling C++11 and pthread for Linux, this is not necessary for "Windows"
+# Enabling C++11 and pthread for Linux, this is not necessary for 
 if("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")                                                                                                                                                    
   list(APPEND CMAKE_CXX_FLAGS "-std=c++11 -pthread")
 endif()
 
-# Include FinancialMarketServer headers
+if("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")                                                                                                                                                    
+	# Restrain to debug/release only
+	if(CMAKE_CONFIGURATION_TYPES)
+		set(CMAKE_CONFIGURATION_TYPES Debug Release)
+		set(CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}" CACHE STRING "Reset the configurations to what we need" FORCE)
+	endif()
+ 
+	# Add .pdb files to Release
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
+	set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG")
+	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /DEBUG")
+endif()
+
 include_directories(headers)
+file(GLOB_RECURSE SOURCE_FILES headers/*.h src/*.cpp)
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-# FinancialMarketServer files
-file(GLOB_RECURSE CITADEL_FILES headers/* src/*)
+# Package Citadel with CPack
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION bin
+    ARCHIVE DESTINATION bin
+	)
+include (InstallRequiredSystemLibraries)
 
-add_executable(Citadel ${CITADEL_FILES})
+set(CPACK_GENERATOR "ZIP")
+set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
+include(CPack)

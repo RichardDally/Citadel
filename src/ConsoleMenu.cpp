@@ -1,13 +1,23 @@
 #include <set>
 #include <iostream>
+#include <unordered_set>
+#include "Logger.h"
 #include "Boardgame.h"
 #include "PlayerData.h"
 #include "ConsoleMenu.h"
+#include "Randomness.h"
 
 namespace Citadel
 {
     void ConsoleMenu::Start()
     {
+        Edition edition = Edition::UNINITIALIZED;
+        do
+        {
+            edition = ConsoleMenu::ChooseEdition();
+        }
+        while (edition == Edition::UNINITIALIZED);
+
         Boardgame boardgame;
 
         size_t humanPlayers, robotPlayers;
@@ -25,54 +35,70 @@ namespace Citadel
             boardgame.AddPlayer<HumanPlayer>(name);
         }
 
-        static const char* const names[] =
+        std::vector<std::string> robotNames =
         {
-            "Hal",
-            "Synapse",
-            "DevNull",
-            "Alpha",
-            "TheOracle",
-            "Alfred",
-            "Corona",
+            "Minotaur",
+            "Todd",
+            "HAL",
+            "Frost",
+            "Karl V",
+            "42",
+            "Golem 9000"
         };
+
+        // TODO: turn this check into constexpr/static_assert
+        if (GetMaximumPlayers() > robotNames.size())
+        {
+            throw std::logic_error("Not enough robot names");
+        }
 
         for (size_t i = 0; i < robotPlayers; ++i)
         {
-            boardgame.AddPlayer<RobotPlayer>(names[i]);
+            const int robotNameIndex = Dice::GetRandomNumber(0, robotNames.size() - 1);
+            const auto& robotName = robotNames.at(robotNameIndex);
+            boardgame.AddPlayer<RobotPlayer>(robotName);
+            robotNames.erase(robotNames.begin() + robotNameIndex);
         }
-
-        // TODO: call ChooseEdition() when multiple editions are available (currently one)
-        const Edition edition = Edition::REGULAR_WITHOUT_PURPLE_DISTRICTS;
 
         boardgame.StartGame(edition);
     }
 
     const Edition ConsoleMenu::ChooseEdition()
     {
-        Edition edition = Edition::UNINITIALIZED;
-        do
+        static_assert(static_cast<size_t>(Edition::UNINITIALIZED) == 0, "Edition::UNINITIALIZED must be first and equal to zero");
+        static const size_t firstAvailableEdition = static_cast<size_t>(Edition::UNINITIALIZED) + 1;
+
+        // TODO: remove this container when these editions are implemented
+        static const std::set<Edition> notImplementedEditions { Edition::REGULAR, Edition::DARK_CITY };
+
+        size_t pickedEdition = static_cast<size_t>(Edition::UNINITIALIZED);
+        size_t displayedEditions = 0;
+        std::cout << "Choose edition among:\n";
+        size_t editionIndex = static_cast<size_t>(Edition::UNINITIALIZED) + 1;
+        for (; editionIndex < static_cast<size_t>(Edition::MAX); ++editionIndex)
         {
-            // TODO: remove this container when these editions are implemented
-            std::set<Edition> notImplementedEditions { Edition::REGULAR, Edition::DARK_CITY };
-
-            std::cout << "Choose edition among:" << std::endl;
-            for (size_t i = 1; i < static_cast<size_t>(Edition::MAX); ++i)
+            if (notImplementedEditions.find(static_cast<Edition>(editionIndex)) == std::end(notImplementedEditions))
             {
-                if (notImplementedEditions.find(static_cast<Edition>(i)) == std::end(notImplementedEditions))
-                {
-                    std::cout << "- " << GetEditionName(static_cast<Edition>(i)) << " (" << i << ")" << std::endl;
-                }
-            }
-
-            size_t editionIndex = 0;
-            std::cin >> editionIndex;
-
-            if (editionIndex >= 1 && editionIndex < static_cast<size_t>(Edition::MAX))
-            {
-                edition = static_cast<Edition>(editionIndex);
+                std::cout << "- " << GetEditionName(static_cast<Edition>(editionIndex)) << " (" << editionIndex << ")\n";
+                pickedEdition = editionIndex;
+                ++displayedEditions;
             }
         }
-        while (edition == Edition::UNINITIALIZED);
+
+        if (displayedEditions > 1)
+        {
+            Logger::GetInstance() << Verbosity::DEBUG << displayedEditions << " editions are available" << std::endl;
+            std::cin >> pickedEdition;
+        }
+        else
+        {
+            Logger::GetInstance() << Verbosity::DEBUG << "Skipping choice, only " << GetEditionName(static_cast<Edition>(pickedEdition)) << " is available" << std::endl;
+        }
+
+        if (pickedEdition >= firstAvailableEdition && pickedEdition < static_cast<size_t>(Edition::MAX))
+        {
+            return static_cast<Edition>(pickedEdition);
+        }
 
         return Edition::UNINITIALIZED;
     }
@@ -81,8 +107,8 @@ namespace Citadel
     {
         do
         {
-            std::cout << "Minimum players: " << GetMinimumPlayers() << std::endl;
-            std::cout << "Maximum players: " << GetMaximumPlayers() << std::endl;
+            std::cout << "Minimum total players: " << GetMinimumPlayers() << "\n";
+            std::cout << "Maximum total players: " << GetMaximumPlayers() << "\n";
 
             std::cout << "Choose number of human players: ";
             std::cin >> humanPlayers;
