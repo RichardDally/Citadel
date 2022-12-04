@@ -3,8 +3,9 @@
 #include <cassert>
 #include <iostream>
 #include <algorithm>
-#include "Logger.h"
+#include <spdlog/spdlog.h>
 #include "DistrictDeck.h"
+
 
 namespace Citadel
 {
@@ -40,7 +41,7 @@ namespace Citadel
         }
         else
         {
-            Logger::GetInstance() << Verbosity::FATAL << "There is not enough districts." << std::endl;
+            spdlog::critical("There is not enough districts.");
             assert(!"There is not enough districts.");
         }
 

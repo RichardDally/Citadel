@@ -1,13 +1,13 @@
 #pragma once
 
+#include <set>
 #include <vector>
 #include <iostream>
 #include <functional>
-#include <set>
-
-#include "Logger.h"
+#include <spdlog/spdlog.h>
 #include "CharacterData.h"
 #include "Randomness.h"
+
 
 namespace Citadel
 {
@@ -38,7 +38,7 @@ namespace Citadel
 
         void RemoveCard(const Character character)
         {
-            Logger::GetInstance() << Verbosity::DEBUG << "remove [" << GetCharacterName(character) << "] from remaining cards." << std::endl;
+            spdlog::debug("Remove [{}] from remaining cards.", GetCharacterName(character));
             remainingCards_.erase(character);
         }
 
@@ -58,7 +58,8 @@ namespace Citadel
 
                 if (characterFilter(character))
                 {
-                    Logger::GetInstance() << Verbosity::DEBUG << (&container == &faceupCards_ ? "faceup" : "faceoff") << " character: " << GetCharacterName(character) << std::endl;
+                    const char* faceStatus = (&container == &faceupCards_ ? "faceup" : "faceoff");
+                    spdlog::debug("{}  character: {}", faceStatus, GetCharacterName(character));
                     container.insert(character);
                     remainingCards_.erase(it);
                 }

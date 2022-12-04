@@ -1,11 +1,11 @@
 #include <set>
 #include <iostream>
 #include <unordered_set>
-#include "Logger.h"
 #include "Boardgame.h"
 #include "PlayerData.h"
 #include "ConsoleMenu.h"
 #include "Randomness.h"
+
 
 namespace Citadel
 {
@@ -87,12 +87,12 @@ namespace Citadel
 
         if (displayedEditions > 1)
         {
-            Logger::GetInstance() << Verbosity::DEBUG << displayedEditions << " editions are available" << std::endl;
+            spdlog::debug("[{}] editions are available", displayedEditions);
             std::cin >> pickedEdition;
         }
         else
         {
-            Logger::GetInstance() << Verbosity::DEBUG << "Skipping choice, only " << GetEditionName(static_cast<Edition>(pickedEdition)) << " is available" << std::endl;
+            spdlog::debug("Skipping choice, only [{}] is available", GetEditionName(static_cast<Edition>(pickedEdition)));
         }
 
         if (pickedEdition >= firstAvailableEdition && pickedEdition < static_cast<size_t>(Edition::MAX))

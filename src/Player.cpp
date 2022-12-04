@@ -1,6 +1,7 @@
 #include <algorithm>
-#include "Logger.h"
+#include <spdlog/spdlog.h>
 #include "Player.h"
+
 
 namespace Citadel
 {
@@ -33,7 +34,7 @@ namespace Citadel
             }
             else
             {
-                Logger::GetInstance() << Verbosity::ERROR << "District [" << GetDistrictName(district) << "] is already built. Cannot build again." << std::endl;
+                spdlog::error("District [{}] is already built. Cannot build again.", GetDistrictName(district));
             }
         }
     }

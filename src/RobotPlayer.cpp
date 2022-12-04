@@ -1,7 +1,8 @@
 #include <algorithm>
-#include "Logger.h"
+#include <spdlog/spdlog.h>
 #include "Randomness.h"
 #include "RobotPlayer.h"
+
 
 namespace Citadel
 {
@@ -21,7 +22,7 @@ namespace Citadel
         assert(remainingCharacters.size() > 0);
         if (remainingCharacters.empty())
         {
-            Logger::GetInstance() << Verbosity::ERROR << "There is no remaining characters" << std::endl;
+            spdlog::error("There is no remaining characters");
             return Character::UNINITIALIZED;
         }
 
@@ -41,13 +42,13 @@ namespace Citadel
         if (mostValuableCharacter.first != Character::UNINITIALIZED)
         {
             result = mostValuableCharacter.first;
-            Logger::GetInstance() << Verbosity::DEBUG << "[" << GetCharacterName(result) << "] is the most valuable for [" << GetName() << "]" << std::endl;
+            spdlog::debug("[{}] is the most valuable for [{}]", GetCharacterName(result), GetName());
         }
         else
         {
             auto random_it = std::next(std::begin(remainingCharacters), Dice::GetRandomNumber(0, remainingCharacters.size() - 1));
             result = *random_it;
-            Logger::GetInstance() << Verbosity::DEBUG << "[" << GetName() << "] picked randomly [" << GetCharacterName(result) << "]" << std::endl;
+            spdlog::debug("[{}] picked randomly [{}]", GetName(), GetCharacterName(result));
         }
 
         return result;
@@ -58,7 +59,7 @@ namespace Citadel
         assert(availableActions.empty() == false);
         if (availableActions.empty())
         {
-            Logger::GetInstance() << Verbosity::FATAL << "There is no available action." << std::endl;
+            spdlog::critical("There is no available action.");
             return PlayerAction::UNINITIALIZED;
         }
 
@@ -97,7 +98,7 @@ namespace Citadel
         assert(districts.empty() == false);
         if (districts.empty())
         {
-            Logger::GetInstance() << Verbosity::ERROR << "There is no district to watch and choose." << std::endl;
+            spdlog::error("There is no district to watch and choose.");
             return District::UNINITIALIZED;
         }
 
@@ -105,12 +106,12 @@ namespace Citadel
         {
             if (std::find(std::begin(GetBuiltCity()), std::end(GetBuiltCity()), district) == std::end(GetBuiltCity()))
             {
-                Logger::GetInstance() << Verbosity::DEBUG << "[" << GetName() << "] hasn't this card [" << GetDistrictName(district) << "]" << std::endl;
+                spdlog::debug("[{}] hasn't this card [{}]", GetName(), GetDistrictName(district));
                 return district;
             }
         }
         const auto result = districts[Dice::GetRandomNumber(0, districts.size() - 1)];
-        Logger::GetInstance() << Verbosity::DEBUG << "[" << GetName() << "] picked randomly [" << GetDistrictName(result) << "]" << std::endl;
+        spdlog::debug("[{}] picked randomly [{}]", GetName(), GetDistrictName(result));
         return result;
     }
 
@@ -162,12 +163,12 @@ namespace Citadel
         {
             if (std::find(std::begin(opponents), std::end(opponents), character) != std::end(opponents))
             {
-                Logger::GetInstance() << Verbosity::DEBUG << "Robot [" << GetName() << "] targets [" << GetCharacterName(character) << "]" << std::endl;
+                spdlog::debug("Robot [{}] targets [{}]", GetName(), GetCharacterName(character));
                 return character;
             }
         }
 
-        Logger::GetInstance() << Verbosity::FATAL << "Robot [" << GetName() << "] didn't find a target." << std::endl;
+        spdlog::critical("Robot [{}] didn't find a target.", GetName());
         return Character::UNINITIALIZED;
     }
 
@@ -207,7 +208,7 @@ namespace Citadel
             }
         }
 
-        Logger::GetInstance() << Verbosity::DEBUG << "Player [" << GetName() << "] have not found any 1 gold district to destroy..." << std::endl;
+        spdlog::debug("Player [{}] have not found any 1 gold district to destroy...", GetName());
         return std::pair<int, District>(-1, District::UNINITIALIZED);
     }
 
