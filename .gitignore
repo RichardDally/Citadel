@@ -6,6 +6,7 @@ obj
 *.suo
 *.sdf
 *.vcxproj.user
+CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
 CMakeOutput
