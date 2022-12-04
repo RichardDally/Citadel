@@ -1,6 +1,7 @@
 #include <cassert>
 #include <iostream>
-#include "Logger.h"
+#include <spdlog/spdlog.h>
+
 #include "CharacterData.h"
 
 namespace Citadel
@@ -81,7 +82,7 @@ namespace Citadel
             }
             default:
             {
-                Logger::GetInstance() << Verbosity::ERROR << "Character [" << static_cast<int>(character) << "] is not handled." << std::endl;
+                spdlog::error("Character [{}] is not handled.", static_cast<int>(character));
                 assert(!"This character is not handled to get it's color");
             }
         }
@@ -119,7 +120,7 @@ namespace Citadel
         return dummy;
     }
 
-    
+
 #pragma endregion
 
 #pragma region MagicianChoice

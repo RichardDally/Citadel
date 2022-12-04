@@ -3,11 +3,13 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
+#include <spdlog/spdlog.h>
 
 #include "HumanPlayer.h" // for static_assert
 #include "RobotPlayer.h" // for static_assert
 #include "CharacterDeck.h"
 #include "DistrictDeck.h"
+
 
 namespace Citadel
 {
@@ -57,7 +59,7 @@ namespace Citadel
                 }
                 default:
                 {
-                    Logger::GetInstance() << Verbosity::ERROR << "Character [" << static_cast<int>(character) << "] is not handled." << std::endl;
+                    spdlog::error("Character [{}] is not handled.", static_cast<int>(character));
                     assert(!"This character is not handled");
                 }
             }

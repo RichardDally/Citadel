@@ -1,7 +1,9 @@
 #include <cassert>
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include "PlayerData.h"
 #include "CharacterDeck.h"
+
 
 namespace Citadel
 {
@@ -64,7 +66,7 @@ namespace Citadel
             }
             default:
             {
-                Logger::GetInstance() << Verbosity::ERROR << "[" << numberOfPlayers_ << "] players game is not implemented." << std::endl;
+                spdlog::error("[{}] players game is not implemented.", numberOfPlayers_);
                 assert(!"Not implemented");
             }
         }

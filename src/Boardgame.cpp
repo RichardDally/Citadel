@@ -1,11 +1,10 @@
 #include <iostream>
 #include <algorithm>
-
-#include "Logger.h"
 #include "Randomness.h"
 #include "HumanPlayer.h"
 #include "RobotPlayer.h"
 #include "Boardgame.h"
+
 
 namespace Citadel
 {
@@ -25,7 +24,7 @@ namespace Citadel
         // Decide who's starting.
         startingPlayer_ = DecideWhoStarts();
 
-        Logger::GetInstance() << Verbosity::INFO << "[" << playerById_[startingPlayer_]->GetName() << "] has the crown." << std::endl;
+        spdlog::info("[{}] has the crown.", playerById_[startingPlayer_]->GetName());
 
         // Setup basic stuff
         // Each player earns 2 coins
@@ -42,7 +41,7 @@ namespace Citadel
 
         for (currentRound_ = 0; IsGameEnded() == false; ++currentRound_)
         {
-            Logger::GetInstance() << Verbosity::DEBUG << "Round [" << currentRound_ << "]" << std::endl;
+            spdlog::debug("Round [{}]", currentRound_ );
             StartRound(GetEdition());
         }
 
@@ -56,7 +55,7 @@ namespace Citadel
             const auto fromDeck = districtDeck_.GetDistricts(DistrictDeckAction::DRAW, numberOfCards);
             if (fromDeck.size() < numberOfCards)
             {
-                Logger::GetInstance() << Verbosity::FATAL << "There is not enough cards in the deck. Drawn [" << fromDeck.size() << "] instead of [" << numberOfCards << "]" << std::endl;
+                spdlog::critical("There is not enough cards in the deck. Drawn [{}] instead of [{}]", fromDeck.size(), numberOfCards);
                 assert(!"District deck should have enough cards.");
             }
             auto& toHand = player->GetAvailableDistricts();
@@ -64,7 +63,7 @@ namespace Citadel
         }
         else
         {
-            Logger::GetInstance() << Verbosity::FATAL << "Player is nullptr in TransferDistrictCards" << std::endl;
+            spdlog::critical("Player is nullptr in TransferDistrictCards");
             assert(!"Cannot transfer cards to nullptr player");
         }
     }
@@ -79,7 +78,7 @@ namespace Citadel
         }
         else
         {
-            Logger::GetInstance() << Verbosity::ERROR << "There is no player to pick to start a game" << std::endl;
+            spdlog::error("There is no player to pick to start a game");
             assert(!"Player container is empty, cannot start a game");
         }
         return -1;
@@ -111,9 +110,10 @@ namespace Citadel
         do
         {
             assert(currentPlayer_ >= 0 && currentPlayer_ < static_cast<int>(playerById_.size()));
-            Logger::GetInstance() << Verbosity::INFO << "[" << playerById_[currentPlayer_]->GetName() << "] is now picking a role." << std::endl;
-            
-            Logger::GetInstance() << Verbosity::DEBUG << "Available roles to choose [";
+            spdlog::info("[{}] is now picking a role.", playerById_[currentPlayer_]->GetName());
+
+            /*
+            spdlog::debug("Available roles to choose [";
             const size_t remaining = remainingCharacters.size();
             size_t index = 0;
             for (const auto& character : remainingCharacters)
@@ -125,13 +125,14 @@ namespace Citadel
                 }
             }
             Logger::GetInstance() << "]" << std::endl;
+            */
 
             const auto pickedCharacter = playerById_[currentPlayer_]->PickCharacter(remainingCharacters, characterDeck_.GetFaceupCharacters());
 
             // Check if role is available
             if (remainingCharacters.find(pickedCharacter) == remainingCharacters.end())
             {
-                Logger::GetInstance() << Verbosity::ERROR << "Error: @" << playerById_[currentPlayer_]->GetName() << ", role is not available, try again..." << std::endl;
+                spdlog::error("{}, role is not available, try again...", playerById_[currentPlayer_]->GetName());
                 continue;
             }
 
@@ -140,7 +141,7 @@ namespace Citadel
             {
                 // Even murdered, currentPlayer will be the next king on next round
                 nextStartingPlayer_ = currentPlayer_;
-                Logger::GetInstance() << Verbosity::DEBUG << "Next king will be [" << playerById_[currentPlayer_]->GetName() << "]" << std::endl;
+                spdlog::debug("Next king will be [{}]", playerById_[currentPlayer_]->GetName());
             }
 
             // Update player by role index (speed-up calling roles on next step)
@@ -182,25 +183,24 @@ namespace Citadel
         {
             assert(character != Character::MAX);
             assert(character != Character::UNINITIALIZED);
-            Logger::GetInstance() << Verbosity::INFO << "Calling [" << GetCharacterName(character) << "]" << std::endl;
+            spdlog::info("Calling [{}]", GetCharacterName(character));
             auto it = playerByCharacter_.find(character);
             if (it == playerByCharacter_.end())
             {
-                Logger::GetInstance() << Verbosity::DEBUG << "No one picked [" << GetCharacterName(character) << "]" << std::endl;
+                spdlog::debug("No one picked [{}]", GetCharacterName(character));
                 continue;
             }
 
             Player* player = it->second;
             if (player == nullptr)
             {
-                Logger::GetInstance() << Verbosity::FATAL << "player attached to [" << GetCharacterName(character) << "] was nullptr." << std::endl;
+                spdlog::critical("Player attached to [{}] was nullptr.", GetCharacterName(character));
                 assert(!"player pointer should not be nullptr.");
                 continue;
             }
             player->SetCharacter(character);
-            Logger::GetInstance() << Verbosity::DEBUG << "[" << player->GetName() << "] is [" << GetCharacterName(character) << "]" << std::endl;
+            spdlog::debug("[{}] is [{}]", player->GetName(), GetCharacterName(character));
 
-            
             const auto victimsIt = victims.find(character);
             if (victimsIt != std::end(victims))
             {
@@ -211,14 +211,14 @@ namespace Citadel
                 {
                     // Debug block
                     {
-                        Logger::GetInstance() << Verbosity::DEBUG << "[" << GetCharacterName(character) << "] has been murdered." << std::endl;
+                        spdlog::debug("[{}] has been murdered.", GetCharacterName(character));
                         const auto assassinPlayer = playerByCharacter_.find(Character::ASSASSIN);
                         const auto victimPlayer = playerByCharacter_.find(character);
                         assert(assassinPlayer != playerByCharacter_.end());
                         assert(victimPlayer != playerByCharacter_.end());
                         if (assassinPlayer != playerByCharacter_.end() && victimPlayer != playerByCharacter_.end())
                         {
-                            Logger::GetInstance() << Verbosity::DEBUG << "[" << victimPlayer->second->GetName() << "] has been murdered by [" << assassinPlayer->second->GetName() << "] !" << std::endl;
+                            spdlog::debug("[{}] has been murdered by [{}] !", victimPlayer->second->GetName(), assassinPlayer->second->GetName());
                         }
                     }
                     // Current player skip it's turn
@@ -231,12 +231,12 @@ namespace Citadel
 
                     {
                         // Debug block
-                        Logger::GetInstance() << Verbosity::DEBUG << "[" << GetCharacterName(character) << "] has been stolen !" << std::endl;
+                        spdlog::debug("[{}] has been stolen !", GetCharacterName(character));
                         assert(thiefPlayer != playerByCharacter_.end());
                         assert(victimPlayer != playerByCharacter_.end());
                         if (thiefPlayer != playerByCharacter_.end() && victimPlayer != playerByCharacter_.end())
                         {
-                            Logger::GetInstance() << Verbosity::DEBUG << "[" << victimPlayer->second->GetName() << "] has been stolen by [" << thiefPlayer->second->GetName() << "] !" << std::endl;
+                            spdlog::debug("[{}] has been stolen by [{}] !", victimPlayer->second->GetName(), thiefPlayer->second->GetName());
                         }
                     }
 
@@ -267,7 +267,7 @@ namespace Citadel
                 return false;
             case Character::UNINITIALIZED:
             {
-                Logger::GetInstance() << Verbosity::ERROR << "Error: CanUseMagicPower called with Character::UNINITIALIZED" << std::endl;
+                spdlog::error("Error: CanUseMagicPower called with Character::UNINITIALIZED");
                 assert(!"CanUseMagicPower called with Character::UNINITIALIZED");
                 return false;
             }
@@ -310,7 +310,7 @@ namespace Citadel
         const auto peekedDistrictsIt = std::find(std::begin(peekedDistricts), std::end(peekedDistricts), selectedDistrict);
         if (peekedDistrictsIt == std::end(peekedDistricts))
         {
-            Logger::GetInstance() << Verbosity::ERROR << "Player must pick a district among proposed ones" << std::endl;
+            spdlog::error("Player must pick a district among proposed ones");
             return false;
         }
 
@@ -328,7 +328,7 @@ namespace Citadel
         }
         else
         {
-            Logger::GetInstance() << Verbosity::ERROR << "Could not find district [" << GetDistrictName(selectedDistrict) << "] in drawn districts." << std::endl;
+            spdlog::error("Could not find district [{}] in drawn districts.", GetDistrictName(selectedDistrict));
         }
 
         return true;
@@ -344,13 +344,13 @@ namespace Citadel
 
         if (districtCards.empty())
         {
-            Logger::GetInstance() << Verbosity::DEBUG << "Player [" << player->GetName() << "] do not build during this round." << std::endl;
+            spdlog::debug("Player [{}] do not build during this round.", player->GetName());
             return true;
         }
 
         if (districtCards.size() > authorizedBuilds)
         {
-            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] is not able to build [" << districtCards.size() << "] districts." << std::endl;
+            spdlog::error("Player [{}] is not able to build [{}] districts.", player->GetName(), districtCards.size());
             return false;
         }
 
@@ -365,7 +365,7 @@ namespace Citadel
         // Check if player has enough gold coins
         if (goldCost > player->GetGoldCoins())
         {
-            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] tried to build but doesn't have enough gold coins." << std::endl;
+            spdlog::error("Player [{}] tried to build but doesn't have enough gold coins.", player->GetName());
             return false;
         }
 
@@ -375,7 +375,7 @@ namespace Citadel
         // Record first player ending game to grant bonus points
         if (player->GetBuiltCitySize() >= numberOfDistrictsToWin_ && firstPlayerEndingGame_ == -1)
         {
-            Logger::GetInstance() << Verbosity::DEBUG << "[" << player->GetName() << "] is first player to end it's city (" << numberOfDistrictsToWin_ << ") districts built." << std::endl;
+            spdlog::debug("[{}] is first player to end it's city ({}) districts built.", player->GetName(), numberOfDistrictsToWin_);
             firstPlayerEndingGame_ = player->GetID();
         }
 
@@ -402,7 +402,7 @@ namespace Citadel
             }
             default:
             {
-                Logger::GetInstance() << Verbosity::ERROR << "No magic power for [" << GetCharacterName(player->GetCharacter()) << "]" << std::endl;
+                spdlog::error("No magic power for [{}]", GetCharacterName(player->GetCharacter()));
             }
         }
         return true;
@@ -540,7 +540,7 @@ namespace Citadel
 
             if (validAction == false)
             {
-                Logger::GetInstance() << Verbosity::ERROR << "Maximum attempts [" << attempts << "] reached to choose action" << std::endl;
+                spdlog::error("Maximum attempts [{}] reached to choose action", attempts);
                 return;
             }
 
@@ -548,14 +548,14 @@ namespace Citadel
             const auto stepActionIt = stepByAction.find(action);
             if (stepActionIt == std::end(stepByAction))
             {
-                Logger::GetInstance() << Verbosity::FATAL << "Cannot find value from PlayerAction key [" << GetPlayerActionName(action) << "]" << std::endl;
+                spdlog::critical("Cannot find value from PlayerAction key [{}]", GetPlayerActionName(action));
                 return;
             }
 
             auto stepStateIt = stepState.find(stepActionIt->second);
             if (stepStateIt == std::end(stepState))
             {
-                Logger::GetInstance() << Verbosity::FATAL << "Cannot find value from PlayerTurnStep key [" << GetPlayerTurnStepName(stepActionIt->second) << "]" << std::endl;
+                spdlog::critical("Cannot find value from PlayerTurnStep key [{}]", GetPlayerTurnStepName(stepActionIt->second));
                 return;
             }
 
@@ -569,7 +569,7 @@ namespace Citadel
                 if (result)
                 {
                     // This step is now consumed
-                    Logger::GetInstance() << Verbosity::DEBUG << "Step [" << GetPlayerTurnStepName(stepActionIt->second) << "] is now consumed for [" << player->GetName() << "]" << std::endl;
+                    spdlog::debug("Step [{}] is now consumed for [{}]", GetPlayerTurnStepName(stepActionIt->second), player->GetName());
                     stepStateIt->second = false;
 
                     // Call state transition function
@@ -586,18 +586,18 @@ namespace Citadel
         const auto victim = player->ChooseCharacterTarget(possibleVictims);
         if (possibleVictims.find(victim) == std::end(possibleVictims))
         {
-            Logger::GetInstance() << Verbosity::WARNING << "Player [" << player->GetName() << "] choosed [" << GetCharacterName(victim) << "] but it's impossible." << std::endl;
+            spdlog::warn("Player [{}] choosed [{}] but it's impossible.", player->GetName(), GetCharacterName(victim));
         }
         else if (victims.find(victim) != std::end(victims))
         {
-            Logger::GetInstance() << Verbosity::WARNING << "Character [" << GetCharacterName(victim) << "] is already a victim. Cannot target a victim." << std::endl;
+            spdlog::warn("Character [{}] is already a victim. Cannot target a victim.", GetCharacterName(victim));
         }
         else
         {
             assert(player->GetCharacter() != Character::UNINITIALIZED);
             victims.insert({ victim, player->GetCharacter() });
         }
-        
+
         return true;
     }
 
@@ -627,7 +627,7 @@ namespace Citadel
             }
             default:
             {
-                Logger::GetInstance() << Verbosity::ERROR << "Magician [" << player->GetName() << "] choice is not correct: [" << static_cast<int>(magicianChoice) << "]" << std::endl;
+                spdlog::error("Magician [{}] choice is not correct: [{}]", player->GetName(), static_cast<int>(magicianChoice));
                 return false;
             }
         }
@@ -642,14 +642,14 @@ namespace Citadel
 
         if (victimID == player->GetID())
         {
-            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot self swap available districts" << std::endl;
+            spdlog::error("Player [{}] cannot self swap available districts", player->GetName());
             return false;
         }
 
         auto playerIdPairIt = playerById_.find(victimID);
         if (playerIdPairIt == playerById_.end())
         {
-            Logger::GetInstance() << Verbosity::ERROR << "Unable to find [" << victimID << "] player ID. Retry." << std::endl;
+            spdlog::error("Unable to find [{}] player ID. Retry.", victimID);
             return false;
         }
 
@@ -664,20 +664,20 @@ namespace Citadel
         auto& cardsInHand = player->GetAvailableDistricts();
         if (cardsInHand.empty())
         {
-            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot swap with districts deck, no district to swap !" << std::endl;
+            spdlog::error("Player [{}] cannot swap with districts deck, no district to swap !", player->GetName());
             return false;
         }
 
         if (districtDeck_.GetPileOfCardSize() < cardsInHand.size())
         {
-            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot swap with districts deck, there is not enough districts in deck to swap" << std::endl;
+            spdlog::error("Player [{}] cannot swap with districts deck, there is not enough districts in deck to swap", player->GetName());
             return false;
         }
 
         auto districtsToDiscard = player->ChooseDistrictsCardsToSwap();
         if (districtsToDiscard.empty())
         {
-            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] returned no districts to exchange with District deck" << std::endl;
+            spdlog::error("Player [{}] returned no districts to exchange with District deck", player->GetName());
             return false;
         }
 
@@ -692,7 +692,7 @@ namespace Citadel
             }
             else
             {
-                Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] chose district [" << GetDistrictName(*it) << "] he does not own" << std::endl;
+                spdlog::error("Player [{}] chose district [{}] he does not own", player->GetName(), GetDistrictName(*it));
                 // Insert removed cards to rollback
                 cardsInHand.insert(cardsInHand.end(), districtsToDiscard.begin(), it);
                 return false;
@@ -717,7 +717,7 @@ namespace Citadel
         auto pair = player->ChoosePlayerDistrictTarget(players);
         if (pair.first == -1)
         {
-            Logger::GetInstance() << Verbosity::DEBUG << "Player [" << player->GetName() << "] finally doesn't destroy a district" << std::endl;
+            spdlog::debug("Player [{}] finally doesn't destroy a district", player->GetName());
             return true;
         }
 
@@ -725,7 +725,7 @@ namespace Citadel
         auto victimIt = playerById_.find(pair.first);
         if (victimIt == playerById_.end())
         {
-            Logger::GetInstance() << Verbosity::ERROR << "Unable to find player id [" << pair.first << "]" << std::endl;
+            spdlog::error("Unable to find player id [{}]", pair.first);
             return true;
         }
 
@@ -736,7 +736,7 @@ namespace Citadel
         {
             if (bishopIt->second->GetID() == victimIt->second->GetID())
             {
-                Logger::GetInstance() << Verbosity::WARNING << "Player [" << player->GetName() << "] cannot destroy Bishop district" << std::endl;
+                spdlog::warn("Player [{}] cannot destroy Bishop district", player->GetName());
                 return true;
             }
         }
@@ -744,13 +744,13 @@ namespace Citadel
         // Once a city is completed, this city becomes immune to Warlord
         if (victimIt->second->GetBuiltCitySize() >= numberOfDistrictsToWin_)
         {
-            Logger::GetInstance() << Verbosity::WARNING << "Player [" << player->GetName() << "] cannot destroy a district in a finished Citadel" << std::endl;
+            spdlog::warn("Player [{}] cannot destroy a district in a finished Citadel", player->GetName());
             return true;
         }
 
         if (pair.second == District::UNINITIALIZED)
         {
-            Logger::GetInstance() << Verbosity::ERROR << "Player [" << player->GetName() << "] cannot destroy UNINITIALIZED district" << std::endl;
+            spdlog::error("Player [{}] cannot destroy UNINITIALIZED district", player->GetName());
             return true;
         }
 
@@ -761,20 +761,20 @@ namespace Citadel
             {
                 if (victimIt->second->DestroyDistrict(pair.second) == false)
                 {
-                    Logger::GetInstance() << Verbosity::WARNING << "Player [" << pair.first << "] does not have [" << GetDistrictName(pair.second) << "]" << std::endl;
+                    spdlog::warn("Player [{}] does not have [{}]", pair.first, GetDistrictName(pair.second));
                     return true;
                 }
-                Logger::GetInstance() << Verbosity::INFO << "player [" << player->GetName() << "] destroyed [" << GetDistrictName(pair.second) << "] owned by [" << victimIt->second->GetName() << "]" << std::endl;
+                spdlog::info("Player [{}] destroyed [{}] owned by [{}]", player->GetName(), GetDistrictName(pair.second), victimIt->second->GetName());
             }
             else
             {
-                Logger::GetInstance() << Verbosity::WARNING << "Player [" << pair.first << "] has not enough gold to destroy this district" << std::endl;
+                spdlog::warn("Player [{}] has not enough gold to destroy this district", pair.first);
                 return true;
             }
         }
         else
         {
-            Logger::GetInstance() << Verbosity::FATAL << "District [" << GetDistrictName(pair.second) << "] has a cost of [" << GetDistrictCost(pair.second) << "] gold coins." << std::endl;
+            spdlog::critical("District [{}] has a cost of [{}] gold coins.", GetDistrictName(pair.second), GetDistrictCost(pair.second));
             return false;
         }
 
@@ -847,7 +847,7 @@ namespace Citadel
 
             scores[player->GetID()] = score;
 
-            Logger::GetInstance() << Verbosity::INFO << "Player [" << player->GetName() << "] has [" << score << "] points." << std::endl;
+            spdlog::info("Player [{}] has [{}] points.", player->GetName(), score);
         }
         // TODO: display player scores
     }

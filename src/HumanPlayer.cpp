@@ -2,9 +2,9 @@
 #include <array>
 #include <iostream>
 #include <unordered_set>
-
-#include "Logger.h"
+#include <spdlog/spdlog.h>
 #include "HumanPlayer.h"
+
 
 namespace Citadel
 {
@@ -19,7 +19,7 @@ namespace Citadel
     {
         assert(remainingCharacters.size() > 0);
         std::vector<Character> indexedCharacters;
-        
+
         if (faceupCharacters.empty() == false)
         {
             std::cout << "Faceup character" << (faceupCharacters.size() == 1 ? " is" : "s are") << ":" << std::endl;
@@ -189,17 +189,17 @@ namespace Citadel
                 }
                 else
                 {
-                    Logger::GetInstance() << Verbosity::ERROR << "District ID [" << districtID << "] does not exist." << std::endl;
+                    spdlog::error("District ID [{}] does not exist.", districtID);
                 }
             }
             else
             {
-                Logger::GetInstance() << Verbosity::ERROR << "Player index [" << playerIndex << "] is not valid, there is only [" << players.size() << "] players available to choose." << std::endl;
+                spdlog::error("Player index [{}] is not valid, there is only [{}] players available to choose.", playerIndex, players.size());
             }
         }
         else
         {
-            Logger::GetInstance() << Verbosity::INFO << "All cities are empty, there is nothing to destroy." << std::endl;
+            spdlog::info("All cities are empty, there is nothing to destroy.");
         }
 
         return { -1, District::UNINITIALIZED };
@@ -215,7 +215,7 @@ namespace Citadel
         {
             std::cout << "- " << GetMagicianChoiceName(indexedMagicianChoices[i]) << " (" << i << ")" << std::endl;
         }
-        
+
         size_t magicianChoice = 0;
         std::cin >> magicianChoice;
 
