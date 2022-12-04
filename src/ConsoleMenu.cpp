@@ -11,12 +11,14 @@ namespace Citadel
 {
     void ConsoleMenu::Start()
     {
-        Edition edition = Edition::UNINITIALIZED;
+        Edition edition = Edition::REGULAR_WITHOUT_PURPLE_DISTRICTS;
+        /*
         do
         {
             edition = ConsoleMenu::ChooseEdition();
         }
         while (edition == Edition::UNINITIALIZED);
+        */
 
         Boardgame boardgame;
 
