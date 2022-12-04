@@ -1,8 +1,11 @@
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include "ConsoleMenu.h"
+
 
 int main()
 {
+    spdlog::set_level(spdlog::level::debug);
     // TODO: parse args
     try
     {
@@ -12,6 +15,4 @@ int main()
     {
         std::cerr << exception.what() << "\n";
     }
-    
-    return 0;
 }
