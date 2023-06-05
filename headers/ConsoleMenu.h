@@ -9,7 +9,8 @@ namespace Citadel
     class ConsoleMenu
     {
     public:
-        static void Start();
+        static void StartAIGame(const std::uint16_t robotPlayers);
+        static void StartInteractiveGame();
 
     private:
         static const Edition ChooseEdition();

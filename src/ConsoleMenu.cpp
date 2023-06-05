@@ -9,7 +9,33 @@
 
 namespace Citadel
 {
-    void ConsoleMenu::Start()
+    static std::vector<std::string> robotNames =
+    {
+        "Minotaur",
+        "Todd",
+        "HAL",
+        "Frost",
+        "Karl V",
+        "42",
+        "Golem 9000"
+    };
+
+    void ConsoleMenu::StartAIGame(const std::uint16_t robotPlayers)
+    {
+        Boardgame boardgame;
+
+        for (size_t i = 0; i < robotPlayers; ++i)
+        {
+            const int robotNameIndex = Dice::GetRandomNumber(0, robotNames.size() - 1);
+            const auto& robotName = robotNames.at(robotNameIndex);
+            boardgame.AddPlayer<RobotPlayer>(robotName);
+            robotNames.erase(robotNames.begin() + robotNameIndex);
+        }
+
+        boardgame.StartGame(Edition::REGULAR_WITHOUT_PURPLE_DISTRICTS);
+    }
+
+    void ConsoleMenu::StartInteractiveGame()
     {
         Edition edition = Edition::REGULAR_WITHOUT_PURPLE_DISTRICTS;
         /*
@@ -36,17 +62,6 @@ namespace Citadel
             while (name.empty());
             boardgame.AddPlayer<HumanPlayer>(name);
         }
-
-        std::vector<std::string> robotNames =
-        {
-            "Minotaur",
-            "Todd",
-            "HAL",
-            "Frost",
-            "Karl V",
-            "42",
-            "Golem 9000"
-        };
 
         // TODO: turn this check into constexpr/static_assert
         if (GetMaximumPlayers() > robotNames.size())
