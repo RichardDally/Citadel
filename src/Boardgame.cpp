@@ -753,6 +753,12 @@ namespace Citadel
             return true;
         }
 
+        if (pair.second == District::KEEP)
+        {
+            spdlog::warn("Player [{}] cannot destroy KEEP district", player->GetName());
+            return true;
+        }
+
         if (GetDistrictCost(pair.second) >= 1)
         {
             // Destroy cost is district cost minus one.
