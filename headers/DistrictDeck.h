@@ -21,7 +21,12 @@ namespace Citadel
 
         void Setup(const std::vector<District>& availableDistricts);
 
-        const size_t GetPileOfCardSize() const
+        inline const bool IsPileEmpty() const
+        {
+            return pileOfCards_.empty();
+        }
+
+        inline const size_t GetPileOfCardSize() const
         {
             return pileOfCards_.size();
         }
