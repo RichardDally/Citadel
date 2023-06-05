@@ -31,6 +31,7 @@ namespace Citadel
     {
         std::vector<District> result;
 
+        spdlog::debug("Remaining cards [{}]", pileOfCards_.size());
         if (pileOfCards_.size() >= n)
         {
             result.assign(std::begin(pileOfCards_), std::begin(pileOfCards_) + n);

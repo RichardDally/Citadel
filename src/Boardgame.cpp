@@ -730,7 +730,6 @@ namespace Citadel
         }
 
         // Warlord cannot destroy Bishop districts
-
         const auto bishopIt = playerByCharacter_.find(Character::BISHOP);
         if (bishopIt != std::end(playerByCharacter_))
         {

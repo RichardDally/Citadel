@@ -163,7 +163,7 @@ namespace Citadel
         {
             if (std::find(std::begin(opponents), std::end(opponents), character) != std::end(opponents))
             {
-                spdlog::debug("Robot [{}] targets [{}]", GetName(), GetCharacterName(character));
+                spdlog::info("Robot [{}] targets [{}]", GetName(), GetCharacterName(character));
                 return character;
             }
         }
