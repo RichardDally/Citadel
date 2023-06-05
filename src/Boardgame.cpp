@@ -55,8 +55,7 @@ namespace Citadel
             const auto fromDeck = districtDeck_.GetDistricts(DistrictDeckAction::DRAW, numberOfCards);
             if (fromDeck.size() < numberOfCards)
             {
-                spdlog::critical("There is not enough cards in the deck. Drawn [{}] instead of [{}]", fromDeck.size(), numberOfCards);
-                assert(!"District deck should have enough cards.");
+                spdlog::warn("There is not enough cards in the deck. Drawn [{}] instead of [{}]", fromDeck.size(), numberOfCards);
             }
             auto& toHand = player->GetAvailableDistricts();
             toHand.insert(std::end(toHand), std::begin(fromDeck), std::end(fromDeck));
