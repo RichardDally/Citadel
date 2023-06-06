@@ -32,18 +32,18 @@ namespace Citadel
         std::vector<District> result;
 
         spdlog::debug("Remaining cards [{}]", pileOfCards_.size());
-        if (pileOfCards_.size() >= n)
+
+        // District deck may not be able to fullfil n cards
+        const auto available_cards = (pileOfCards_.size() >= n)? n : pileOfCards_.size();
+
+        result.assign(std::begin(pileOfCards_), std::begin(pileOfCards_) + available_cards);
+        if (action == DistrictDeckAction::DRAW)
         {
-            result.assign(std::begin(pileOfCards_), std::begin(pileOfCards_) + n);
-            if (action == DistrictDeckAction::DRAW)
+            pileOfCards_.erase(std::begin(pileOfCards_), std::begin(pileOfCards_) + available_cards);
+            if (pileOfCards_.empty())
             {
-                pileOfCards_.erase(std::begin(pileOfCards_), std::begin(pileOfCards_) + n);
+                spdlog::info("There is remaining districts, game will end.");
             }
-        }
-        else
-        {
-            spdlog::critical("There is not enough districts.");
-            assert(!"There is not enough districts.");
         }
 
         return result;

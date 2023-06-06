@@ -787,6 +787,12 @@ namespace Citadel
 
     bool Boardgame::IsGameEnded() const
     {
+        if (districtDeck_.IsPileEmpty())
+        {
+            spdlog::debug("Game ended, pile of cards is empty.");
+            return true;
+        }
+
         for (const auto& pair : playerById_)
         {
             if (pair.second->GetBuiltCity().size() >= numberOfDistrictsToWin_)
