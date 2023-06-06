@@ -11,6 +11,7 @@ namespace Citadel
 {
     void DistrictDeck::Setup(const std::vector<District>& availableDistricts)
     {
+        spdlog::debug("Available different districts [{}]", availableDistricts.size());
         for (const auto district : availableDistricts)
         {
             const size_t districtQuantity = GetDistrictQuantity(district);
@@ -19,6 +20,7 @@ namespace Citadel
                 pileOfCards_.push_back(district);
             }
         }
+        spdlog::debug("District deck counts [{}] cards", pileOfCards_.size());
 
         std::random_device randomDevice;
         std::mt19937 randomNumberGenerator(randomDevice());
