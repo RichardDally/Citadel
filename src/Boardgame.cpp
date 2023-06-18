@@ -39,7 +39,7 @@ namespace Citadel
         currentPlayer_ = startingPlayer_;
         nextStartingPlayer_ = startingPlayer_; // for the moment, next king will be current king
 
-        for (currentRound_ = 0; IsGameEnded() == false; ++currentRound_)
+        for (currentRound_ = 1; IsGameEnded() == false; ++currentRound_)
         {
             spdlog::debug("Round [{}]", currentRound_ );
             StartRound(GetEdition());
