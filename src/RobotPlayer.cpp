@@ -212,7 +212,7 @@ namespace Citadel
         return std::pair<int, District>(-1, District::UNINITIALIZED);
     }
 
-    MagicianChoice RobotPlayer::MagicianDecision(const std::vector<const Player*>& opponents)
+    MagicianChoice RobotPlayer::MagicianDecision(const size_t pileSize, const std::vector<const Player*>& opponents)
     {
         if (GetNumberOfAvailableDistricts() == 0)
         {
@@ -220,6 +220,7 @@ namespace Citadel
         }
         else
         {
+            // Exchange from district deck choice may be not interesting (TODO: use pileSize argument)
             for (const auto district : GetAvailableDistricts())
             {
                 if (std::find(std::begin(GetBuiltCity()), std::end(GetBuiltCity()), district) != std::end(GetBuiltCity()))

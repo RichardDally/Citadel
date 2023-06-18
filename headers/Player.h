@@ -94,7 +94,7 @@ namespace Citadel
         virtual std::pair<int, District> ChoosePlayerDistrictTarget(const std::vector<const Player*>& players) = 0;
 
         // Returns a choice specific to Magician character
-        virtual MagicianChoice MagicianDecision(const std::vector<const Player*>& opponents) = 0;
+        virtual MagicianChoice MagicianDecision(const size_t pileSize, const std::vector<const Player*>& opponents) = 0;
 
         // Returns discarded districts to be replaced by equivalent number of cards from district deck
         virtual std::vector<District> ChooseDistrictsCardsToSwap() = 0;
