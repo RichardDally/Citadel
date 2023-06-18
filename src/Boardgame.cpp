@@ -677,7 +677,9 @@ namespace Citadel
         if (districtDeck_.GetPileOfCardSize() < cardsInHand.size())
         {
             spdlog::error("Player [{}] cannot swap with districts deck, there is not enough districts in deck to swap", player->GetName());
-            return false;
+            // Consume step (return true), this may be annoying for human players if this is a mistake.
+            // TODO: refactor this path, code a swap (player will have less cards than previously)
+            return true;
         }
 
         auto districtsToDiscard = player->ChooseDistrictsCardsToSwap();
