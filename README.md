@@ -36,18 +36,3 @@ ght buildings or buildings of all five colors.
 mkdir -p zoo/data zoo/logs broker/data broker/secrets
 sudo docker-compose -d up
 ````
-
-## Badges
-
-| Continuous Integration | master | unstable |
-| ------------- |:-------------:|:-----:|
-| GNU/Linux      | [![Build Status](https://travis-ci.org/RichardDally/Citadel.svg?branch=master)](https://travis-ci.org/RichardDally/Citadel) | [![Build Status](https://travis-ci.org/RichardDally/Citad\
-el.svg?branch=unstable)](https://travis-ci.org/RichardDally/Citadel) |
-| Windows      | [![Build status](https://ci.appveyor.com/api/projects/status/08pocyyslo6gpvkx/branch/master?svg=true)](https://ci.appveyor.com/project/RichardDally/citadel/branch/master) | [![Build sta\
-tus](https://ci.appveyor.com/api/projects/status/08pocyyslo6gpvkx/branch/unstable?svg=true)](https://ci.appveyor.com/project/RichardDally/citadel/branch/unstable) |
-
-| Codacy     | Coverity Scan    |
-| ------------- |:-------------:|
-| [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e06bfa6a11ad40688153dcd55f4bf3e0)](https://www.codacy.com/app/RichardDally/Citadel?utm_source=github.com&amp;utm_medium=referral&amp;utm_con\
-tent=RichardDally/Citadel&amp;utm_campaign=Badge_Grade) | <a href="https://scan.coverity.com/projects/richarddally-citadel"> <img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects\
-/6253/badge.svg"/> </a> |
