@@ -41,6 +41,7 @@ namespace Citadel
             return availableDistricts_.size();
         }
 
+        // District cards in hand.
         std::vector<District>& GetAvailableDistricts()
         {
             return availableDistricts_;
