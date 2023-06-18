@@ -46,6 +46,7 @@ namespace Citadel
         }
 
         ComputeScores();
+        spdlog::info("Game ended in [{}] rounds.", currentRound_);
     }
 
     void Boardgame::TransferDistrictCards(const size_t numberOfCards, Player* player)
