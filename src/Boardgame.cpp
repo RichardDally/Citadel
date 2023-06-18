@@ -301,6 +301,11 @@ namespace Citadel
 
         const size_t numberOfDistricts = 2;
         const auto peekedDistricts = districtDeck_.GetDistricts(DistrictDeckAction::PEEK, numberOfDistricts);
+        if (peekedDistricts.empty())
+        {
+            spdlog::info("Cannot pick districts, no remaining district cards.");
+            return true;
+        }
 
         // Player can watch 2 cards but pick only one.
         const auto selectedDistrict = player->WatchAndChooseDistrictCard(peekedDistricts);
