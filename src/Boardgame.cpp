@@ -614,7 +614,6 @@ namespace Citadel
         //     then draw an equal number of cards from the top of the District Deck
         // 3) Do nothing
         const auto opponents = GetOpponentPlayers(player->GetID());
-        const size_t pileSize = districtDeck_.GetPileOfCardSize();
         const MagicianChoice magicianChoice = player->MagicianDecision(opponents);
         switch (magicianChoice)
         {

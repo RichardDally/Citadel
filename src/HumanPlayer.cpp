@@ -206,9 +206,9 @@ namespace Citadel
     }
 
     // Returns a choice specific to Magician character
-    MagicianChoice HumanPlayer::MagicianDecision(const size_t pileSize, const std::vector<const Player*>& opponents)
+    MagicianChoice HumanPlayer::MagicianDecision(const std::vector<const Player*>& opponents)
     {
-        std::cout << "@" << GetName() << ", As Magician make a choice among (pile size [" << pileSize << "]:" << std::endl;
+                std::cout << "@" << GetName() << ", As Magician make a choice among:" << std::endl;
 
         static const std::array<MagicianChoice, 3> indexedMagicianChoices { { MagicianChoice::DO_NOTHING, MagicianChoice::EXCHANGE_FROM_PLAYER, MagicianChoice::EXCHANGE_FROM_DISTRICT_DECK } };
         for (size_t i = 0; i < indexedMagicianChoices.size(); ++i)
