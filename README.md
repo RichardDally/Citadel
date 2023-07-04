@@ -15,7 +15,7 @@ Usage:
   -h, --help                Print help
 ````
 
-## Rules (pasted from [boardgamegeek](https://boardgamegeek.com/boardgame/478/citadels))
+## Rules (from [boardgamegeek](https://boardgamegeek.com/boardgame/478/citadels))
 
 In Citadels, players take on new roles each round to represent characters they hire in order to help them acquire gold and erect buildings. The game ends at the close of a round in which a player erect\
 s his/her eighth building. Players then tally their points, and the player with the highest score wins.
@@ -30,7 +30,7 @@ On a turn, a player earns two or more gold (or draws two building cards then dis
 old equal to the number of symbols on them, and each building is worth a certain number of points. In addition to points from buildings, at the end of the game a player scores bonus points for having ei\
 ght buildings or buildings of all five colors.
 
-## Optional Kafka broker
+## Optional Dockerized Kafka cluster
 
 ````
 mkdir -p zoo/data zoo/logs broker/data broker/secrets
